@@ -1,48 +1,192 @@
 [
-  { "id": "intro", "text": "[placeholder] Den v hospodě U Tří vran skončil. Za okny se ještě táhl kouř od průsmyku." },
   {
-    "id": "mira_kicked",
+    "id": "intro",
+    "text": "Den v hospodě U Tří vran skončil. Za okny ležel průsmyk, kde našli mrtvého kurýra – a pečeť míru, zlomenou napůl."
+  },
+  {
+    "id": "mira_died",
     "when": { "outcome": ["mira", "kick"] },
-    "text": "{name:mira} strávila noc venku. Ráno ji nikdo neviděl – na cestě prý řádili lapkové."
+    "text": "{name:mira} zůstala venku. Ráno ji našli u cesty – mrtvou. V Redanii to dají za vinu průsmyku i vám."
+  },
+  {
+    "id": "radek_died",
+    "when": { "outcome": ["radek", "kick"] },
+    "text": "{name:radek} se vydal v noci dál. Do Redanie už nedorazil; u potoka leželo jeho tělo a rozbitý vůz."
+  },
+  {
+    "id": "bohdan_died",
+    "when": { "outcome": ["bohdan", "kick"] },
+    "text": "{name:bohdan} spal pod širákem. Před svítáním ho zabili lapkové. Nilfgaard pošle otázky – ostré."
+  },
+  {
+    "id": "vlasta_died",
+    "when": { "outcome": ["vlasta", "kick"] },
+    "text": "{name:vlasta} zmizela v mlze. Polední stráž našla jen stopy a kapku krve. V Impériu šeptají, že hostinec lidi vyhazuje na smrt."
+  },
+  {
+    "id": "eliska_died",
+    "when": { "outcome": ["eliska", "kick"] },
+    "text": "{name:eliska} šla měřit za tmy. Spadla ze skály – nebo ji někdo strčil. Ferelden ztratil učenku a důvěru v průsmyk."
+  },
+  {
+    "id": "mira_bed",
+    "when": { "outcome": ["mira", "bed"] },
+    "text": "{name:mira} ráno odešla vděčná. V Redanii řekne, že U Tří vran ještě drží slovo."
   },
   {
     "id": "eliska_bed",
     "when": { "outcome": ["eliska", "bed"] },
-    "text": "{name:eliska} se ráno vyspalá vydala na cestu domů a slíbila, že o hospodě řekne jen dobré."
+    "text": "{name:eliska} se vyspala a slíbila, že Kronice napíše o hospodě jen dobré – a o pečeti pravdu, až ji najde."
   },
   {
     "id": "mira_bohdan_room",
     "when": { "roommates": ["mira", "bohdan"] },
-    "text": "{name:mira} a {name:bohdan} spali ve stejném pokoji. Do rána se z něj ozývala hádka o požáru."
+    "text": "{name:mira} a {name:bohdan} spali v jednom pokoji. Do rána se z něj ozývala hádka o kurýrovi a černém plášti."
   },
   {
     "id": "radek_vlasta_table",
     "when": { "sameTable": ["radek", "vlasta"] },
-    "text": "U jednoho stolu se {name:radek} a {name:vlasta} rozpovídali tak, že zapomněli, z jakých království pocházejí."
+    "text": "U jednoho stolu se {name:radek} a {name:vlasta} šeptali o sudích s olejem, až zapomněli, z jakých království jsou."
+  },
+  {
+    "id": "mira_eliska_table",
+    "when": { "sameTable": ["mira", "eliska"] },
+    "text": "{name:mira} popsala {name:eliska} lucerny nad stezkou. Učenka si dělala poznámky ještě při pivu."
+  },
+  {
+    "id": "bohdan_eliska_table",
+    "when": { "sameTable": ["bohdan", "eliska"] },
+    "text": "{name:bohdan} a {name:eliska} se u stolu skoro nepohádali – ale mír mezi nimi nevydržel ani do zákusku."
   },
   {
     "id": "mira_secret",
     "when": { "inkVar": ["mira", "told_secret", true] },
-    "text": "Hostinský teď ví, že {name:mira} byla u požáru. Komu to poví?"
+    "text": "Hostinský teď ví, že {name:mira} kurýra viděla. Ta znalost má cenu – a cenu i nebezpečí."
+  },
+  {
+    "id": "bohdan_accused",
+    "when": { "inkVar": ["bohdan", "accused_mira", true] },
+    "text": "{name:bohdan} u baru veřejně osočil Miru. Zvěst se rozběhne dřív než posel."
+  },
+  {
+    "id": "eliska_murder",
+    "when": { "inkVar": ["eliska", "believes_murder", true] },
+    "text": "{name:eliska} už nevěří na blesk. Ve Fereldenu budou psát o vraždě – ne o bouři."
+  },
+  {
+    "id": "vlasta_oil",
+    "when": { "inkVar": ["vlasta", "saw_oil", true] },
+    "text": "Díky {name:vlasta} víte o sudích s olejem u stezky. Kdo je tam nechal, zatím mlčí."
   },
   {
     "id": "vlasta_no_show",
     "when": { "all": [{ "not": { "present": "vlasta" } }, { "present": "bohdan" }] },
-    "text": "{name:bohdan} se celý večer ptal po jakési Vlastě. Nepřišla."
+    "text": "{name:bohdan} se celý večer ptal po jakési Vlastě. Nepřišla – a jemu to nebylo vhod."
   },
   {
-    "id": "k1_angry",
-    "when": { "meter": ["k1", "<=", -3] },
-    "text": "Z {kingdom:k1} přicházejí zprávy, že hostinský u průsmyku nadržuje sousedům."
+    "id": "mira_no_show",
+    "when": { "all": [{ "not": { "present": "mira" } }, { "present": "bohdan" }] },
+    "text": "{name:bohdan} hledal očima Miru z Redanie. Dnes nepřišla; ušetřil si hádku, ne podezření."
   },
   {
-    "id": "k2_pleased",
-    "when": { "any": [{ "meter": ["k2", ">=", 2] }, { "meter": ["bohdan", ">", 4] }] },
-    "text": "V {kingdom:k2} se o hospodě U Tří vran mluví jako o spolehlivém místě."
+    "id": "ending_war",
+    "when": {
+      "any": [
+        { "meter": ["k1", "<=", -4] },
+        { "meter": ["k2", "<=", -4] },
+        { "meter": ["k3", "<=", -4] },
+        {
+          "any": [
+            { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
+            { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+            { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+            { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+            { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+            { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+            { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+            { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+            { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+            { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
+          ]
+        }
+      ]
+    },
+    "text": "Do tří dnů se průsmyk zavře. Bubny v Redanii, Nilfgaardu i Fereldenu bijí stejně – do války. Hospoda U Tří vran stojí přesně uprostřed cesty, kudy půjdou vojska."
   },
   {
-    "id": "balanced",
-    "when": { "all": [{ "meter": ["k1", ">", -3] }, { "meter": ["k2", "<", 2] }, { "meter": ["k3", "==", 0] }] },
-    "text": "Království si hostince zatím příliš nevšímají. Mír vydrží – aspoň dnes."
+    "id": "ending_peace",
+    "when": {
+      "all": [
+        { "not": { "meter": ["k1", "<=", -4] } },
+        { "not": { "meter": ["k2", "<=", -4] } },
+        { "not": { "meter": ["k3", "<=", -4] } },
+        {
+          "not": {
+            "any": [
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
+            ]
+          }
+        },
+        { "any": [{ "not": { "present": "mira" } }, { "not": { "outcome": ["mira", "kick"] } }] },
+        { "any": [{ "not": { "present": "radek" } }, { "not": { "outcome": ["radek", "kick"] } }] },
+        { "any": [{ "not": { "present": "bohdan" } }, { "not": { "outcome": ["bohdan", "kick"] } }] },
+        { "any": [{ "not": { "present": "vlasta" } }, { "not": { "outcome": ["vlasta", "kick"] } }] },
+        { "any": [{ "not": { "present": "eliska" } }, { "not": { "outcome": ["eliska", "kick"] } }] },
+        { "meter": ["k1", ">=", 0] },
+        { "meter": ["k2", ">=", 0] },
+        { "meter": ["k3", ">=", 0] }
+      ]
+    },
+    "text": "Pečeť se nenašla celá – ale království zatím nehýbou vojskem. O hospodě U Tří vran se mluví jako o mostu: kdo tudy projde, ještě věří, že mír vydrží."
+  },
+  {
+    "id": "ending_shadow",
+    "when": {
+      "all": [
+        { "not": { "meter": ["k1", "<=", -4] } },
+        { "not": { "meter": ["k2", "<=", -4] } },
+        { "not": { "meter": ["k3", "<=", -4] } },
+        {
+          "not": {
+            "any": [
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
+            ]
+          }
+        },
+        {
+          "not": {
+            "all": [
+              { "any": [{ "not": { "present": "mira" } }, { "not": { "outcome": ["mira", "kick"] } }] },
+              { "any": [{ "not": { "present": "radek" } }, { "not": { "outcome": ["radek", "kick"] } }] },
+              { "any": [{ "not": { "present": "bohdan" } }, { "not": { "outcome": ["bohdan", "kick"] } }] },
+              { "any": [{ "not": { "present": "vlasta" } }, { "not": { "outcome": ["vlasta", "kick"] } }] },
+              { "any": [{ "not": { "present": "eliska" } }, { "not": { "outcome": ["eliska", "kick"] } }] },
+              { "meter": ["k1", ">=", 0] },
+              { "meter": ["k2", ">=", 0] },
+              { "meter": ["k3", ">=", 0] }
+            ]
+          }
+        }
+      ]
+    },
+    "text": "Válka ještě nezačala – ale šeptanda ano. Špehové si zapisují, koho jste hostili a koho ne. U Tří vran už nejste jen hostinský; jste součást hry o pečeť."
   }
 ]

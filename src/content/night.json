@@ -1,7 +1,7 @@
 {
-  "mira":   { "bed": { "self": 1 },  "kick": { "self": -3, "k1": -1 } },
-  "radek":  { "bed": { "self": 1 },  "kick": { "self": -2 } },
-  "bohdan": { "bed": { "self": 0 },  "kick": { "self": -2, "k2": -1 } },
-  "vlasta": { "bed": { "self": 2 },  "kick": { "self": -1 } },
-  "eliska": { "bed": { "self": 1, "k3": 1 }, "kick": { "self": -4, "k3": -2 } }
+  "mira":   { "bed": { "self": 1, "k1": 1 },  "kick": { "self": -4, "k1": -2 } },
+  "radek":  { "bed": { "self": 1, "k1": 1 },  "kick": { "self": -3, "k1": -2 } },
+  "bohdan": { "bed": { "self": 1, "k2": 1 },  "kick": { "self": -4, "k2": -2 } },
+  "vlasta": { "bed": { "self": 2, "k2": 1 },  "kick": { "self": -3, "k2": -1 } },
+  "eliska": { "bed": { "self": 1, "k3": 1 },  "kick": { "self": -4, "k3": -2 } }
 }

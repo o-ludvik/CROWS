@@ -1,5 +1,5 @@
 {
-  "title": "What the crows say",
+  "title": "Co říkají vrány",
   "start": "Začít",
   "openPub": "Otevřít hospodu",
   "greeting": "Zdravím, čím posloužím?",
@@ -22,5 +22,6 @@
   "kick": "Vyhodit",
   "done": "Hotovo",
   "summaryHeading": "Shrnutí dne",
-  "playAgain": "Hrát znovu"
+  "playAgain": "Hrát znovu",
+  "debugHint": "Debug: klávesa pod Esc"
 }

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { t } from './content'
 import { Stage } from './components/Stage'
 import { DebugPanel } from './components/DebugPanel'
 import { TitleScreen } from './screens/TitleScreen'
@@ -25,6 +26,7 @@ export default function App() {
       {(phase === 'desk' || phase === 'conversation' || phase === 'seating') && <PubScreen />}
       {phase === 'night' && <NightScreen />}
       {phase === 'summary' && <SummaryScreen />}
+      {!debugOpen && <div className="debug-hint">{t('debugHint')}</div>}
       <div className={`fade ${fading ? 'on' : ''}`} />
       {debugOpen && <DebugPanel />}
     </Stage>

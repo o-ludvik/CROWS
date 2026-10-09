@@ -105,6 +105,10 @@ body { font-family: 'EB Garamond', serif; color: #2a1d10; user-select: none; }
   background: rgba(239, 226, 196, 0.95); border: 3px solid #2a1d10; font-size: 28px; line-height: 1.5;
 }
 
+.debug-hint {
+  position: absolute; left: 24px; bottom: 24px; z-index: 50; pointer-events: none;
+  color: rgba(243, 230, 200, 0.55); font-size: 22px;
+}
 .debug {
   position: absolute; right: 0; top: 0; width: 640px; max-height: 1080px; overflow: auto; margin: 0; padding: 12px;
   background: rgba(0, 0, 0, 0.85); color: #9f9; font: 15px/1.35 monospace; white-space: pre-wrap; word-break: break-all; z-index: 1000; pointer-events: none; user-select: text;

@@ -14,9 +14,8 @@ export function DebugPanel() {
     inkTags: s.inkTags,
     currentInkVars: liveInkVars(),
     inkVarSnapshots: s.inkVars,
-    eventLog: s.eventLog.slice(-20).map((e) => `#${e.seq} ${e.source}: ${e.description}`),
   }
-  const { eventLog, ...rest } = dump
-  const text = Object.entries(rest).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join('\n')
-  return <pre className="debug">{`${text}\n\neventLog:\n${eventLog.join('\n')}`}</pre>
+  const state = Object.entries(dump).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join('\n')
+  const log = s.eventLog.slice(-20).map((e) => `#${e.seq} ${e.source} → ${e.description}`)
+  return <pre className="debug">{`eventLog (affiliation changes):\n${log.join('\n') || '(empty)'}\n\n${state}`}</pre>
 }

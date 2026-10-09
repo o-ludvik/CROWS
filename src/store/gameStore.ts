@@ -114,11 +114,14 @@ export function applyEffects(effects: Effects, source: string) {
   for (const [id, d] of Object.entries(effects)) {
     if (!(id in meters) || !d) continue // unknown or absent guest → ignored
     const next = Math.max(-10, Math.min(10, meters[id] + d))
-    applied[id] = next - meters[id]
+    const delta = next - meters[id]
+    if (!delta) continue // already at clamp
+    applied[id] = delta
     meters[id] = next
-    lastDelta[id] = applied[id]
+    lastDelta[id] = delta
   }
-  const description = Object.entries(applied).map(([id, d]) => `${id} ${d > 0 ? '+' : ''}${d}`).join(', ') || 'bez změny'
+  if (!Object.keys(applied).length) { syncInkVars(); return }
+  const description = Object.entries(applied).map(([id, d]) => `${id} ${d > 0 ? '+' : ''}${d}`).join(', ')
   set({ meters, lastDelta, eventLog: [...get().eventLog, { seq: ++seq, source, description, effects: applied }] })
   syncInkVars()
 }
@@ -141,7 +144,7 @@ export function liveInkVars(): Record<string, unknown> {
 }
 
 /** Standard inkjs loop: Continue() while possible, applying tags per line, then expose choices. */
-function continueStory() {
+function continueStory(action?: string) {
   if (!story) return
   const id = currentGuestId()
   while (story.canContinue) {
@@ -161,7 +164,7 @@ function continueStory() {
     if (line.speaker === 'bartender') line.cuttable = false
     set({ inkTags: tags })
     if (text) set({ chatLog: [...get().chatLog, line] })
-    if (Object.keys(effects).length) applyEffects(effects, `ink:${id}`)
+    if (Object.keys(effects).length) applyEffects(effects, action ?? `ink:${id}`)
   }
   const choices = story.currentChoices.map((c) => c.text)
   if (!choices.length) set({ inkVars: { ...get().inkVars, [id]: liveInkVars() } })
@@ -202,9 +205,10 @@ export const actions = {
   }),
   choose(i: number) {
     if (!story) return
-    set({ chatLog: [...get().chatLog, { speaker: 'bartender', text: get().choices[i], cuttable: false }], choices: [] })
+    const text = get().choices[i]
+    set({ chatLog: [...get().chatLog, { speaker: 'bartender', text, cuttable: false }], choices: [] })
     story.ChooseChoiceIndex(i)
-    continueStory()
+    continueStory(`choice:${currentGuestId()}:${text}`)
   },
   closeConversation: () => set({ phase: 'seating', readerOpen: null }),
   seat(seatIndex: number) {

@@ -2,24 +2,24 @@
   {
     "id": "scroll_k1",
     "kingdom": "k1",
-    "title": "Hlasatel Království A [placeholder]",
+    "title": "Hlasatel Redanie",
     "articles": [
       {
-        "headline": "Požár v pohraničním lese",
+        "headline": "Kurýr zavražděn u průsmyku",
         "paragraphs": [
           [
-            { "text": "Včera v noci vypukl požár v lese u průsmyku. " },
-            { "id": "k1_a1_s1", "text": "Svědci viděli prchat muže v barvách Království B.", "cut": true },
-            { "text": " Oheň zachvátil přes sto sáhů lesa." }
+            { "text": "Dnes ráno našli u horského průsmyku tělo královského kurýra. " },
+            { "id": "k1_a1_s1", "text": "U mrtvého ležela pečeť mírové smlouvy mezi třemi královstvími – zlomená.", "cut": true }
           ],
           [
-            { "id": "k1_a1_s2", "text": "Královská stráž našla u ohniště zbytky pochodní typických pro Béčko.", "cut": true },
+            { "text": "Redanská stráž tvrdí: " },
+            { "id": "k1_a1_s2", "text": "vraha poznali podle černého pláště v barvách Nilfgaardu.", "cut": true },
             { "text": " " },
-            { "id": "k1_a1_s3", "text": "Rada žádá, aby hranice zůstala pro poutníky z B uzavřena.", "cut": true }
+            { "id": "k1_a1_s3", "text": "Rada žádá uzavření průsmyku pro nilfgaardské poutníky.", "cut": true }
           ],
           [
-            { "text": "Lesníci z obce Javorná hlásí, že " },
-            { "id": "k1_a1_s4", "text": "dřevaři toho dne v lese vůbec nepracovali.", "cut": true }
+            { "text": "Svědci z Javorné prý slyšeli křik krátce po půlnoci. " },
+            { "id": "k1_a1_s4", "text": "Na stezce našli zbytky pochodní namočených v oleji.", "cut": true }
           ]
         ]
       }
@@ -28,20 +28,24 @@
   {
     "id": "scroll_k2",
     "kingdom": "k2",
-    "title": "Posel Království B [placeholder]",
+    "title": "Posel Nilfgaardu",
     "articles": [
       {
-        "headline": "Pašeráci zapálili les?",
+        "headline": "Redanie křivě obviňuje Impérium",
         "paragraphs": [
           [
-            { "text": "Požár u průsmyku je dílem pašeráků. " },
-            { "id": "k2_a1_s1", "text": "Pašerácká stezka z Království C vede přímo spáleništěm.", "cut": true }
+            { "text": "Smrt kurýra u průsmyku je tragédie – a také záminka. " },
+            { "id": "k2_a1_s1", "text": "Žádný nilfgaardský voják ten večer u hranice nebyl.", "cut": true }
           ],
           [
-            { "text": "Obvinění z Áčka naše vláda odmítá. " },
-            { "id": "k2_a1_s2", "text": "Žádný z našich vojáků ten večer nebyl u hranice.", "cut": true },
+            { "text": "Impérium ukazuje jinam: " },
+            { "id": "k2_a1_s2", "text": "pašerácká stezka z Fereldenu vede přímo kolem místa činu.", "cut": true },
             { "text": " " },
-            { "id": "k2_a1_s3", "text": "Pašeráci prý převáželi lampový olej.", "cut": true }
+            { "id": "k2_a1_s3", "text": "Pašeráci prý převáželi lampový olej a pochodně.", "cut": true }
+          ],
+          [
+            { "text": "Císařský dvůr varuje: " },
+            { "id": "k2_a1_s4", "text": "kdo Redanii uvěří, podkopává mír celého hřebene.", "cut": true }
           ]
         ]
       }
@@ -50,20 +54,24 @@
   {
     "id": "scroll_k3",
     "kingdom": "k3",
-    "title": "Kronika Království C [placeholder]",
+    "title": "Kronika Fereldenu",
     "articles": [
       {
-        "headline": "Blesk nebo nedbalost?",
+        "headline": "Vražda, nebo noční bouře?",
         "paragraphs": [
           [
-            { "text": "Učenci Království C tvrdí, že " },
-            { "id": "k3_a1_s1", "text": "les zapálil blesk z bouřky nad průsmykem.", "cut": true }
+            { "text": "Fereldenští učenci zkoumají místo činu. " },
+            { "id": "k3_a1_s1", "text": "Stopa po blesku na skále nad stezkou je čerstvá.", "cut": true }
           ],
           [
-            { "text": "Jiní však ukazují na sousedy: " },
-            { "id": "k3_a1_s2", "text": "dřevaři z Království A nechávají v lese neuhašená ohniště.", "cut": true },
+            { "text": "Jiní však varují: " },
+            { "id": "k3_a1_s2", "text": "redanští dřevaři nechávají u cesty neuhašená ohniště a sudy s olejem.", "cut": true },
             { "text": " " },
-            { "id": "k3_a1_s3", "text": "O pašerácích z naší země nic nevíme.", "cut": true }
+            { "id": "k3_a1_s3", "text": "O nilfgaardských vrazích nemáme důkaz.", "cut": true }
+          ],
+          [
+            { "text": "Královna žádá klid. " },
+            { "id": "k3_a1_s4", "text": "Dokud se nevyšetří pečeť smlouvy, ať nikdo nehne vojskem.", "cut": true }
           ]
         ]
       }
