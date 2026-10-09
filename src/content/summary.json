@@ -1,0 +1,48 @@
+[
+  { "id": "intro", "text": "[placeholder] Den v hospodě U Tří vran skončil. Za okny se ještě táhl kouř od průsmyku." },
+  {
+    "id": "mira_kicked",
+    "when": { "outcome": ["mira", "kick"] },
+    "text": "{name:mira} strávila noc venku. Ráno ji nikdo neviděl – na cestě prý řádili lapkové."
+  },
+  {
+    "id": "eliska_bed",
+    "when": { "outcome": ["eliska", "bed"] },
+    "text": "{name:eliska} se ráno vyspalá vydala na cestu domů a slíbila, že o hospodě řekne jen dobré."
+  },
+  {
+    "id": "mira_bohdan_room",
+    "when": { "roommates": ["mira", "bohdan"] },
+    "text": "{name:mira} a {name:bohdan} spali ve stejném pokoji. Do rána se z něj ozývala hádka o požáru."
+  },
+  {
+    "id": "radek_vlasta_table",
+    "when": { "sameTable": ["radek", "vlasta"] },
+    "text": "U jednoho stolu se {name:radek} a {name:vlasta} rozpovídali tak, že zapomněli, z jakých království pocházejí."
+  },
+  {
+    "id": "mira_secret",
+    "when": { "inkVar": ["mira", "told_secret", true] },
+    "text": "Hostinský teď ví, že {name:mira} byla u požáru. Komu to poví?"
+  },
+  {
+    "id": "vlasta_no_show",
+    "when": { "all": [{ "not": { "present": "vlasta" } }, { "present": "bohdan" }] },
+    "text": "{name:bohdan} se celý večer ptal po jakési Vlastě. Nepřišla."
+  },
+  {
+    "id": "k1_angry",
+    "when": { "meter": ["k1", "<=", -3] },
+    "text": "Z {kingdom:k1} přicházejí zprávy, že hostinský u průsmyku nadržuje sousedům."
+  },
+  {
+    "id": "k2_pleased",
+    "when": { "any": [{ "meter": ["k2", ">=", 2] }, { "meter": ["bohdan", ">", 4] }] },
+    "text": "V {kingdom:k2} se o hospodě U Tří vran mluví jako o spolehlivém místě."
+  },
+  {
+    "id": "balanced",
+    "when": { "all": [{ "meter": ["k1", ">", -3] }, { "meter": ["k2", "<", 2] }, { "meter": ["k3", "==", 0] }] },
+    "text": "Království si hostince zatím příliš nevšímají. Mír vydrží – aspoň dnes."
+  }
+]

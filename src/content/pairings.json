@@ -1,0 +1,13 @@
+{
+  "pairs": [
+    { "guests": ["mira", "bohdan"], "effects": { "a": -2, "b": -2, "k1": -1 } },
+    { "guests": ["mira", "eliska"], "effects": { "a": 1, "b": 1 } },
+    { "guests": ["radek", "vlasta"], "effects": { "a": 2, "b": 2, "k1": 1, "k2": 1 } }
+  ],
+  "factionFallback": {
+    "same":  { "a": 1,  "b": 1 },
+    "k1-k2": { "a": -1, "b": -1 },
+    "k1-k3": { "a": 0,  "b": 0 },
+    "k2-k3": { "a": -1, "b": -1 }
+  }
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "scroll_k1",
+    "kingdom": "k1",
+    "title": "Hlasatel Království A [placeholder]",
+    "articles": [
+      {
+        "headline": "Požár v pohraničním lese",
+        "paragraphs": [
+          [
+            { "text": "Včera v noci vypukl požár v lese u průsmyku. " },
+            { "id": "k1_a1_s1", "text": "Svědci viděli prchat muže v barvách Království B.", "cut": true },
+            { "text": " Oheň zachvátil přes sto sáhů lesa." }
+          ],
+          [
+            { "id": "k1_a1_s2", "text": "Královská stráž našla u ohniště zbytky pochodní typických pro Béčko.", "cut": true },
+            { "text": " " },
+            { "id": "k1_a1_s3", "text": "Rada žádá, aby hranice zůstala pro poutníky z B uzavřena.", "cut": true }
+          ],
+          [
+            { "text": "Lesníci z obce Javorná hlásí, že " },
+            { "id": "k1_a1_s4", "text": "dřevaři toho dne v lese vůbec nepracovali.", "cut": true }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scroll_k2",
+    "kingdom": "k2",
+    "title": "Posel Království B [placeholder]",
+    "articles": [
+      {
+        "headline": "Pašeráci zapálili les?",
+        "paragraphs": [
+          [
+            { "text": "Požár u průsmyku je dílem pašeráků. " },
+            { "id": "k2_a1_s1", "text": "Pašerácká stezka z Království C vede přímo spáleništěm.", "cut": true }
+          ],
+          [
+            { "text": "Obvinění z Áčka naše vláda odmítá. " },
+            { "id": "k2_a1_s2", "text": "Žádný z našich vojáků ten večer nebyl u hranice.", "cut": true },
+            { "text": " " },
+            { "id": "k2_a1_s3", "text": "Pašeráci prý převáželi lampový olej.", "cut": true }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "scroll_k3",
+    "kingdom": "k3",
+    "title": "Kronika Království C [placeholder]",
+    "articles": [
+      {
+        "headline": "Blesk nebo nedbalost?",
+        "paragraphs": [
+          [
+            { "text": "Učenci Království C tvrdí, že " },
+            { "id": "k3_a1_s1", "text": "les zapálil blesk z bouřky nad průsmykem.", "cut": true }
+          ],
+          [
+            { "text": "Jiní však ukazují na sousedy: " },
+            { "id": "k3_a1_s2", "text": "dřevaři z Království A nechávají v lese neuhašená ohniště.", "cut": true },
+            { "text": " " },
+            { "id": "k3_a1_s3", "text": "O pašerácích z naší země nic nevíme.", "cut": true }
+          ]
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,7 @@
+[
+  { "id": "mira",   "name": "Mira",   "faction": "k1", "portrait": "art/guest_mira.png",   "startAffinity": -2, "ink": "mira" },
+  { "id": "radek",  "name": "Radek",  "faction": "k1", "portrait": "art/guest_radek.png",  "startAffinity": 0,  "ink": "radek" },
+  { "id": "bohdan", "name": "Bohdan", "faction": "k2", "portrait": "art/guest_bohdan.png", "startAffinity": 1,  "ink": "bohdan" },
+  { "id": "vlasta", "name": "Vlasta", "faction": "k2", "portrait": "art/guest_vlasta.png", "startAffinity": -1, "ink": "vlasta" },
+  { "id": "eliska", "name": "Eliška", "faction": "k3", "portrait": "art/guest_eliska.png", "startAffinity": 2,  "ink": "eliska" }
+]

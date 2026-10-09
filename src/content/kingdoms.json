@@ -1,0 +1,5 @@
+[
+  { "id": "k1", "name": "Království A", "startAffinity": 0 },
+  { "id": "k2", "name": "Království B", "startAffinity": 0 },
+  { "id": "k3", "name": "Království C", "startAffinity": 0 }
+]
