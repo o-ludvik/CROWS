@@ -13,6 +13,8 @@ The full game spans many in-game days. This demo covers exactly one day, and its
 3. **Seating.** Does choosing where to seat a guest create an interesting decision?
 4. **Night management.** Does assigning beds or kicking guests out feel meaningful?
 5. **Affinity.** Do the visible meters make choices feel like they matter?
+6. **Stress.** Does the bartender stress meter and gated replies feel fair and readable?
+7. **Corkboard.** Is pinning cutouts/scrolls and linking them with coloured string useful?
 
 Because the goal is fast iteration, all game content (newspapers, guests, dialogue, pairings, night effects, summary text) lives in data files and Ink scripts, never hardcoded in components. Changing a number or a sentence must never require touching game logic.
 
@@ -47,7 +49,7 @@ Not used in the demo: Howler.js (no sound), localStorage (no saves).
 
 **Language.** All in-game text is Czech. Use a font that covers Czech diacritics (á, č, ď, é, ě, í, ň, ó, ř, š, ť, ú, ů, ý, ž) and bundle it locally so the game does not depend on a CDN. All UI strings live in `strings.cs.json` (section 14.8).
 
-**Presentation.** Static screens, no animation. The only motion allowed is fade-to-black transitions (section 13.2) and the browser's native scrolling in the chat log.
+**Presentation.** Static screens, minimal motion. Allowed motion: fade-to-black transitions (section 13.2), the portrait fade-in on guest change, the horizontal slide of the pub top strip when opening/closing the corkboard (section 6.5), and the browser's native scrolling in the chat log.
 
 ---
 
@@ -76,14 +78,19 @@ The desk (scrolls, cutouts, trashcan) is interactive during DESK and CONVERSATIO
 
 The pub screen is used for DESK, CONVERSATION and (underneath the overlay) SEATING. The layout follows the Papers, Please model: the person in front of you at the top, your workspace at the bottom.
 
-| Region | x | y | w | h | Contents |
+The **desk** occupies roughly the bottom quarter of the stage (height 270). The **top strip** (height 810) is a sliding row wider than the stage:
+
+| Region | Strip x | y | w | h | Contents |
 |---|---|---|---|---|---|
-| Portrait area | 0 | 0 | 600 | 620 | Closed door with "Otevřít hospodu" button in DESK; guest portrait in CONVERSATION |
-| Meters panel | 600 | 0 | 420 | 620 | Affinity meters (section 9) |
-| Chat panel | 1020 | 0 | 900 | 620 | Scrollable conversation log and choice buttons |
-| Desk | 0 | 620 | 1920 | 460 | Scrolls and cutouts, free drag-and-drop |
-| Trashcan | 20 | 880 | 180 | 180 | Drop target inside the desk, bottom-left |
-| Minimap | 1640 | 800 | 260 | 260 | Fixed seating map inside the desk, bottom-right |
+| Corkboard | 0 | 0 | 960 | 810 | Investigation board (section 6.5); off-screen left when closed |
+| Portrait area | 960 | 0 | 600 | 810 | Closed door with "Otevřít hospodu" in DESK; guest portrait in CONVERSATION |
+| Meters panel | 1560 | 0 | 420 | 810 | Affinity + stress meters (section 9) |
+| Chat panel | 1980 | 0 | 900 | 810 | Conversation log and choice buttons |
+| Desk | stage 0 | 810 | 1920 | 270 | Always visible; does not slide |
+| Trashcan | desk-relative | | 180 | ~140 | Drop target inside the desk, bottom-left |
+| Minimap | desk-relative | | 220 | 220 | Fixed seating map inside the desk, bottom-right |
+
+When the corkboard is **closed**, the strip is translated by −960 so the stage shows portrait + meters + chat (1920 wide). When **open**, translation is 0: left half corkboard, right half mostly the guest; chat sits further right off the viewpoint. An arrow on the left edge opens the board; an arrow on the right edge closes it. Slide duration ~300 ms.
 
 These coordinates are a starting point and can be tuned once real art exists. The trashcan and minimap are fixed and always render above desk items.
 
@@ -121,7 +128,15 @@ Cutouts have no effect on game state. They are purely the player's memory aid, a
 
 ### 6.4 Trashcan
 
-Dropping a cutout or a scroll on the trashcan removes it permanently. The trashcan highlights while something is being dragged over it. A thrown-away scroll can no longer be read; existing cutouts from it stay on the desk.
+Dropping a cutout or a scroll on the trashcan removes it permanently. The trashcan highlights while something is being dragged over it. A thrown-away scroll can no longer be read; existing cutouts from it stay on the desk. The trashcan only accepts drops while the item is over the desk (not the corkboard).
+
+### 6.5 Corkboard
+
+The corkboard is the bartender's investigation board on the left of the sliding top strip. The same scrolls and cutouts that live on the desk can be dragged onto the corkboard and back. Items on the corkboard show a **pin**; the player can connect two pins with coloured string (three colours: red, twine/yellow, blue). Select a colour, then click two pins to link them; click an existing string to remove it.
+
+Hovering a cutout on the corkboard shows its text in a tooltip. Clicking a cutout opens a full-screen parchment reader with the note text. Scrolls keep the normal scroll reader.
+
+Layout and strings persist for the whole day and reset on "Hrát znovu". Like desk cutouts, the corkboard has **no gameplay effect** — it is only a memory aid.
 
 ---
 
@@ -137,7 +152,11 @@ When the story reaches its end, the engine shows a single choice button with the
 
 The chat panel is a scrollable log. New lines are appended at the bottom and the panel auto-scrolls to the newest line. The player can scroll up to reread the whole conversation. Guest lines are left-aligned with the guest's name (or "???") as the label; bartender lines are right-aligned with the label "Hostinský".
 
-Lines produced between two choice points appear all at once (no typewriter effect). Choice buttons (1–3) appear below the last line at the bottom of the panel. Clicking a choice appends its text to the log as a bartender line and continues the story. All choices are always visible and selectable; there are no locked or hidden options.
+Lines produced between two choice points appear all at once (no typewriter effect). Choice buttons appear below the last line at the bottom of the panel. Clicking a choice appends its text to the log as a bartender line and continues the story.
+
+**Gated choices.** Some options are locked (not rendered) based on Ink conditions that read synced variables: stress, kingdom affinity (`aff_k1`…`aff_k3`), current guest affinity (`aff_self`), and optionally other present guests' meters (`aff_<guestId>`). Writers gate with Ink syntax such as `* { stress < 5 && aff_k1 >= 0 } [Text]`. The engine shows only choices Ink exposes; there is no greyed-out locked UI.
+
+**Stress feedback.** Choice buttons do not preview stress changes. When a chosen answer changes stress, a small circle with `+N` or `−N` appears in the corner of that bartender chat bubble.
 
 There is no time pressure.
 
@@ -165,26 +184,27 @@ The game logic always knows each guest's true faction (it uses it for seating fa
 
 ---
 
-## 9. Affinity meters
+## 9. Affinity and stress meters
 
 ### 9.1 Meters
 
-There are two kinds of meters, all on the same scale from −10 to +10, clamped at both ends:
+All meters use the scale −10 to +10, clamped at both ends:
 
-1. **Kingdom meters (3).** How each kingdom views the bartender. Starting values come from data (default 0).
-2. **Guest meters (one per guest present today).** How that guest views the bartender. Starting values come from the guest data and need not be 0 (a guest may arrive already distrustful).
+1. **Stress meter (1).** How tense the bartender is. Starts at 0. Changed only by Ink `#stress` tags during conversation. Does not change seating or night mechanics; summary text can react to it.
+2. **Kingdom meters (3).** How each kingdom views the bartender. Starting values come from data (default 0).
+3. **Guest meters (one per guest present today).** How that guest views the bartender. Starting values come from the guest data and need not be 0 (a guest may arrive already distrustful).
 
 ### 9.2 What changes them
 
-Any of the following can change zero, one or all meters at once: a line or choice in a conversation (Ink tags), a seating decision (pairing rules), and a night decision (night effects). The demo has no other consequences; meters only move, and the summary text reacts.
+Affinity (kingdom/guest) can change from a line or choice in a conversation (Ink `#aff` tags), a seating decision (pairing rules), and a night decision (night effects). Stress changes only from Ink `#stress:+N` / `#stress:-N` tags.
 
 All changes go through one function, `applyEffects(effects, source)`, which clamps values, records the change for display and writes an entry to the event log.
 
 ### 9.3 Display
 
-The meters are always visible in the demo. The meters panel shows the three kingdom meters (labelled with the kingdom names), followed by a meter for each guest who has arrived today, in arrival order, labelled with the guest's name or "???". The current guest's meter is highlighted.
+The meters are always visible in the demo. The meters panel shows the stress meter first, then the three kingdom meters, then a meter for each guest who has arrived today, in arrival order, labelled with the guest's name or "???". The current guest's meter is highlighted.
 
-Each meter is a horizontal bar from −10 to +10 with a centre mark and the numeric value. The most recent change to a meter is shown next to it, for example "(+2)", until that meter changes again.
+Each meter is a horizontal bar from −10 to +10 with a centre mark and the numeric value. The most recent change to a meter is shown next to it, for example "(+2)", until that meter changes again. Stress changes from a dialogue answer are also shown as a badge on that bartender chat bubble (section 7.2).
 
 The meters panel (or an equivalent block) is also visible on the seating overlay, the night screen and the summary screen.
 
@@ -239,7 +259,7 @@ On "Hotovo" the engine applies each guest's night effects from `night.json` (one
 
 The summary screen shows the heading "Shrnutí dne", a single continuous text wall on the left, the final meter values on the right and a "Hrát znovu" button.
 
-The text is assembled from authored blocks in `summary.json` (section 14.7). The engine evaluates every block in file order and includes each block whose condition is true, joining them as paragraphs. Conditions can check night outcomes, roommates, table-mates, meter values, Ink variables and which guests were present. This lets the summary describe what happened in the kingdoms that day, how the bartender's decisions affected things, and what it caused for the pub and the guests (for example, a guest who was kicked out was taken by bandits).
+The text is assembled from authored blocks in `summary.json` (section 14.7). The engine evaluates every block in file order and includes each block whose condition is true, joining them as paragraphs. Conditions can check night outcomes, roommates, table-mates, meter values (including `stress`), Ink variables and which guests were present. This lets the summary describe what happened in the kingdoms that day, how the bartender's decisions and stress affected things, and what it caused for the pub and the guests (for example, a guest who was kicked out was taken by bandits).
 
 "Hrát znovu" resets all state to initial values, draws 3 new guests and returns to DESK with fresh scrolls.
 
@@ -347,11 +367,12 @@ Each scroll belongs to one kingdom. Articles consist of paragraphs; each paragra
 | `#aff:self:+2` | Change the current guest's meter |
 | `#aff:k1:-1` | Change a kingdom meter (`k1`, `k2`, `k3`) |
 | `#aff:<guestId>:+1` | Change another guest's meter (ignored if that guest is not present today) |
+| `#stress:+2` / `#stress:-1` | Change the bartender stress meter |
 | `#bartender` | This non-choice line is spoken by the bartender, not the guest |
 
 Several tags can be attached to one line. To make choosing an option change a meter, put the tag on the first line inside that choice's branch.
 
-**Optional variable sync.** If a story declares any of `VAR aff_self`, `VAR aff_k1`, `VAR aff_k2`, `VAR aff_k3`, the engine writes the current meter values into them when the story starts and after every effect, so dialogue can branch on affinity. When the story ends, the engine stores a snapshot of all the story's global variables under the guest's id, so summary conditions can read flags set during the conversation (for example `VAR told_secret = false`).
+**Optional variable sync.** If a story declares any of `VAR stress`, `VAR aff_self`, `VAR aff_k1`, `VAR aff_k2`, `VAR aff_k3`, or `VAR aff_<guestId>` for a guest present today, the engine writes the current meter values into them when the story starts and after every effect, so dialogue can branch and **hide choices** with Ink conditions. When the story ends, the engine stores a snapshot of all the story's global variables under the guest's id, so summary conditions can read flags set during the conversation (for example `VAR told_secret = false`).
 
 Minimal example:
 
@@ -427,7 +448,7 @@ Condition types:
 | `{ "outcome": ["mira", "kick"] }` | Night outcome is `kick` or `bed` (any bed) |
 | `{ "roommates": ["mira", "bohdan"] }` | Both slept in the same room |
 | `{ "sameTable": ["mira", "bohdan"] }` | Both sat at the same table |
-| `{ "meter": ["k1", ">=", 3] }` | Final meter comparison; meter id is `k1`–`k3` or a guest id; operators `<`, `<=`, `==`, `>=`, `>` |
+| `{ "meter": ["k1", ">=", 3] }` | Final meter comparison; meter id is `stress`, `k1`–`k3` or a guest id; operators `<`, `<=`, `==`, `>=`, `>` |
 | `{ "inkVar": ["mira", "told_secret", true] }` | Ink variable snapshot equals a value |
 | `{ "all": [ ... ] }` / `{ "any": [ ... ] }` / `{ "not": { ... } }` | Combinators |
 
@@ -475,7 +496,10 @@ type Phase = "title" | "desk" | "conversation" | "seating" | "night" | "summary"
 type KingdomId = "k1" | "k2" | "k3";
 type NightOutcome = "r1a" | "r1b" | "r2a" | "r2b" | "kick";
 
-interface DeskItemBase { id: string; x: number; y: number; z: number; }
+interface DeskItemBase {
+  id: string; x: number; y: number; z: number;
+  surface: "desk" | "cork";
+}
 interface ScrollItem extends DeskItemBase { kind: "scroll"; scrollId: string; }
 interface CutoutItem extends DeskItemBase {
   kind: "cutout";
@@ -483,18 +507,29 @@ interface CutoutItem extends DeskItemBase {
   source: { type: "scroll"; kingdom: KingdomId } | { type: "conversation"; guestId: string };
 }
 
-interface ChatLine { speaker: "guest" | "bartender"; text: string; cuttable: boolean; }
+interface ChatLine {
+  speaker: "guest" | "bartender";
+  text: string;
+  cuttable: boolean;
+  stressDelta?: number;                     // badge on bartender answer bubble
+}
+
+interface CorkString { id: string; a: string; b: string; color: "red" | "twine" | "blue"; }
 
 interface GameState {
   phase: Phase;
-  meters: Record<string, number>;          // "k1" | "k2" | "k3" | guestId → −10..10
+  meters: Record<string, number>;          // "stress" | "k1" | "k2" | "k3" | guestId → −10..10
   lastDelta: Record<string, number>;        // most recent change per meter, for display
   todayGuests: string[];                    // 3 guest ids in arrival order
   currentGuestIndex: number;
   revealed: Record<string, { name: boolean; faction: boolean }>;
   chatLog: ChatLine[];
   deskItems: (ScrollItem | CutoutItem)[];
+  corkOpen: boolean;
+  corkStrings: CorkString[];
+  corkStringColor: "red" | "twine" | "blue";
   readerOpen: string | null;                // scrollId shown in the reader
+  noteOpen: string | null;                  // cutout id shown full-screen on corkboard
   seats: (string | null)[];                 // length 8: 0–3 table 1, 4–7 table 2
   nightAssignments: Record<string, NightOutcome | null>;
   inkVars: Record<string, Record<string, unknown>>; // snapshot per guest
@@ -514,13 +549,16 @@ Art will come from the user's sketches. Until then, each image is a simple place
 | File | Size | Use |
 |---|---|---|
 | `title_bg.png` | 1920×1080 | Title screen |
-| `pub_door_closed.png` | 600×620 | Portrait area before opening |
-| `guest_<id>.png` | 600×620 | Guest portraits (thumbnails are scaled down) |
-| `desk.png` | 1920×460 | Desk surface |
-| `scroll_rolled.png` | ~200×80 | Scroll on the desk |
-| `parchment.png` | ~1000×900 | Scroll reader background |
+| `pub_door_closed.png` | 600×810 | Portrait area before opening |
+| `guest_<id>.png` | 600×620 | Guest portraits (thumbnails are scaled down; portrait area may letterbox) |
+| `desk.png` | 1920×270 | Desk surface |
+| `scroll_rolled.png` | ~200×80 | Scroll on the desk / corkboard |
+| `parchment.png` | ~1000×900 | Scroll / note reader background |
 | `cutout_paper.png` | tileable | Cutout background |
 | `trashcan.png` | 180×180 | Trashcan |
+| `corkboard.png` | 960×810 | Corkboard surface |
+| `pin.png` | ~32×40 | Pin on corkboard items |
+| `cork_arrow.png` | ~48×200 | Open/close corkboard tab |
 | `night_bg.png` | 1920×1080 | Night screen |
 | `summary_bg.png` | 1920×1080 | Summary screen |
 
@@ -543,7 +581,7 @@ So the loop is playable end to end before the script phase, generate minimal Cze
 
 ## 18. Out of scope for the demo
 
-Sound and music; saving and loading; more than one day; character movement or animation beyond fades; consequences other than meter changes and summary text; hint or glow systems that point at relevant cutouts (intentionally removed so the player alone decides what matters); meter effects from roommates; the separate morning room and noteboard screens (both replaced by the desk); touch and mobile support; languages other than Czech; telemetry or choice logging for export.
+Sound and music; saving and loading; more than one day; character movement or animation beyond allowed fades/slides; consequences other than meter changes and summary text; hint or glow systems that point at relevant cutouts (intentionally removed so the player alone decides what matters); meter effects from roommates; corkboard affecting gameplay (memory aid only); touch and mobile support; languages other than Czech; telemetry or choice logging for export.
 
 ---
 
@@ -557,7 +595,9 @@ Sound and music; saving and loading; more than one day; character movement or an
 - [ ] Greeting is inserted automatically; chat appends at the bottom, auto-scrolls and can be scrolled up; `#cut` guest lines create cutouts.
 - [ ] All Ink tags work; name and faction show "???" until revealed.
 - [ ] Closing line opens the seating overlay; seat selection plus "Usadit" seats the guest; pairing effects (specific, then faction fallback) apply immediately; log clears and the next guest arrives.
-- [ ] Meters are always visible, clamp to −10…+10 and show the last change.
+- [ ] Meters (including stress) are always visible, clamp to −10…+10 and show the last change; stress badge appears on the bartender answer bubble.
+- [ ] Ink can hide choices via conditions on synced stress/affinity vars.
+- [ ] Corkboard slides open/closed; items drag between desk and board; pins and three string colours work; layout resets on replay.
 - [ ] Night dropdowns prevent double-booked beds; "Hotovo" is disabled until all guests have an outcome; night effects apply.
 - [ ] Summary text is assembled correctly from conditions, with final meters shown.
 - [ ] "Hrát znovu" fully resets state and draws a new random set of 3 guests.

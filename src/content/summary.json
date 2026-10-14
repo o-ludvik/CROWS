@@ -89,6 +89,26 @@
     "text": "{name:bohdan} hledal očima Miru z Redanie. Dnes nepřišla; ušetřil si hádku, ne podezření."
   },
   {
+    "id": "stress_high",
+    "when": { "meter": ["stress", ">=", 5] },
+    "text": "Hostinský usnul až nad ránem – ruce se mu třásly ještě u zamčených dveří. Hosté to poznali: u baru stál člověk na pokraji."
+  },
+  {
+    "id": "stress_low",
+    "when": { "meter": ["stress", "<=", -3] },
+    "text": "Přes všechnu šeptandu zůstal hostinský klidný. Ráno si lidé pamatovali víc jeho rovný hlas než zprávy o pečeti."
+  },
+  {
+    "id": "stress_mid",
+    "when": {
+      "all": [
+        { "not": { "meter": ["stress", ">=", 5] } },
+        { "not": { "meter": ["stress", "<=", -3] } }
+      ]
+    },
+    "text": "Stres dne hostinského nespálil – ale taky ho neuhlídal. Byl to obyčejný těžký den u průsmyku."
+  },
+  {
     "id": "ending_war",
     "when": {
       "any": [
@@ -112,6 +132,36 @@
       ]
     },
     "text": "Do tří dnů se průsmyk zavře. Bubny v Redanii, Nilfgaardu i Fereldenu bijí stejně – do války. Hospoda U Tří vran stojí přesně uprostřed cesty, kudy půjdou vojska."
+  },
+  {
+    "id": "ending_war_stress",
+    "when": {
+      "all": [
+        { "meter": ["stress", ">=", 5] },
+        {
+          "any": [
+            { "meter": ["k1", "<=", -4] },
+            { "meter": ["k2", "<=", -4] },
+            { "meter": ["k3", "<=", -4] },
+            {
+              "any": [
+                { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
+                { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+                { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+                { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+                { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+                { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+                { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+                { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+                { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+                { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "text": "A hostinský? Válka ho našla už rozbitého. Říká se, že první bubny slyšel dřív než ostatní – ve vlastní hlavě."
   },
   {
     "id": "ending_peace",
@@ -147,6 +197,42 @@
       ]
     },
     "text": "Pečeť se nenašla celá – ale království zatím nehýbou vojskem. O hospodě U Tří vran se mluví jako o mostu: kdo tudy projde, ještě věří, že mír vydrží."
+  },
+  {
+    "id": "ending_peace_calm",
+    "when": {
+      "all": [
+        { "meter": ["stress", "<=", -3] },
+        { "not": { "meter": ["k1", "<=", -4] } },
+        { "not": { "meter": ["k2", "<=", -4] } },
+        { "not": { "meter": ["k3", "<=", -4] } },
+        {
+          "not": {
+            "any": [
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
+            ]
+          }
+        },
+        { "any": [{ "not": { "present": "mira" } }, { "not": { "outcome": ["mira", "kick"] } }] },
+        { "any": [{ "not": { "present": "radek" } }, { "not": { "outcome": ["radek", "kick"] } }] },
+        { "any": [{ "not": { "present": "bohdan" } }, { "not": { "outcome": ["bohdan", "kick"] } }] },
+        { "any": [{ "not": { "present": "vlasta" } }, { "not": { "outcome": ["vlasta", "kick"] } }] },
+        { "any": [{ "not": { "present": "eliska" } }, { "not": { "outcome": ["eliska", "kick"] } }] },
+        { "meter": ["k1", ">=", 0] },
+        { "meter": ["k2", ">=", 0] },
+        { "meter": ["k3", ">=", 0] }
+      ]
+    },
+    "text": "A ten klid u baru? Lidé říkají, že právě on udržel průsmyk otevřený o den déle."
   },
   {
     "id": "ending_shadow",
@@ -188,5 +274,47 @@
       ]
     },
     "text": "Válka ještě nezačala – ale šeptanda ano. Špehové si zapisují, koho jste hostili a koho ne. U Tří vran už nejste jen hostinský; jste součást hry o pečeť."
+  },
+  {
+    "id": "ending_shadow_stress",
+    "when": {
+      "all": [
+        { "meter": ["stress", ">=", 5] },
+        { "not": { "meter": ["k1", "<=", -4] } },
+        { "not": { "meter": ["k2", "<=", -4] } },
+        { "not": { "meter": ["k3", "<=", -4] } },
+        {
+          "not": {
+            "any": [
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
+              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
+              { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
+            ]
+          }
+        },
+        {
+          "not": {
+            "all": [
+              { "any": [{ "not": { "present": "mira" } }, { "not": { "outcome": ["mira", "kick"] } }] },
+              { "any": [{ "not": { "present": "radek" } }, { "not": { "outcome": ["radek", "kick"] } }] },
+              { "any": [{ "not": { "present": "bohdan" } }, { "not": { "outcome": ["bohdan", "kick"] } }] },
+              { "any": [{ "not": { "present": "vlasta" } }, { "not": { "outcome": ["vlasta", "kick"] } }] },
+              { "any": [{ "not": { "present": "eliska" } }, { "not": { "outcome": ["eliska", "kick"] } }] },
+              { "meter": ["k1", ">=", 0] },
+              { "meter": ["k2", ">=", 0] },
+              { "meter": ["k3", ">=", 0] }
+            ]
+          }
+        }
+      ]
+    },
+    "text": "Špehové si všimli i vašich třesoucích se rukou. V hlášeních stojí: hostinský ví víc, než unese."
   }
 ]

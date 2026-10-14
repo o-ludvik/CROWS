@@ -5,8 +5,17 @@ import { actions, useGame } from '../store/gameStore'
 
 export function SummaryScreen() {
   const s = useGame()
-  const paragraphs = buildSummary(summaryBlocks, { ...s, present: s.todayGuests }, (id) =>
-    kingdoms.some((k) => k.id === id) ? kingdomById(id).name : guestById(id).name,
+  // Explicit DayResult — avoid spreading unrelated store fields into the evaluator.
+  const paragraphs = buildSummary(
+    summaryBlocks,
+    {
+      present: s.todayGuests,
+      seats: s.seats,
+      nightAssignments: s.nightAssignments,
+      meters: s.meters,
+      inkVars: s.inkVars,
+    },
+    (id) => kingdoms.some((k) => k.id === id) ? kingdomById(id).name : guestById(id).name,
   )
   return (
     <div className="screen" style={{ backgroundImage: 'url(art/summary_bg.png)' }}>

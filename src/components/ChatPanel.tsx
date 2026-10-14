@@ -16,11 +16,18 @@ export function ChatPanel() {
       {s.chatLog.map((line, i) => (
         <div key={i} className={`line ${line.speaker}`}>
           <div className="label">{line.speaker === 'bartender' ? t('bartenderLabel') : guestName(id, s)}</div>
-          {line.cuttable ? (
-            <span className="cut" onClick={() => actions.addCutout(line.text, { type: 'conversation', guestId: id })}>{line.text}</span>
-          ) : (
-            <span>{line.text}</span>
-          )}
+          <div className="bubble">
+            {line.cuttable ? (
+              <span className="cut" onClick={() => actions.addCutout(line.text, { type: 'conversation', guestId: id })}>{line.text}</span>
+            ) : (
+              <span>{line.text}</span>
+            )}
+            {line.stressDelta != null && line.stressDelta !== 0 && (
+              <span className={`stress-badge ${line.stressDelta > 0 ? 'up' : 'down'}`}>
+                {line.stressDelta > 0 ? '+' : ''}{line.stressDelta}
+              </span>
+            )}
+          </div>
         </div>
       ))}
       <div className="choices" ref={bottom}>

@@ -23,5 +23,10 @@
   "done": "Hotovo",
   "summaryHeading": "Shrnutí dne",
   "playAgain": "Hrát znovu",
-  "debugHint": "Debug: klávesa pod Esc"
+  "debugHint": "Debug: klávesa pod Esc",
+  "stress": "Stres",
+  "corkOpen": "Nástěnka",
+  "corkClose": "Zpět k hostovi",
+  "corkColors": "Barva šňůrky",
+  "noteHeading": "Poznámka"
 }

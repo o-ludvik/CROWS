@@ -5,7 +5,7 @@ const r: DayResult = {
   present: ['mira', 'bohdan', 'eliska'],
   seats: ['mira', null, 'bohdan', null, 'eliska', null, null, null],
   nightAssignments: { mira: 'r1a', bohdan: 'r1b', eliska: 'kick' },
-  meters: { k1: -3, k2: 0, k3: 2, mira: 1, bohdan: 0, eliska: -4 },
+  meters: { stress: 6, k1: -3, k2: 0, k3: 2, mira: 1, bohdan: 0, eliska: -4 },
   inkVars: { mira: { told_secret: true } },
 }
 
@@ -22,6 +22,8 @@ const cases: [Condition, boolean][] = [
   [{ meter: ['k1', '<=', -3] }, true],
   [{ meter: ['k1', '<', -3] }, false],
   [{ meter: ['radek', '<', 100] }, false],
+  [{ meter: ['stress', '>=', 5] }, true],
+  [{ meter: ['stress', '<=', -3] }, false],
   [{ inkVar: ['mira', 'told_secret', true] }, true],
   [{ inkVar: ['bohdan', 'told_secret', true] }, false],
   [{ all: [{ present: 'mira' }, { not: { present: 'radek' } }] }, true],
@@ -31,4 +33,13 @@ const cases: [Condition, boolean][] = [
 cases.forEach(([c, want], i) => {
   if (evaluate(c, r) !== want) throw new Error(`case ${i} failed: ${JSON.stringify(c)} expected ${want}`)
 })
-console.log(`summary.check: ${cases.length} ok`)
+
+// Stress scale: high = tense (>=5), low = calm (<=-3). -9 must select calm, not mid/high.
+const calm = { ...r, meters: { ...r.meters, stress: -9 } }
+if (!evaluate({ meter: ['stress', '<=', -3] }, calm)) throw new Error('stress -9 should be calm')
+if (evaluate({ meter: ['stress', '>=', 5] }, calm)) throw new Error('stress -9 must not be high')
+if (evaluate({
+  all: [{ not: { meter: ['stress', '>=', 5] } }, { not: { meter: ['stress', '<=', -3] } }],
+}, calm)) throw new Error('stress -9 must not be mid')
+
+console.log(`summary.check: ${cases.length} ok (+ stress -9)`)
