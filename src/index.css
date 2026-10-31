@@ -229,8 +229,8 @@ body { font-family: 'EB Garamond', serif; color: #2a1d10; user-select: none; }
 }
 
 /* Night */
-.night-rows { position: absolute; left: 120px; top: 180px; width: 1200px; display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
-.night-row { display: flex; align-items: center; gap: 28px; width: 100%; padding: 16px; background: rgba(233, 217, 180, 0.92); border: 3px solid #2a1d10; font-size: 30px; }
+.night-rows { position: absolute; left: 120px; top: 180px; width: 1200px; display: flex; flex-direction: column; gap: 24px; align-items: flex-start; max-height: 860px; overflow-y: auto; padding-right: 12px; }
+.night-row { display: flex; align-items: center; gap: 28px; width: 100%; padding: 16px; background: rgba(233, 217, 180, 0.92); border: 3px solid #2a1d10; font-size: 30px; flex-shrink: 0; }
 .night-row img { width: 140px; height: 145px; }
 .night-who { flex: 1; }
 .night-row select { font: inherit; font-size: 26px; padding: 6px; }
