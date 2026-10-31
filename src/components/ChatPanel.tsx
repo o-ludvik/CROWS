@@ -4,11 +4,11 @@ import { slotTopics } from '../engine/slots'
 import { actions, currentGuestId, guestName, useGame } from '../store/gameStore'
 import { CutoutTag, toneStyle } from './IconBadge'
 
-/** Empty bubble a cutout is dropped into (GDD 7.5). The desk drag finds it via data-slot. */
+/** Empty bubble a cutout is dropped into (GDD 7.5). The desk drag finds it via data-slot; a click opens the picker. */
 function CutoutSlot({ topic }: { topic: string }) {
   const rejected = useGame((s) => s.slotRejected === topic)
   return (
-    <div className={`cutout-slot ${rejected ? 'rejected' : ''}`} data-slot={topic}>
+    <div className={`cutout-slot ${rejected ? 'rejected' : ''}`} data-slot={topic} onClick={() => actions.openSlotPicker(topic)}>
       <div className="slot-topic">{topics[topic]}</div>
       <div className="slot-hint">{rejected ? t('slotRejected') : t('slotPlaceholder')}</div>
     </div>

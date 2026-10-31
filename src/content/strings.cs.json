@@ -14,7 +14,7 @@
   "sourceScroll": "Zdroj: Svitek – {kingdom}",
   "sourceConversation": "Zdroj: Rozhovor – {name}",
   "sourceQuest": "Linka: {quest}",
-  "slotPlaceholder": "Přetáhněte sem výstřižek",
+  "slotPlaceholder": "Přetáhněte sem výstřižek, nebo klikněte",
   "slotRejected": "Tohle sem nepatří.",
   "loungeTitle": "Lounge",
   "loungeBack": "Zpět k pultu",
@@ -44,5 +44,6 @@
   "corkOpen": "Nástěnka",
   "corkClose": "Zpět k hostovi",
   "corkColors": "Barva šňůrky",
-  "noteHeading": "Poznámka"
+  "noteHeading": "Poznámka",
+  "slotPickerEmpty": "K tomuhle tématu nemáte na stole ani na nástěnce žádný výstřižek."
 }

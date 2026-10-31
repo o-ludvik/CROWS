@@ -83,6 +83,8 @@ interface GameState {
   storyEnded: boolean
   inkTags: string[]
   slotRejected: string | null
+  /** Topic whose cutout picker modal is open (GDD 7.5). */
+  slotPicker: string | null
   deskItems: DeskItem[]
   /** `${scrollId}#${articleIndex}` of articles whose `when` was false that morning. */
   hiddenArticles: string[]
@@ -143,6 +145,7 @@ export const useGame = create<GameState>(() => ({
   storyEnded: false,
   inkTags: [],
   slotRejected: null,
+  slotPicker: null,
   readerOpen: null,
   noteOpen: null,
   seats: Array(8).fill(null),
@@ -302,6 +305,7 @@ function morning(day: number) {
     storyEnded: false,
     inkTags: [],
     slotRejected: null,
+    slotPicker: null,
     readerOpen: null,
     noteOpen: null,
     deskItems: [...s.deskItems, ...newScrolls],
@@ -421,7 +425,7 @@ export const actions = {
   choose(index: number, usedCutout?: UsedCutout) {
     const c = get().choices.find((ch) => ch.index === index)
     if (!story || !c) return
-    set({ chatLog: [...get().chatLog, { speaker: 'bartender', text: c.text, cuttable: false, usedCutout }], choices: [] })
+    set({ chatLog: [...get().chatLog, { speaker: 'bartender', text: c.text, cuttable: false, usedCutout }], choices: [], slotPicker: null })
     story.ChooseChoiceIndex(index)
     continueStory(`choice:${currentGuestId()}:${c.text}`)
   },
@@ -431,7 +435,7 @@ export const actions = {
     const item = s.deskItems.find((i) => i.id === cutoutId)
     const pick = item?.kind === 'cutout' && s.phase === 'conversation' ? pickSlot(s.choices, topic, item) : null
     if (!pick || item?.kind !== 'cutout') {
-      set({ slotRejected: topic })
+      set({ slotRejected: topic, slotPicker: null })
       setTimeout(() => get().slotRejected === topic && set({ slotRejected: null }), 700)
       return false
     }
@@ -519,6 +523,7 @@ export const actions = {
     set({ deskItems: [...items, item] })
   },
   openReader: (scrollId: string | null) => set({ readerOpen: scrollId }),
+  openSlotPicker: (topic: string | null) => set({ slotPicker: topic }),
   openNote: (id: string | null) => set({ noteOpen: id }),
   setView: (view: View) => set({ view, corkPinFrom: null }),
   setCorkStringColor: (corkStringColor: CorkColor) => set({ corkStringColor, corkPinFrom: null }),

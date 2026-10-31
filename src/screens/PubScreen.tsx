@@ -7,6 +7,7 @@ import { MetersPanel } from '../components/MetersPanel'
 import { NoteReader } from '../components/NoteReader'
 import { ScrollReader } from '../components/ScrollReader'
 import { SeatingOverlay } from '../components/SeatingOverlay'
+import { SlotPicker } from '../components/SlotPicker'
 import { actions, useGame } from '../store/gameStore'
 
 export function PubScreen() {
@@ -14,6 +15,7 @@ export function PubScreen() {
   const guestId = useGame((s) => s.current?.guest)
   const readerOpen = useGame((s) => s.readerOpen)
   const noteOpen = useGame((s) => s.noteOpen)
+  const slotPicker = useGame((s) => s.slotPicker)
   const view = useGame((s) => s.view)
   const waiting = useGame((s) => s.loungeGuests.length)
   const day = useGame((s) => s.day)
@@ -68,6 +70,7 @@ export function PubScreen() {
       <DragGhost />
       {readerOpen && <ScrollReader scrollId={readerOpen} />}
       {noteOpen && <NoteReader itemId={noteOpen} />}
+      {slotPicker && <SlotPicker topic={slotPicker} />}
       {phase === 'seating' && <SeatingOverlay />}
     </div>
   )
