@@ -1,22 +1,26 @@
 # What the crows say — Demo GDD
 
-Version 0.1 · one in-game day, built for playtesting the core loop
+Version 0.2 · three in-game days, built for playtesting the core loop
 
 ---
 
 ## 1. Purpose
 
-The full game spans many in-game days. This demo covers exactly one day, and its only job is to help us decide which mechanics to keep, change or drop. Specifically, playtests should answer these questions:
+The full game spans many in-game days. This demo covers three days, and its only job is to help us decide which mechanics to keep, change or drop. Specifically, playtests should answer these questions:
 
-1. **Desk cutouts.** Is cutting snippets out of newspapers and conversations and arranging them on the desk useful and enjoyable, or should information gathering work differently?
+1. **Desk cutouts.** Is cutting snippets out of newspapers and conversations and arranging them on the desk useful and enjoyable? Cutouts are now also used in conversations (cutout reply slots, section 7.5): is that fun and readable, or should information gathering work differently?
 2. **Conversations.** Do conversations with 1–3 choices per turn and variable length feel good to read and play?
 3. **Seating.** Does choosing where to seat a guest create an interesting decision?
 4. **Night management.** Does assigning beds or kicking guests out feel meaningful?
 5. **Affinity.** Do the visible meters make choices feel like they matter?
-6. **Stress.** Does the bartender stress meter and gated replies feel fair and readable?
+6. **Stress.** Does the bartender stress meter and gated replies feel fair and readable? Does the morning reset make each day feel like a fresh start, or does it remove the consequence?
 7. **Corkboard.** Is pinning cutouts/scrolls and linking them with coloured string useful?
+8. **Colour coding.** Do colour and icon help the player see at a glance where a piece of information comes from and which story it belongs to?
+9. **Cutout replies.** Is dragging a cutout into an empty reply bubble understandable, and does choosing *whose version to spread* feel like a decision?
+10. **Lounge.** Is the lounge discoverable, and is inviting a guest to the bar an interesting decision (when to invite, whom to let leave)?
+11. **Multi-day.** Does state carrying over between days and the growing number of tables feel like progress?
 
-Because the goal is fast iteration, all game content (newspapers, guests, dialogue, pairings, night effects, summary text) lives in data files and Ink scripts, never hardcoded in components. Changing a number or a sentence must never require touching game logic.
+Because the goal is fast iteration, all game content (newspapers, guests, dialogue, schedule, pairings, night effects, summary text) lives in data files and Ink scripts, never hardcoded in components. Changing a number or a sentence must never require touching game logic.
 
 ---
 
@@ -24,7 +28,7 @@ Because the goal is fast iteration, all game content (newspapers, guests, dialog
 
 A medieval pub at the only mountain crossroads between three kingdoms. Mountains separate the kingdoms, so anyone travelling between them passes through this pub. The kingdoms are at peace, but the peace is fragile. The player is the bartender: he reads the three kingdoms' newspapers, talks to travellers, decides where they sit and where they sleep, and his choices shift how the kingdoms and the guests see him.
 
-The real kingdom names, the day's event, guests and dialogue will be written in a later script phase. Until then the build uses placeholder content (section 17).
+The real kingdom names, events, guests and dialogue will be written in a later script phase. Until then the build uses placeholder content (section 17).
 
 ---
 
@@ -32,67 +36,75 @@ The real kingdom names, the day's event, guests and dialogue will be written in 
 
 | Piece | Role | Notes |
 |---|---|---|
-| React | Screens and UI components | Renders backgrounds, portrait, chat, desk, minimap, overlays |
+| React | Screens and UI components | Renders backgrounds, portrait, chat, desk, minimap, lounge, overlays |
 | TypeScript | Language | Strict mode; typed game state |
-| Vite | Dev server and build | React + TS template, no Next.js |
-| Zustand | Game state store | One store for phase, meters, guests, desk items, seating, night choices, event log |
-| inkjs | Dialogue runtime | Loads compiled Ink JSON; exposes text, choices, tags, variables |
+| Vite | Dev server and build | React + TS template, no Next.js; `base: '/CROWS/'` for GitHub Pages |
+| Zustand | Game state store | One store for phase, day, meters, guests, desk items, seating, lounge, night choices, event log |
+| inkjs 2.4 | Dialogue runtime | Loads compiled Ink JSON; exposes text, choices, line **and choice** tags, variables, state save/load |
 | Inky | Writing tool for Ink | Used to write and test conversations; not part of the build |
 
-Not used in the demo: Howler.js (no sound), localStorage (no saves).
+Not used in the demo: Howler.js (no sound), localStorage (no saves). The three days run in memory in one browser session.
 
-**Running for playtests.** `npm run dev -- --host` (or `vite --host`). Testers on the same network open `http://<host-ip>:5173`. No backend, no hosting.
+**Running for playtests.** `npm run dev -- --host` (or `vite --host`). Testers on the same network open `http://<host-ip>:5173/CROWS/`. Every push to `main` is also built and deployed to GitHub Pages by `.github/workflows/deploy.yml` (`https://o-ludvik.github.io/CROWS/`); keep `base` in `vite.config.ts` and relative asset paths (`art/...`) so both work. No backend.
 
-**Stage and scaling.** The game is designed for a fixed 1920×1080 stage. A `Stage` component scales the stage uniformly to fit the browser window (`scale = min(innerWidth / 1920, innerHeight / 1080)`), centred, with black bars where the aspect ratio differs. All positions in this document are stage coordinates. Pointer coordinates used for drag-and-drop must be converted from screen space to stage space by dividing by the current scale.
+**Stage and scaling.** The game is designed for a fixed 1920×1080 stage. A `Stage` component scales the stage uniformly to fit the browser window (`scale = min(innerWidth / 1920, innerHeight / 1080)`), centred, with black bars where the aspect ratio differs. All positions in this document are stage coordinates. Pointer coordinates used for drag-and-drop must be converted from screen space to stage space by dividing by the current scale. Drops on the reply slot are hit-tested with `document.elementFromPoint` on screen coordinates, so they are exact at every scale.
 
-**Input.** Mouse only. Clicks, hovers and drag-and-drop. No keyboard input except the debug toggle, and no text fields anywhere.
+**Input.** Mouse only. Clicks, hovers and drag-and-drop. No keyboard input except the debug toggle (and, in dev builds only, the day-jump keys of section 13.3), and no text fields anywhere.
 
-**Language.** All in-game text is Czech. Use a font that covers Czech diacritics (á, č, ď, é, ě, í, ň, ó, ř, š, ť, ú, ů, ý, ž) and bundle it locally so the game does not depend on a CDN. All UI strings live in `strings.cs.json` (section 14.8).
+**Language.** All in-game text is Czech. The font (EB Garamond via `@fontsource`) covers Czech diacritics and is bundled locally so the game does not depend on a CDN. All UI strings live in `strings.cs.json` (section 14.8).
 
-**Presentation.** Static screens, minimal motion. Allowed motion: fade-to-black transitions (section 13.2), the portrait fade-in on guest change, the horizontal slide of the pub top strip when opening/closing the corkboard (section 6.5), and the browser's native scrolling in the chat log.
+**Presentation.** Static screens, minimal motion. Allowed motion: fade-to-black transitions (section 13.2), the portrait fade-in on guest change (including a paused guest returning), the ~300 ms horizontal slide of the pub top strip between corkboard, main view and lounge (sections 5, 6.5, 7a), and the browser's native scrolling in the chat log. A rejected cutout jumps straight back to its place (no bounce animation); the slot bubble turns red for ~700 ms.
 
 ---
 
 ## 4. Day flow
 
-The day is a simple state machine:
+The demo is a state machine run three times:
 
 ```
-TITLE ─► DESK (pub closed) ─► [ CONVERSATION ─► SEATING ] × 3 ─► NIGHT ─► SUMMARY
-                ▲                                                            │
-                └───────────────────── "Hrát znovu" ─────────────────────────┘
+TITLE ─► [ MORNING/DESK ─► DAY (conversations, seating, lounge) ─► DAY END ─► NIGHT ─► SUMMARY ] × 3 ─► END
+                ▲                                                                              │
+                └────────────────────────── "Další den" (after days 1 and 2) ──────────────────┘
+END = the day-3 summary with the ending blocks and "Hrát znovu" (full reset to day 1)
 ```
 
 1. **TITLE.** Title screen with the game name and a "Začít" button. Shown only on first launch.
-2. **DESK.** The bartender sits behind his desk in the pub, which is still closed. Three rolled scrolls (newspapers, one per kingdom) lie on the desk. The player reads them, cuts out snippets and arranges the desk. When ready, he clicks "Otevřít hospodu".
-3. **CONVERSATION.** A guest enters (their portrait fades in). The bartender's greeting appears automatically, then the guest's Ink script plays. The player picks responses until the script ends, then clicks the closing line.
-4. **SEATING.** The minimap expands to full screen and the player chooses an empty seat. Seating effects apply immediately. The chat log is cleared and the next guest walks in at once.
-5. After the third guest is seated, the screen fades to **NIGHT**. The player assigns each guest a bed or kicks them out and clicks "Hotovo".
-6. **SUMMARY.** A text wall describes what happened that day and night, with final meter values. "Hrát znovu" resets everything, draws a new set of guests and returns to DESK.
+2. **MORNING/DESK** (phase `desk`). Stress resets to 0 (logged as `morning reset`). The day's scrolls (from `days.json`) are added to the desk; scrolls, cutouts and the corkboard from earlier days stay. Articles whose `when` condition is false are hidden for good (section 14.3). Guests with a follow-up for today appear in the lounge (section 7a). The day label "Den {n}" is shown at the top of the pub screen. The player reads, cuts and arranges, then clicks "Otevřít hospodu".
+3. **DAY** (phases `conversation` / `seating`). Today's queue arrives one guest at a time (conversation → seating). At any time while the pub is open the player can switch to the lounge and invite a guest to the bar; the invited guest cuts in ahead of the current one (section 7a).
+4. **DAY END** (phase `dayEnd`). When the queue is empty and nobody is at the bar, the portrait area shows the closed door with the hint "Fronta je prázdná. Než zavřete, můžete ještě zajít do lounge." and a "Zavřít hospodu" button. The player can still visit the lounge and invite someone. "Zavřít hospodu" fades to NIGHT; guests still waiting in the lounge leave (event log + `leftLounge`, section 14.7).
+5. **NIGHT.** One row for every guest seated today (queue + invited from the lounge). See section 11.
+6. **SUMMARY.** "Shrnutí dne {n}". After days 1 and 2 the button is "Další den" (fade to the next morning). After day 3 the same screen adds the heading "Konec dema", the ending blocks and "Hrát znovu", which resets everything and starts day 1 again.
 
-The desk (scrolls, cutouts, trashcan) is interactive during DESK and CONVERSATION. It is not interactive while the seating overlay is open.
+The desk (scrolls, cutouts, trashcan) is interactive in MORNING, DAY and DAY END. It is not interactive while the seating overlay is open.
 
 ---
 
 ## 5. Pub screen layout
 
-The pub screen is used for DESK, CONVERSATION and (underneath the overlay) SEATING. The layout follows the Papers, Please model: the person in front of you at the top, your workspace at the bottom.
+The pub screen is used for MORNING, DAY, DAY END and (underneath the overlay) seating. The layout follows the Papers, Please model: the person in front of you at the top, your workspace at the bottom.
 
-The **desk** occupies roughly the bottom quarter of the stage (height 270). The **top strip** (height 810) is a sliding row wider than the stage:
+The **desk** occupies the bottom quarter of the stage (height 270). The **top strip** (height 810, width 4800) is a sliding row wider than the stage:
 
 | Region | Strip x | y | w | h | Contents |
 |---|---|---|---|---|---|
-| Corkboard | 0 | 0 | 960 | 810 | Investigation board (section 6.5); off-screen left when closed |
-| Portrait area | 960 | 0 | 600 | 810 | Closed door with "Otevřít hospodu" in DESK; guest portrait in CONVERSATION |
+| Corkboard | 0 | 0 | 960 | 810 | Investigation board (section 6.5) |
+| Portrait area | 960 | 0 | 600 | 810 | Closed door + "Otevřít hospodu" (MORNING), guest portrait (DAY), door + "Zavřít hospodu" (DAY END) |
 | Meters panel | 1560 | 0 | 420 | 810 | Affinity + stress meters (section 9) |
-| Chat panel | 1980 | 0 | 900 | 810 | Conversation log and choice buttons |
-| Desk | stage 0 | 810 | 1920 | 270 | Always visible; does not slide |
-| Trashcan | desk-relative | | 180 | ~140 | Drop target inside the desk, bottom-left |
+| Chat panel | 1980 | 0 | 900 | 810 | Conversation log, choice buttons and slot bubbles |
+| Lounge | 2880 | 0 | 1920 | 810 | Guests waiting with a follow-up (section 7a) |
+| Desk | stage 0 | 810 | 1920 | 270 | Always visible in all three views; does not slide |
+| Trashcan | desk-relative | | 140 | 140 | Drop target inside the desk, bottom-left |
 | Minimap | desk-relative | | 220 | 220 | Fixed seating map inside the desk, bottom-right |
 
-When the corkboard is **closed**, the strip is translated by −960 so the stage shows portrait + meters + chat (1920 wide). When **open**, translation is 0: left half corkboard, right half mostly the guest; chat sits further right off the viewpoint. An arrow on the left edge opens the board; an arrow on the right edge closes it. Slide duration ~300 ms.
+The strip has three positions (`view` in the store):
 
-These coordinates are a starting point and can be tuned once real art exists. The trashcan and minimap are fixed and always render above desk items.
+| View | Translate | Visible | Arrows |
+|---|---|---|---|
+| `cork` | 0 | corkboard + portrait | right edge → `main` |
+| `main` | −960 | portrait + meters + chat | left edge → `cork`; right edge → `lounge` (with a red badge showing how many guests wait) |
+| `lounge` | −2880 | lounge | left edge → `main` |
+
+The chat panel has extra right padding so the lounge arrow never covers bartender lines. Inviting a guest, closing a conversation and the start of each morning switch back to `main`. These coordinates are a starting point and can be tuned once real art exists. The trashcan and minimap are fixed and always render above desk items.
 
 ---
 
@@ -100,11 +112,11 @@ These coordinates are a starting point and can be tuned once real art exists. Th
 
 ### 6.1 Scrolls
 
-At the start of the day, three rolled scrolls lie on the desk, one from each kingdom. Each scroll holds one or two articles. All three scrolls report on the same event, but each kingdom tells it differently (for example, a forest fire where each kingdom names a different suspect). The player decides which version to believe and what to keep.
+Every morning the scrolls listed for that day in `days.json` are added to the desk (any number; the placeholder story has three on days 1–2 and two on day 3). Each scroll belongs to one kingdom and holds one or more articles. Scrolls from earlier days stay until the player throws them away. No new scrolls arrive during the day.
 
-Scrolls can be dragged around the desk. A click (pointer moved less than 5 px between down and up) opens the scroll in the **reader**: a large unrolled parchment overlay centred on the stage (roughly 1000×900), showing the kingdom's name, the newspaper title and the articles. The reader closes with a "Zavřít" button or a click outside it.
+Scrolls can be dragged around the desk. A click (pointer moved less than 5 px between down and up) opens the scroll in the **reader**: a large unrolled parchment overlay centred on the stage (roughly 1000×900), showing the kingdom's icon and name, the newspaper title and the articles. The reader closes with a "Zavřít" button or a click outside it.
 
-No new scrolls arrive during the day.
+A rolled scroll shows its kingdom's icon in the corner and a strip in the kingdom colour (section 6.6). In the reader the parchment has a kingdom-coloured top edge; an article that belongs to a quest line has a quest-coloured bar along its left side, and a segment with its own quest is underlined in the quest colour.
 
 ### 6.2 Cutting snippets
 
@@ -118,13 +130,18 @@ Cuttable guest lines in conversations work the same way (section 7.3).
 
 A cutout is a small paper slip with the snippet's text, fixed width of about 260 px, height fitting the text, body font around 18 px. New cutouts spawn at a random position within the central part of the desk and are placed on top.
 
-Cutouts can be dragged anywhere within the desk bounds and freely overlap and stack. The item being dragged, or last clicked, moves to the top of the stack. If a cutout is dropped with its centre over the minimap, it is pushed just outside the minimap so it never ends up hidden under it.
+Each cutout carries, copied from its source, an optional **topic** and **claim** (used by reply slots, section 7.5) and an optional **quest** line. It takes its colour and icons from its source (section 6.6):
 
-Hovering a cutout shows a tooltip with its source, for example "Zdroj: Svitek – Království A" or "Zdroj: Rozhovor – Mira" (or "Zdroj: Rozhovor – ???" if the guest's name is not yet known).
+- Scroll cutout: kingdom icon; quest colour if the segment (or its article) belongs to a quest, otherwise the kingdom colour.
+- Conversation cutout: the guest's small icon and the guest's kingdom icon. Until the guest's faction is revealed the kingdom icon is a question mark and the kingdom colour is not applied; after `#reveal:faction` every existing cutout from that guest updates.
+
+Cutouts can be dragged anywhere within the desk bounds and freely overlap and stack. The item being dragged, or last clicked, moves to the top of the stack. If a cutout is dropped with its centre over the minimap, it is pushed just outside the minimap so it never ends up hidden under it. A cutout lifted above the desk (in the main view) follows the pointer as a floating copy so it can be dropped on a reply slot; when released anywhere above the desk it returns to where it was picked up.
+
+Hovering a cutout shows a tooltip with its source and quest line, for example "Zdroj: Svitek – Velesie · Linka: Most přes Vranku" or "Zdroj: Rozhovor – Hana" (or "Zdroj: Rozhovor – ???" if the guest's name is not yet known).
 
 There is no limit on the number of cutouts. Desk space is the only natural limit.
 
-Cutouts have no effect on game state. They are purely the player's memory aid, and nothing in the game reads them.
+The game reads cutouts in exactly one place: reply slots in conversations (section 7.5). Apart from that they have no gameplay effect. Using a cutout in a slot does not consume it. Cutouts and the corkboard persist across all three days and reset on "Hrát znovu".
 
 ### 6.4 Trashcan
 
@@ -132,11 +149,26 @@ Dropping a cutout or a scroll on the trashcan removes it permanently. The trashc
 
 ### 6.5 Corkboard
 
-The corkboard is the bartender's investigation board on the left of the sliding top strip. The same scrolls and cutouts that live on the desk can be dragged onto the corkboard and back. Items on the corkboard show a **pin**; the player can connect two pins with coloured string (three colours: red, twine/yellow, blue). Select a colour, then click two pins to link them; click an existing string to remove it.
+The corkboard is the bartender's investigation board on the left of the sliding top strip. The same scrolls and cutouts that live on the desk can be dragged onto the corkboard and back. Items on the corkboard show a **pin**; the player can connect two pins with coloured string (three colours: red, twine/yellow, blue). Select a colour, then click two pins to link them; right-click an existing string to remove it. Corkboard items keep their colour coding and icons.
 
 Hovering a cutout on the corkboard shows its text in a tooltip. Clicking a cutout opens a full-screen parchment reader with the note text. Scrolls keep the normal scroll reader.
 
-Layout and strings persist for the whole day and reset on "Hrát znovu". Like desk cutouts, the corkboard has **no gameplay effect** — it is only a memory aid.
+Layout and strings persist across all three days and reset on "Hrát znovu". The corkboard itself has **no gameplay effect**. A cutout cannot be dragged from the corkboard into a reply slot (the chat is off-screen while the board is open); slots take cutouts from the desk.
+
+### 6.6 Colour coding
+
+Every kingdom has a `color` and an `icon` (`kingdoms.json`). Every quest line has an `id`, a `name` and a `color` (`quests.json`); quest lines have no icon.
+
+| Item | Colour | Icons |
+|---|---|---|
+| Rolled scroll / reader | kingdom | kingdom |
+| Scroll article / segment in a quest | quest (bar / underline in the reader) | – |
+| Scroll cutout | quest if any, else kingdom | kingdom |
+| Conversation cutout | quest if any, else kingdom once the faction is revealed, else neutral paper | guest + kingdom (or `?`) |
+| Guest chat line tagged `#quest` | quest (bar on the left of the bubble) | – |
+| Slot tag under a bartender bubble | as the cutout used | as the cutout used |
+
+Colour is applied as an 8 px left border plus a 14 % tint of the paper, so text stays readable. Icons are 28 px circles on the top-right corner of the item.
 
 ---
 
@@ -144,17 +176,17 @@ Layout and strings persist for the whole day and reset on "Hrát znovu". Like de
 
 ### 7.1 Opening and closing
 
-When a guest arrives, the engine inserts the bartender's generic greeting as the first line of the chat log ("Zdravím, čím posloužím?"), then starts the guest's Ink story. Writers do not repeat the greeting in Ink; each guest's story begins with the guest's reply.
+When a guest arrives from the queue, the engine inserts the bartender's generic greeting as the first line of the chat log ("Zdravím, čím posloužím?"), then starts the guest's Ink knot for the visit. A guest invited from the lounge gets `greetingReturning` instead ("Á, vy jste tu ještě. Co pro vás můžu udělat?"). Writers do not repeat the greeting in Ink; each visit begins with the guest's reply.
 
-When the story reaches its end, the engine shows a single choice button with the bartender's closing line ("Pojďte, najdu vám místo."). Clicking it opens the seating overlay. This line signals to the player that the conversation is over and the log will disappear. After the guest is seated, the chat log is cleared.
+When the knot reaches its end, the engine shows a single choice button with the bartender's closing line ("Pojďte, najdu vám místo."). Clicking it opens the seating overlay. After the guest is seated, the chat log is cleared (or replaced by a paused guest's log, section 7a).
 
 ### 7.2 Chat panel
 
 The chat panel is a scrollable log. New lines are appended at the bottom and the panel auto-scrolls to the newest line. The player can scroll up to reread the whole conversation. Guest lines are left-aligned with the guest's name (or "???") as the label; bartender lines are right-aligned with the label "Hostinský".
 
-Lines produced between two choice points appear all at once (no typewriter effect). Choice buttons appear below the last line at the bottom of the panel. Clicking a choice appends its text to the log as a bartender line and continues the story.
+Lines produced between two choice points appear all at once (no typewriter effect). Below the last line come the reply slots (one bubble per slot topic, section 7.5), then the normal choice buttons. Clicking a choice appends its text to the log as a bartender line and continues the story.
 
-**Gated choices.** Some options are locked (not rendered) based on Ink conditions that read synced variables: stress, kingdom affinity (`aff_k1`…`aff_k3`), current guest affinity (`aff_self`), and optionally other present guests' meters (`aff_<guestId>`). Writers gate with Ink syntax such as `* { stress < 5 && aff_k1 >= 0 } [Text]`. The engine shows only choices Ink exposes; there is no greyed-out locked UI.
+**Gated choices.** Some options are locked (not rendered) based on Ink conditions that read synced variables: `stress`, kingdom affinity (`aff_k1`…`aff_k3`), current guest affinity (`aff_self`), any guest met so far (`aff_<guestId>`) and the current day (`day`, 1–3). Writers gate with Ink syntax such as `* { stress < 5 && aff_k1 >= 0 } [Text]`. The engine shows only choices Ink exposes; there is no greyed-out locked UI.
 
 **Stress feedback.** Choice buttons do not preview stress changes. When a chosen answer changes stress, a small circle with `+N` or `−N` appears in the corner of that bartender chat bubble.
 
@@ -162,25 +194,74 @@ There is no time pressure.
 
 ### 7.3 Cuttable guest lines
 
-A guest line tagged `#cut` in Ink is a predefined snippet. It shows the same hover affordance as cuttable newspaper segments, and clicking it creates a cutout with the guest as its source. Bartender lines are never cuttable. Lines can be cut repeatedly, like scroll snippets.
+A guest line tagged `#cut` in Ink is a predefined snippet. It shows the same hover affordance as cuttable newspaper segments, and clicking it creates a cutout with the guest as its source. `#cut:<topic>:<claim>` also gives the cutout a slot topic and claim, and `#quest:<questId>` on the same line gives it a quest line. A plain `#cut` cutout has no topic and fits no slot. Bartender lines are never cuttable. Lines can be cut repeatedly, like scroll snippets.
 
 ### 7.4 Ink conventions
 
 See section 14.4 for the tag reference. The engine runs the standard inkjs loop: `Continue()` while `canContinue`, read `currentTags` for each line, apply tags, append the line; then render `currentChoices`; on click, call `ChooseChoiceIndex()` and repeat.
 
-Writers should use bracketed choice text (`* [Choice text]`) so Ink does not echo the choice; the engine appends the choice text itself as the bartender's line.
+Writers use bracketed choice text (`* [Choice text]`) so Ink does not echo the choice; the engine appends the choice text itself as the bartender's line. **Choice tags go inside the brackets** (`* [Text #slot:topic:claim]`); a tag after `]` belongs to the first line of the branch, not to the choice.
+
+**One story per guest, one knot per visit.** Each guest has one Ink file. The root content is just `-> END`; every visit is a knot (`=== day1 ===`, `=== followup_day2 ===`, …) named in `days.json`. The engine keeps the story state per guest across visits (`story.state.toJson()` when a visit ends, `LoadJson` + `ChoosePathString(knot)` on the next one), so `VAR`s set on day 1 are still there on day 3. A guest's first visit says the name in its first line with `#reveal:name`.
+
+### 7.5 Cutout reply slots
+
+A reply can be a **slot**: instead of a button, the chat shows an empty dashed bubble labelled with the slot's topic (e.g. "Proč spadl most?") and the hint "Přetáhněte sem výstřižek". The player drags a cutout from the desk onto it.
+
+In Ink a slot is a group of choices tagged with the same topic:
+
+```ink
+* [Velesští. Lukovinský posel píše o vorařích se sekerami. #slot:bridge_cause:k1_axe]
+    Velesští! Ti by podřízli i vlastní matku. #aff:k1:-2 #aff:k2:+1
+    ~ blames = "k1"
+* [Lukovina. Lana byla shnilá. #slot:bridge_cause:k3_rot]
+    Přesně tak. #aff:k3:-2
+* [Tohle jsem četl. #slot:bridge_cause:*]
+    Noviny. Každé píšou, co se hodí jejich pánovi.
+* [Nevím.]
+    Tak to zjistěte.
+```
+
+The engine does not render slot choices as buttons; it shows one bubble per topic. When a cutout is dropped on the bubble:
+
+1. If the cutout's topic differs from the bubble's (or it has none), the bubble turns red with "Tohle sem nepatří." for ~700 ms, the cutout jumps back to its place, nothing is chosen.
+2. Otherwise the engine picks the choice whose claim equals the cutout's claim; if none, the choice with claim `*`; if neither exists, the cutout is rejected as in 1.
+3. The picked choice's text is appended as the bartender's line with a small **cutout tag** beneath it (colour + icons + the cutout's text, truncated) so it is visible whose information the bartender spreads. The cutout is not consumed and returns to where it was picked up.
+4. The engine records `{ topic, claim, cutoutId, day, guestId }` in `usedClaims` (for the `usedClaim` condition) and writes the slot, the claim, the source and the picked choice to the event log.
+
+Effects (affinity to the kingdom whose version is spread, stress, flags such as `~ blames = "k1"`) live in the Ink branch as usual (`#aff`, `#stress`). Several sources can share a topic with different claims; the placeholder story has five claims for `bridge_cause` from three newspapers and two guests (section 17).
+
+A slot stands next to normal choices. **Authoring rule:** every choice point must also offer at least one normal (non-slot) choice, because the player may have no fitting cutout. `npm run check` fails if a choice point consists only of slots. The slot shows only its topic, never which cutout fits.
+
+---
+
+## 7a. Lounge
+
+A room to the right of the main view (section 5). Background `lounge_bg.png`, heading "Lounge", up to four guests shown as clickable portraits (300×310) at fixed spots with their name ("???" if unknown) underneath and a name – faction tooltip. With nobody waiting it shows "Nikdo tu nečeká."
+
+**Who appears.** On the morning of day N, a lounge entry from `days.json` for day N is used if the guest (a) slept in a bed last night (night N−1) and (b) its optional `when` condition holds. A guest can have several entries (for example one for "shared a room with X" and a fallback); the first entry that matches wins. `when` is evaluated against the previous day (section 14.7). Day 1 has no lounge guests. Lounge guests stay for that one day only.
+
+**Inviting.** Clicking a portrait selects it and shows a "Pozvat k pultu" button below it (a second click or a click elsewhere deselects). Inviting is possible while the pub is open (`conversation` or `dayEnd`) and outside the seating overlay; otherwise the button is disabled and the reason is shown under it ("Hospoda je zavřená." / "Nejdřív doběhněte rozhovor s pozvaným hostem.").
+
+**Cutting in.** The invited guest goes straight to the bar and the view slides back to the main view. If a queue guest is at the bar mid-conversation, that conversation is paused: the engine stores the Ink state (`story.state.toJson()`) and the chat log. The invited guest has a full conversation (with `greetingReturning`) and is seated; then the paused guest's portrait fades back in, their chat log is restored and the conversation continues at the same choice point (choices are rebuilt from the restored state; synced variables are refreshed, so meter changes made in between count). If the bar is empty, the invited guest simply comes in. At most one conversation can be paused: while a guest invited from the lounge is at the bar, further invites are blocked.
+
+**Leaving.** Guests still in the lounge when "Zavřít hospodu" is clicked leave: they are logged (`… left without being invited`), recorded in `leftLounge` and do not appear on the night screen.
+
+The right arrow in the main view shows a red badge with the number of waiting guests.
 
 ---
 
 ## 8. Guests
 
-The guest pool has 5 guests. At the start of each day, 3 are drawn at random without replacement, in random order. They arrive one by one; the next guest walks in immediately after the previous one is seated.
+Guests come from a per-day schedule in `days.json` (section 14.9), not a random draw. Each day has a **queue** (optionally `shuffle: true`; each entry may have a `when` condition evaluated against the previous day) and a list of **lounge** follow-ups. They arrive one by one; the next queue guest walks in immediately after the previous one is seated (or after a paused guest finishes).
 
-Each guest has an id, name, faction (one of the three kingdoms), portrait, starting affinity and an Ink story (section 14.2).
+Each guest has an id, name, faction (one of the three kingdoms), portrait, optional small icon, starting affinity and an Ink story (section 14.2). A guest may come on several days. Their meter, name/faction reveal and Ink variables persist for the whole demo.
 
-**Reveal.** The portrait is always visible. The name and faction start hidden and display as "???" everywhere (chat label, meters panel, minimap tooltip, night screen, cutout source) until revealed by the Ink tags `#reveal:name` and `#reveal:faction`. By writing convention, every guest says their name in their first line, so the name is revealed right away; the faction is revealed whenever the script decides.
+**Reveal.** The portrait is always visible. The name and faction start hidden and display as "???" everywhere (chat label, meters panel, minimap tooltip, lounge, night screen, cutout source and icon) until revealed by the Ink tags `#reveal:name` and `#reveal:faction`. By writing convention, a guest's first visit says the name in its first line; the faction is revealed whenever the script decides.
 
-The game logic always knows each guest's true faction (it uses it for seating fallbacks and summary conditions) regardless of what the player has seen.
+The game logic always knows each guest's true faction (it uses it for seating fallbacks) regardless of what the player has seen.
+
+**Capacity.** For every day, queue length + number of distinct lounge guests must not exceed the seats available that day (`tables × 4`). This is validated at start-up (section 14.11).
 
 ---
 
@@ -190,23 +271,23 @@ The game logic always knows each guest's true faction (it uses it for seating fa
 
 All meters use the scale −10 to +10, clamped at both ends:
 
-1. **Stress meter (1).** How tense the bartender is. Starts at 0. Changed only by Ink `#stress` tags during conversation. Does not change seating or night mechanics; summary text can react to it.
-2. **Kingdom meters (3).** How each kingdom views the bartender. Starting values come from data (default 0).
-3. **Guest meters (one per guest present today).** How that guest views the bartender. Starting values come from the guest data and need not be 0 (a guest may arrive already distrustful).
+1. **Stress meter (1).** How tense the bartender is. Starts at 0 and **resets to 0 every morning** (applied through `applyEffects` and logged as `morning reset`, so the meter shows the drop, e.g. "0 (−6)"). Changed only by Ink `#stress` tags during conversation. Does not change seating or night mechanics; the day summary reads the stress at the end of the day.
+2. **Kingdom meters (3).** How each kingdom views the bartender. Starting values come from data (default 0). Persist across days.
+3. **Guest meters.** How a guest views the bartender. Created from the guest's starting affinity when the guest first arrives, then persist across days.
 
 ### 9.2 What changes them
 
-Affinity (kingdom/guest) can change from a line or choice in a conversation (Ink `#aff` tags), a seating decision (pairing rules), and a night decision (night effects). Stress changes only from Ink `#stress:+N` / `#stress:-N` tags.
+Affinity (kingdom/guest) can change from a line or choice in a conversation (Ink `#aff` tags), including slot choices (section 7.5), a seating decision (pairing rules) and a night decision (night effects). Stress changes only from Ink `#stress:+N` / `#stress:-N` tags and the morning reset. `#aff:<guestId>` affects any guest met so far and is ignored for guests not met yet.
 
 All changes go through one function, `applyEffects(effects, source)`, which clamps values, records the change for display and writes an entry to the event log.
 
 ### 9.3 Display
 
-The meters are always visible in the demo. The meters panel shows the stress meter first, then the three kingdom meters, then a meter for each guest who has arrived today, in arrival order, labelled with the guest's name or "???". The current guest's meter is highlighted.
+The meters are always visible in the demo. The meters panel shows the stress meter first, then the three kingdom meters, then a meter for each guest who has arrived **today** (queue + invited), in arrival order, labelled with the guest's name or "???". The guest at the bar is highlighted. Guests from earlier days who did not come today are not shown (the debug panel shows all meters).
 
 Each meter is a horizontal bar from −10 to +10 with a centre mark and the numeric value. The most recent change to a meter is shown next to it, for example "(+2)", until that meter changes again. Stress changes from a dialogue answer are also shown as a badge on that bartender chat bubble (section 7.2).
 
-The meters panel (or an equivalent block) is also visible on the seating overlay, the night screen and the summary screen.
+The meters panel is also visible on the seating overlay, the night screen and the summary screen.
 
 ---
 
@@ -214,15 +295,15 @@ The meters panel (or an equivalent block) is also visible on the seating overlay
 
 ### 10.1 Layout
 
-The pub has 2 tables with 4 seats each. Seats are indexed 0–3 (Stůl 1) and 4–7 (Stůl 2). All seats are empty at the start of the day. Seating is final: a seated guest stays in place until the next day.
+The pub has up to 2 tables with 4 seats each. Seats are indexed 0–3 (Stůl 1) and 4–7 (Stůl 2). The number of usable tables comes from `days.json` (`tables`): in the placeholder story day 1 has only Stůl 1, days 2–3 both. All seats are emptied every morning. Seating is final until the next day.
 
 ### 10.2 Minimap
 
-A fixed square in the bottom-right corner of the desk shows both tables and their seats. Occupied seats show a small portrait. Hovering an occupied seat shows a tooltip with the guest's name and faction ("???" if unrevealed). The minimap cannot be moved and cannot be used to seat anyone outside the seating phase.
+A fixed square in the bottom-right corner of the desk shows both tables and their seats. A table not available today is drawn faded with the label "Stůl 2 – zatím nemáte" and cannot be used. Occupied seats show a small portrait. Hovering an occupied seat shows a tooltip with the guest's name and faction ("???" if unrevealed). The minimap cannot be moved and cannot be used to seat anyone outside the seating phase.
 
 ### 10.3 Seating phase
 
-After the closing line, the minimap expands into a full-screen overlay (instant switch, no animation). The overlay shows the two tables large and easy to click, the current guest's portrait and name in a corner, and the heading "Kam posadíte hosta?". Clicking an empty seat selects it (highlight); clicking another empty seat changes the selection. The "Usadit" button confirms. Occupied seats are not selectable but still show hover tooltips.
+After the closing line, the minimap expands into a full-screen overlay (instant switch, no animation). The overlay shows the tables large and easy to click (a locked table faded and not clickable), the current guest's portrait and name in a corner, and the heading "Kam posadíte hosta?". Clicking an empty seat selects it (highlight); clicking another empty seat changes the selection. The "Usadit" button confirms. Occupied seats are not selectable but still show hover tooltips.
 
 ### 10.4 Pairing effects
 
@@ -231,15 +312,15 @@ After the closing line, the minimap expands into a full-screen overlay (instant 
 1. If `pairings.json` has a specific rule for those two guests, that rule applies.
 2. Otherwise, the faction fallback rule for their two kingdoms applies (same kingdom, or a specific pair of kingdoms).
 
-A rule can move both guests' meters and any kingdom meters, positively (allies) or negatively (enemies). Effects apply immediately and are visible in the meters panel. The engine also records who shared a table, so summary blocks can react to it.
+A rule can move both guests' meters and any kingdom meters, positively (allies) or negatively (enemies). Effects apply immediately and are visible in the meters panel. The engine also records who shared a table, so summary blocks can react to it. With a single table every guest is everyone's neighbour, which is the point of day 1: the player cannot keep enemies apart and has to manage them in conversation.
 
-After confirming, the overlay closes, the chat log is cleared and the next guest's portrait fades in. After the third guest is seated, the game fades to NIGHT.
+After confirming, the overlay closes and the next guest's portrait fades in (or the paused guest returns). When the queue is empty the day moves to DAY END (section 4).
 
 ---
 
 ## 11. Night management
 
-The night screen is a separate full screen with a night illustration, the heading "Noc – kde budou hosté spát?", the meters panel and one row per guest (3 rows). Each row shows the guest's portrait thumbnail, name and faction ("???" if unrevealed) and a dropdown with these options:
+The night screen is a separate full screen with a night illustration, the heading "Noc – kde budou hosté spát?", the meters panel and one row for every guest seated today (queue + invited from the lounge; not guests who left the lounge). Each row shows the guest's portrait thumbnail, name and faction ("???" if unrevealed) and a dropdown with these options:
 
 | Value | Label |
 |---|---|
@@ -249,19 +330,21 @@ The night screen is a separate full screen with a night illustration, the headin
 | `r2b` | Pokoj 2 – postel B |
 | `kick` | Vyhodit |
 
-Each bed can hold one guest: a bed chosen by one guest is disabled in the other dropdowns. Any number of guests can be kicked out. The "Hotovo" button is enabled only when every guest has an outcome.
+Each bed can hold one guest: a bed chosen by one guest is disabled in the other dropdowns. Any number of guests can be kicked out (with more than four guests some must be). The "Hotovo" button is enabled only when every guest has an outcome.
 
-On "Hotovo" the engine applies each guest's night effects from `night.json` (one set of effects for getting a bed, one for being kicked out). Guests sharing a room are recorded as roommates. In the demo, roommates only affect the summary text, not the meters. The game then fades to SUMMARY.
+On "Hotovo" the engine applies each guest's night effects from `night.json` (one set for getting any bed, one for being kicked out; optionally overridden for a specific day, section 14.6). Guests sharing a room are recorded as roommates. The whole day — present guests, seats, night outcomes, invited and left lounge guests — is stored as `history[day]`; the next morning reads it to decide who appears in the lounge, which queue entries and articles apply, and summary conditions can refer back to it. Roommates affect only the summary text and which follow-ups unlock, not the meters. The game then fades to SUMMARY.
 
 ---
 
 ## 12. Summary
 
-The summary screen shows the heading "Shrnutí dne", a single continuous text wall on the left, the final meter values on the right and a "Hrát znovu" button.
+The summary screen shows the heading "Shrnutí dne {n}", a continuous text wall on the left, the final meter values on the right and the button for the next step: "Další den" after days 1–2, "Hrát znovu" after day 3.
 
-The text is assembled from authored blocks in `summary.json` (section 14.7). The engine evaluates every block in file order and includes each block whose condition is true, joining them as paragraphs. Conditions can check night outcomes, roommates, table-mates, meter values (including `stress`), Ink variables and which guests were present. This lets the summary describe what happened in the kingdoms that day, how the bartender's decisions and stress affected things, and what it caused for the pub and the guests (for example, a guest who was kicked out was taken by bandits).
+The text is assembled from authored blocks in `summary.json` (section 14.7). The engine evaluates every block in file order and includes each block whose condition is true, joining them as paragraphs. A block's optional `day` field limits it to one day (`1`–`3`); blocks without `day` are evaluated every day; blocks with `"day": "final"` are the ending. After day 3 the screen shows the day-3 blocks, then the heading "Konec dema" and the final blocks.
 
-"Hrát znovu" resets all state to initial values, draws 3 new guests and returns to DESK with fresh scrolls.
+Conditions can check night outcomes, roommates, table-mates, meter values (including `stress`), Ink variables, which guests were present, the current day, lounge invites and departures, and which claims the player spread through slots. Guest-day conditions default to the day being summarised and can name an earlier day explicitly.
+
+"Hrát znovu" resets all state to initial values (meters, desk, corkboard, reveals, Ink states, history) and starts the morning of day 1.
 
 ---
 
@@ -269,124 +352,154 @@ The text is assembled from authored blocks in `summary.json` (section 14.7). The
 
 ### 13.1 Title screen
 
-A background, the title "What the crows say" and a "Začít" button that fades to DESK.
+A background, the title "What the crows say" (Czech: "Co říkají vrány") and a "Začít" button that fades to the morning of day 1.
 
 ### 13.2 Transitions
 
-Screen changes use fade to black and fade back in (about 400 ms each way): title → desk, desk → first guest, seated guest → next guest (portrait area), last guest seated → night, night → summary, summary → desk. Opening and closing the scroll reader and the seating overlay are instant.
+Fade to black and back (about 400 ms each way): title → day 1 morning, desk → first guest, last seating → (nothing; DAY END is in place), "Zavřít hospodu" → night, night → summary, summary → next morning, "Hrát znovu" → day 1 morning. Guest changes at the bar (next guest, invited guest, paused guest returning) use the portrait fade-in. Main view ↔ corkboard ↔ lounge use the strip slide, not a fade. Opening and closing the scroll reader and the seating overlay are instant.
 
 ### 13.3 Debug panel
 
-A read-only overlay toggled by the physical key under Esc (`event.code === "Backquote"`, which works regardless of keyboard layout, including Czech). It shows the current phase; drawn guest ids and their order; the current guest; raw values of all meters; reveal flags; seat occupancy; night assignments; the current guest's Ink tags and global variables; and the last ~20 event log entries. It has no controls.
+A read-only overlay toggled by the physical key under Esc (`event.code === "Backquote"`, which works regardless of keyboard layout, including Czech). It shows the last 20 event log entries (meter changes, morning resets, lounge invites/departures, paused/returning guests, slot uses) and: phase; day; table count; view; remaining queue; lounge (`guest:knot`); invited and left today; guest at the bar and the knot; paused conversation; today's guests; all meter values; reveal flags; seats; tonight's assignments; night history per day; the last used slot claims; the current guest's Ink tags and live variables; Ink variable snapshots per guest.
+
+**Day jump (dev builds only, documented exception to "mouse only").** With the debug panel open, keys `1`–`3` restart the game and jump to the morning of that day. Earlier days are played automatically: first non-slot choice everywhere, first free seat, beds in arrival order (the fifth guest onwards is kicked), nobody invited from the lounge. It is compiled out of production builds (`import.meta.env.DEV`).
 
 ---
 
 ## 14. Data and content formats
 
-### 14.1 Folder structure (suggested)
+### 14.1 Folder structure
 
 ```
 src/
-  main.tsx
-  App.tsx
-  store/gameStore.ts
-  screens/      TitleScreen, PubScreen, NightScreen, SummaryScreen
-  components/   Stage, Fade, Desk, ScrollItem, ScrollReader, Cutout, Trashcan,
-                Portrait, ChatPanel, MetersPanel, Minimap, SeatingOverlay, DebugPanel
-  engine/       ink.ts, tags.ts, effects.ts, pairings.ts, summary.ts, random.ts
+  main.tsx, App.tsx
+  store/gameStore.ts      Zustand store + game engine: days, phases, Ink runner, tags, applyEffects,
+                          pairings, lounge/pause, slots, night, desk actions
+  engine/                 pure modules (no store/content imports), runnable in node
+    summary.ts            conditions + summary assembly
+    slots.ts              choice parsing (#slot), slot matching
+    days.ts               queue/lounge selection, start-up content validation, Ink knot/tag scanning
+    engine.check.ts       self-check (npm run check)
+  screens/                TitleScreen, PubScreen, NightScreen, SummaryScreen
+  components/             Stage, Desk, Corkboard (+ DragGhost), ScrollReader, NoteReader, ChatPanel (+ CutoutSlot),
+                          MetersPanel, Tables, SeatingOverlay, Lounge, IconBadge (colour/icon helpers), DebugPanel
   content/
-    kingdoms.json
-    guests.json
-    scrolls.json
-    pairings.json
-    night.json
-    summary.json
-    strings.cs.json
-    ink/        <guestId>.ink  (source)  →  <guestId>.json (compiled)
+    index.ts              typed access + t() + start-up validation
+    kingdoms.json, guests.json, quests.json, topics.json, days.json, scrolls.json,
+    pairings.json, night.json, summary.json, strings.cs.json
+    ink/                  <guestId>.ink (source) → <guestId>.json (compiled, committed)
+scripts/
+  compile-ink.mjs         npm run ink
+  check-content.ts        npm run check (content part)
 public/
-  art/          placeholder images with fixed file names (section 16)
+  art/                    placeholder images with fixed file names (section 16)
+  art/icons/              kingdom, guest and "unknown" icons
 ```
 
-Ink files are written in Inky. Add an `npm run ink` script that compiles every `src/content/ink/*.ink` to JSON with the compiler bundled in inkjs (check the correct import path for the installed inkjs version). Exporting JSON from Inky by hand also works.
+`npm run ink` compiles every `src/content/ink/*.ink` to JSON with the compiler bundled in inkjs (`inkjs/full`). Commit both files; `npm run check` fails if a `.json` is stale.
 
 ### 14.2 kingdoms.json and guests.json
 
 ```json
 [
-  { "id": "k1", "name": "Království A", "startAffinity": 0 },
-  { "id": "k2", "name": "Království B", "startAffinity": 0 },
-  { "id": "k3", "name": "Království C", "startAffinity": 0 }
+  { "id": "k1", "name": "Velesie",  "startAffinity": 0, "color": "#8b2e2e", "icon": "art/icons/k1.png" },
+  { "id": "k2", "name": "Kamenec",  "startAffinity": 0, "color": "#2e4f7a", "icon": "art/icons/k2.png" },
+  { "id": "k3", "name": "Lukovina", "startAffinity": 0, "color": "#3f6b35", "icon": "art/icons/k3.png" }
 ]
 ```
 
 ```json
 [
   {
-    "id": "mira",
-    "name": "Mira",
-    "faction": "k1",
-    "portrait": "art/guest_mira.png",
-    "startAffinity": -2,
-    "ink": "mira"
+    "id": "hana",
+    "name": "Hana",
+    "faction": "k3",
+    "portrait": "art/guest_hana.png",
+    "icon": "art/icons/guest_hana.png",
+    "startAffinity": 0,
+    "ink": "hana"
   }
 ]
 ```
+
+`icon` is optional; without it the portrait is scaled down.
 
 ### 14.3 scrolls.json
 
-Each scroll belongs to one kingdom. Articles consist of paragraphs; each paragraph is a list of segments rendered inline. Segments with `"cut": true` are cuttable snippets and need a stable `id`.
+Each scroll belongs to one kingdom. Articles consist of paragraphs; each paragraph is a list of segments rendered inline. Segments with `"cut": true` are cuttable snippets and need a stable `id`. Which day a scroll arrives is set only in `days.json` (one source of truth; scrolls have no `day` field).
+
+- `article.quest` / `segment.quest` – quest line (colour). A segment inherits its article's quest.
+- `segment.topic` + `segment.claim` – slot topic and claim of the cutout (cuttable segments only).
+- `article.when` – a condition (section 14.7) evaluated once on the morning the scroll arrives, against the previous day. If false the article is hidden. This is how newspapers react to the player's earlier choices.
 
 ```json
-[
-  {
-    "id": "scroll_k1",
-    "kingdom": "k1",
-    "title": "Hlasatel Království A",
-    "articles": [
-      {
-        "headline": "Požár v pohraničním lese",
-        "paragraphs": [
-          [
-            { "text": "Včera v noci vypukl požár v lese u průsmyku. " },
-            { "id": "k1_a1_s1", "text": "Svědci viděli prchat muže v barvách Království B.", "cut": true }
-          ]
+{
+  "id": "velesie_d2",
+  "kingdom": "k1",
+  "title": "Velesský hlásník",
+  "articles": [
+    {
+      "headline": "I hostinský proti nám",
+      "quest": "bridge",
+      "when": { "usedClaim": ["bridge_cause", "k1_axe"] },
+      "paragraphs": [
+        [
+          { "text": "Hostinský U Tří vran prý tvrdí, že most podťali Velesští. " },
+          { "id": "v2_s2", "text": "Vorařské cechy vyhlásily hospodě bojkot.", "cut": true }
         ]
-      }
-    ]
-  }
-]
+      ]
+    }
+  ]
+}
+```
+
+```json
+{ "id": "l1_s1", "text": "Večer předtím viděli u rokle velesské voraře se sekerami.", "cut": true,
+  "topic": "bridge_cause", "claim": "k1_axe" }
 ```
 
 ### 14.4 Ink tag reference
 
-| Tag | Meaning |
-|---|---|
-| `#cut` | This guest line is a cuttable snippet |
-| `#reveal:name` | Reveal the current guest's name |
-| `#reveal:faction` | Reveal the current guest's faction |
-| `#aff:self:+2` | Change the current guest's meter |
-| `#aff:k1:-1` | Change a kingdom meter (`k1`, `k2`, `k3`) |
-| `#aff:<guestId>:+1` | Change another guest's meter (ignored if that guest is not present today) |
-| `#stress:+2` / `#stress:-1` | Change the bartender stress meter |
-| `#bartender` | This non-choice line is spoken by the bartender, not the guest |
+| Tag | Where | Meaning |
+|---|---|---|
+| `#cut` | guest line | This line is a cuttable snippet |
+| `#cut:<topic>:<claim>` | guest line | Cuttable snippet with a slot topic and claim |
+| `#quest:<questId>` | guest line | Line belongs to a quest line (bubble bar; cutouts get the quest colour) |
+| `#slot:<topic>:<claim>` / `#slot:<topic>:*` | **inside the choice brackets** | The choice is picked by dropping a cutout (section 7.5) |
+| `#reveal:name` | line | Reveal the current guest's name |
+| `#reveal:faction` | line | Reveal the current guest's faction |
+| `#aff:self:+2` | line | Change the current guest's meter |
+| `#aff:k1:-1` | line | Change a kingdom meter (`k1`, `k2`, `k3`) |
+| `#aff:<guestId>:+1` | line | Change another guest's meter (ignored if that guest has not been met yet) |
+| `#stress:+2` / `#stress:-1` | line | Change the bartender stress meter |
+| `#bartender` | line | This non-choice line is spoken by the bartender, not the guest |
 
-Several tags can be attached to one line. To make choosing an option change a meter, put the tag on the first line inside that choice's branch.
+Several tags can be attached to one line. To make choosing an option change a meter, put the tag on the first line inside that choice's branch. Unknown tags log a console warning at runtime and are reported by the start-up validation.
 
-**Optional variable sync.** If a story declares any of `VAR stress`, `VAR aff_self`, `VAR aff_k1`, `VAR aff_k2`, `VAR aff_k3`, or `VAR aff_<guestId>` for a guest present today, the engine writes the current meter values into them when the story starts and after every effect, so dialogue can branch and **hide choices** with Ink conditions. When the story ends, the engine stores a snapshot of all the story's global variables under the guest's id, so summary conditions can read flags set during the conversation (for example `VAR told_secret = false`).
+**Optional variable sync.** If a story declares any of `VAR stress`, `VAR aff_self`, `VAR aff_k1`…`aff_k3`, `VAR aff_<guestId>` or `VAR day`, the engine writes the current values into them when a visit starts (or resumes) and after every effect, so dialogue can branch and **hide choices** with Ink conditions. `aff_<guestId>` is only written for guests already met, so a default such as `VAR aff_bertold = -99` lets a story test "has Bertold arrived?" (`{aff_bertold > -99}`). When a visit ends, the engine stores a snapshot of all the story's global variables under the guest's id (for summary and `when` conditions) and keeps the full story state for the guest's next visit.
 
 Minimal example:
 
 ```ink
-VAR told_secret = false
+VAR stress = 0
+VAR told_saw = false
 
-Jmenuji se Mira, jdu z Království A. #reveal:name
-Slyšel jste o tom požáru? Prý to byli lidé z Béčka. #cut
-* [Taky jsem to četl.]
-    Vidíte! Celý svět to ví. #aff:self:+2 #aff:k2:-1
-* [Noviny lžou.]
-    Hm. To jste divný hostinský. #aff:self:-1
-- Mezi námi, já tam byla. #reveal:faction
-~ told_secret = true
+-> END
+
+=== day1 ===
+Hana. Jen Hana. Nemáte tu místo u kamen? #reveal:name
+Všichni říkají, že to Lukovina nechala shnít. #cut:bridge_cause:k3_rot #quest:bridge
+* {stress < 6} [Věřím vám. Co jste viděla?]
+    Lano bylo nařezané pilou. #cut:bridge_cause:sawn #quest:bridge #aff:self:+1
+    ~ told_saw = true
+* [Tohle psaly noviny. #slot:bridge_cause:*]
+    Noviny nebyly u mostu. #aff:self:-1 #stress:+1
+* [Noviny píšou něco jiného.]
+    Noviny nebyly u mostu. Já ano. #aff:self:-1
+- -> END
+
+=== followup_day2 ===
+Ráno jsem šla k mostu. Přinesla jsem kus lana.
 -> END
 ```
 
@@ -397,148 +510,217 @@ Specific pairs take priority; the faction fallback applies to any pair without a
 ```json
 {
   "pairs": [
-    { "guests": ["mira", "bohdan"], "effects": { "a": -2, "b": -2, "k1": -1 } },
-    { "guests": ["mira", "eliska"], "effects": { "a": 1, "b": 1 } }
+    { "guests": ["ota", "vojtech"], "effects": { "a": -2, "b": -2, "k1": -1, "k2": -1 } },
+    { "guests": ["hana", "vojtech"], "effects": { "a": 1, "b": 1 } }
   ],
   "factionFallback": {
     "same":  { "a": 1,  "b": 1 },
     "k1-k2": { "a": -1, "b": -1 },
     "k1-k3": { "a": 0,  "b": 0 },
-    "k2-k3": { "a": -1, "b": -1 }
+    "k2-k3": { "a": -1, "b": -1, "k2": -1, "k3": -1 }
   }
 }
 ```
 
 ### 14.6 night.json
 
-Per guest, effects for getting any bed and for being kicked out. `self` is that guest's meter.
+Per guest, effects for getting any bed and for being kicked out. `self` is that guest's meter. An optional `day<N>` entry overrides both for that day.
 
 ```json
 {
-  "mira":   { "bed": { "self": 1 },  "kick": { "self": -3, "k1": -1 } },
-  "bohdan": { "bed": { "self": 0 },  "kick": { "self": -2 } }
+  "ota":  { "bed": { "self": 1, "k2": 1 }, "kick": { "self": -3, "k2": -1 } },
+  "hana": { "bed": { "self": 2 }, "kick": { "self": -3, "k3": -1 },
+            "day2": { "bed": { "self": 2, "k3": 1 }, "kick": { "self": -4, "k3": -2 } } }
 }
 ```
 
-### 14.7 summary.json
+### 14.7 summary.json and conditions
 
-An ordered list of blocks. A block without `when` is always included. Text may contain `{name:<guestId>}` and `{kingdom:<kingdomId>}`, which are replaced with names.
+An ordered list of blocks. A block without `when` is always included (on its days). `day` is `1`–`3`, `"final"` (ending, shown after day 3 under "Konec dema") or absent (every day). Text may contain `{name:<guestId>}` and `{kingdom:<kingdomId>}`, which are replaced with the nominative name; Czech declension is not handled, so write other cases literally.
 
 ```json
 [
-  { "id": "intro", "text": "Den v hospodě U Tří vran skončil." },
-  {
-    "id": "mira_kicked",
-    "when": { "outcome": ["mira", "kick"] },
-    "text": "{name:mira} strávila noc venku. Ráno ji nikdo neviděl – na cestě prý řádili lapkové."
-  },
-  {
-    "id": "k1_angry",
-    "when": { "meter": ["k1", "<=", -3] },
-    "text": "Z {kingdom:k1} přicházejí zprávy, že hostinský u průsmyku nadržuje sousedům."
-  }
+  { "id": "d1_intro", "day": 1, "text": "První den po pádu mostu přes Vranku…" },
+  { "id": "d2_hana_left", "day": 2, "when": { "leftLounge": "hana" },
+    "text": "{name:hana} na vás čekala v lounge celé dopoledne. Nikdo pro ni nepřišel." },
+  { "id": "final_hana_lost", "day": "final", "when": { "leftLounge": ["hana", 2] },
+    "text": "{name:hana} se nikdy nevrátila." }
 ]
 ```
 
-Condition types:
+The same condition language is used by summary blocks, lounge and queue `when` (section 14.9) and article `when` (section 14.3). **Context day:** for summaries it is the day being summarised; for morning data (lounge, queue, articles) it is the previous day, so `{ "roommates": ["ota", "vojtech"] }` in a day-2 lounge entry means "shared a room last night".
 
 | Condition | Meaning |
 |---|---|
-| `{ "present": "mira" }` | Guest was among today's guests |
-| `{ "outcome": ["mira", "kick"] }` | Night outcome is `kick` or `bed` (any bed) |
-| `{ "roommates": ["mira", "bohdan"] }` | Both slept in the same room |
-| `{ "sameTable": ["mira", "bohdan"] }` | Both sat at the same table |
-| `{ "meter": ["k1", ">=", 3] }` | Final meter comparison; meter id is `stress`, `k1`–`k3` or a guest id; operators `<`, `<=`, `==`, `>=`, `>` |
-| `{ "inkVar": ["mira", "told_secret", true] }` | Ink variable snapshot equals a value |
-| `{ "all": [ ... ] }` / `{ "any": [ ... ] }` / `{ "not": { ... } }` | Combinators |
+| `{ "day": 2 }` | The context day is 2 |
+| `{ "present": "hana" }` / `{ "present": ["hana", 1] }` | Guest was at the pub (queue or invited) on the context day / on day 1 |
+| `{ "outcome": ["hana", "kick"] }` / `["hana", "bed", 1]` | Night outcome was `kick` / any bed, on the context day or the given day |
+| `{ "roommates": ["ota", "vojtech"] }` / `[…, 1]` | Both slept in the same room |
+| `{ "sameTable": ["ota", "vojtech"] }` / `[…, 1]` | Both sat at the same table |
+| `{ "leftLounge": "hana" }` / `["hana", 2]` | Guest waited in the lounge and left without being invited |
+| `{ "invitedFromLounge": "hana" }` / `["hana", 2]` | Guest was invited from the lounge |
+| `{ "usedClaim": ["bridge_cause", "k1_axe"] }` | The player has (on any day so far) dropped a cutout with this claim into a slot of this topic |
+| `{ "meter": ["k1", ">=", 3] }` | Current meter comparison; meter id is `stress`, `k1`–`k3` or a guest id; operators `<`, `<=`, `==`, `>=`, `>` |
+| `{ "inkVar": ["ota", "blames", "k1"] }` | The guest's latest Ink variable snapshot equals a value |
+| `{ "all": [ … ] }` / `{ "any": [ … ] }` / `{ "not": { … } }` | Combinators |
 
-A condition that refers to a guest who was not present evaluates to false.
+A guest-day condition about a guest who was not there that day evaluates to false; `meter` and `inkVar` about a guest never met evaluate to false.
 
 ### 14.8 strings.cs.json
 
-All fixed UI text, so wording can be changed without touching code:
+All fixed UI text, so wording can be changed without touching code (excerpt; see the file for all keys):
 
 ```json
 {
-  "start": "Začít",
   "openPub": "Otevřít hospodu",
+  "closePub": "Zavřít hospodu",
+  "dayEndHint": "Fronta je prázdná. Než zavřete, můžete ještě zajít do lounge.",
   "greeting": "Zdravím, čím posloužím?",
+  "greetingReturning": "Á, vy jste tu ještě. Co pro vás můžu udělat?",
   "closingLine": "Pojďte, najdu vám místo.",
-  "bartenderLabel": "Hostinský",
-  "unknown": "???",
-  "close": "Zavřít",
+  "dayLabel": "Den {n}",
   "sourceScroll": "Zdroj: Svitek – {kingdom}",
   "sourceConversation": "Zdroj: Rozhovor – {name}",
-  "seatingHeading": "Kam posadíte hosta?",
-  "seatConfirm": "Usadit",
-  "table1": "Stůl 1",
-  "table2": "Stůl 2",
-  "nightHeading": "Noc – kde budou hosté spát?",
-  "bedR1A": "Pokoj 1 – postel A",
-  "bedR1B": "Pokoj 1 – postel B",
-  "bedR2A": "Pokoj 2 – postel A",
-  "bedR2B": "Pokoj 2 – postel B",
-  "kick": "Vyhodit",
-  "done": "Hotovo",
-  "summaryHeading": "Shrnutí dne",
+  "sourceQuest": "Linka: {quest}",
+  "slotPlaceholder": "Přetáhněte sem výstřižek",
+  "slotRejected": "Tohle sem nepatří.",
+  "loungeTitle": "Lounge",
+  "loungeBack": "Zpět k pultu",
+  "loungeEmpty": "Nikdo tu nečeká.",
+  "inviteToBar": "Pozvat k pultu",
+  "inviteClosed": "Hospoda je zavřená.",
+  "inviteBusy": "Nejdřív doběhněte rozhovor s pozvaným hostem.",
+  "tableLocked": "zatím nemáte",
+  "summaryHeading": "Shrnutí dne {n}",
+  "nextDay": "Další den",
+  "endOfDemo": "Konec dema",
   "playAgain": "Hrát znovu"
 }
 ```
+
+### 14.9 days.json
+
+```json
+[
+  { "day": 1, "tables": 1, "scrolls": ["velesie_d1", "kamenec_d1", "lukovina_d1"],
+    "queue": [ { "guest": "ota", "knot": "day1" }, { "guest": "hana", "knot": "day1" }, { "guest": "vojtech", "knot": "day1" } ],
+    "lounge": [] },
+  { "day": 2, "tables": 2, "scrolls": ["velesie_d2", "kamenec_d2", "lukovina_d2"],
+    "queue": [ { "guest": "bertold", "knot": "day2" } ],
+    "shuffle": false,
+    "lounge": [
+      { "guest": "hana", "knot": "followup_day2", "when": { "inkVar": ["hana", "told_saw", true] } },
+      { "guest": "hana", "knot": "followup_day2_quiet" },
+      { "guest": "vojtech", "knot": "followup_day2_room", "when": { "roommates": ["ota", "vojtech"] } }
+    ] },
+  { "day": 3, "tables": 2, "scrolls": ["kamenec_d3", "lukovina_d3"],
+    "queue": [ { "guest": "ota", "knot": "day3", "when": { "not": { "outcome": ["ota", "kick", 1] } } } ],
+    "lounge": [] }
+]
+```
+
+- `tables` – 1 or 2.
+- `scrolls` – scroll ids added that morning (each scroll may arrive only once).
+- `queue` – arrivals in order; optional `shuffle: true`; optional `when` per entry (previous day).
+- `lounge` – follow-ups. A guest appears only if they slept in a bed last night and `when` (previous day) holds; several entries per guest, first match wins.
+- `knot` – Ink knot to jump to in the guest's story.
+
+### 14.10 quests.json and topics.json
+
+```json
+[
+  { "id": "bridge", "name": "Most přes Vranku", "color": "#c27a1a" },
+  { "id": "crows",  "name": "Vraní pošta",      "color": "#7a4a9a" }
+]
+```
+
+`topics.json` maps each slot topic to the label shown on the empty bubble:
+
+```json
+{ "bridge_cause": "Proč spadl most?", "letter": "Je ten dopis pravý?", "crow_reader": "Kdo čte vraní poštu?" }
+```
+
+### 14.11 Validation and checks
+
+At start-up `content/index.ts` runs `validateContent()` (`engine/days.ts`) and logs every problem as `console.error("[content] …")`: unknown guest/kingdom/quest/topic/scroll ids, a knot from `days.json` missing in the guest's Ink, a scroll scheduled twice, a guest both queued and in the lounge on one day, lounge entries on day 1, more possible guests than seats, unknown Ink tags, `#slot`/`#cut:…` with an unknown topic or without a claim, `#aff` on an unknown meter, unknown ids in pairings/night/summary text.
+
+`npm run check` runs the same validation in node plus:
+
+- `src/engine/engine.check.ts` – all condition types, summary day/final filtering, slot matching (exact claim, `*` fallback, rejection), queue and lounge selection;
+- `scripts/check-content.ts` – recompiles every `.ink` and compares it with the committed `.json`; walks every branch of every knot listed in `days.json` under several stress/affinity presets and fails if a choice point has only slot options; checks that each guest's first knot reveals the name in its first line; plays 3 000 random full 3-day runs (random choices including slots, seats, beds/kicks, lounge invites at random moments) and fails if a run gets stuck, a day summary is empty, the ending is not exactly one of the five ending blocks, a knot is never reached or a summary block never fires.
 
 ---
 
 ## 15. Game state (Zustand)
 
-A sketch of the store; exact shape is up to the implementation.
+The shape as implemented (`src/store/gameStore.ts`):
 
 ```ts
-type Phase = "title" | "desk" | "conversation" | "seating" | "night" | "summary";
+type Phase = "title" | "desk" | "conversation" | "seating" | "dayEnd" | "night" | "summary";
+type View = "cork" | "main" | "lounge";
 type KingdomId = "k1" | "k2" | "k3";
 type NightOutcome = "r1a" | "r1b" | "r2a" | "r2b" | "kick";
 
-interface DeskItemBase {
-  id: string; x: number; y: number; z: number;
-  surface: "desk" | "cork";
-}
-interface ScrollItem extends DeskItemBase { kind: "scroll"; scrollId: string; }
-interface CutoutItem extends DeskItemBase {
-  kind: "cutout";
-  text: string;
-  source: { type: "scroll"; kingdom: KingdomId } | { type: "conversation"; guestId: string };
-}
+interface Visit { guest: string; knot: string; when?: Condition }
+interface ActiveVisit extends Visit { fromLounge: boolean }
+
+interface DeskItemBase { id: string; x: number; y: number; z: number; surface: "desk" | "cork" }
+interface ScrollItem extends DeskItemBase { kind: "scroll"; scrollId: string }
+type CutoutSource = { type: "scroll"; kingdom: KingdomId } | { type: "conversation"; guestId: string };
+interface CutoutMeta { topic?: string; claim?: string; quest?: string }
+interface CutoutItem extends DeskItemBase, CutoutMeta { kind: "cutout"; text: string; source: CutoutSource }
 
 interface ChatLine {
   speaker: "guest" | "bartender";
   text: string;
   cuttable: boolean;
-  stressDelta?: number;                     // badge on bartender answer bubble
+  meta?: CutoutMeta;                        // from #cut:<topic>:<claim> / #quest
+  stressDelta?: number;                     // badge on the bartender answer bubble
+  usedCutout?: CutoutMeta & { text: string; source: CutoutSource }; // slot tag
 }
 
-interface CorkString { id: string; a: string; b: string; color: "red" | "twine" | "blue"; }
+interface DayRecord {
+  present: string[]; seats: (string | null)[]; night: Record<string, NightOutcome | null>;
+  invited: string[]; left: string[];
+}
 
 interface GameState {
   phase: Phase;
-  meters: Record<string, number>;          // "stress" | "k1" | "k2" | "k3" | guestId → −10..10
-  lastDelta: Record<string, number>;        // most recent change per meter, for display
-  todayGuests: string[];                    // 3 guest ids in arrival order
-  currentGuestIndex: number;
+  day: number;                              // 1..3
+  view: View;
+  tableCount: number;
+  meters: Record<string, number>;           // "stress" | "k1".."k3" | guestId (once met) → −10..10
+  lastDelta: Record<string, number>;
+  queue: Visit[];                           // still waiting today
+  current: ActiveVisit | null;              // at the bar
+  paused: { visit: ActiveVisit; inkState: string; chatLog: ChatLine[] } | null;
+  loungeGuests: Visit[];
+  todayGuests: string[];                    // queue + invited, in arrival order
+  invitedFromLounge: string[];              // today
+  leftLounge: string[];                     // today
+  history: Record<number, DayRecord>;       // finished days (night history = history[d].night)
+  usedClaims: { topic: string; claim: string; cutoutId: string; day: number; guestId: string }[];
+  inkStates: Record<string, string>;        // persistent Ink state per guest
+  inkVars: Record<string, Record<string, unknown>>; // VAR snapshot per guest
   revealed: Record<string, { name: boolean; faction: boolean }>;
   chatLog: ChatLine[];
+  choices: { index: number; text: string; slot?: { topic: string; claim: string } }[];
+  storyEnded: boolean;
+  slotRejected: string | null;              // topic flashing red
   deskItems: (ScrollItem | CutoutItem)[];
-  corkOpen: boolean;
-  corkStrings: CorkString[];
-  corkStringColor: "red" | "twine" | "blue";
-  readerOpen: string | null;                // scrollId shown in the reader
-  noteOpen: string | null;                  // cutout id shown full-screen on corkboard
+  hiddenArticles: string[];                 // `${scrollId}#${articleIndex}`
+  corkStrings: { id: string; a: string; b: string; color: "red" | "twine" | "blue" }[];
+  readerOpen: string | null;
+  noteOpen: string | null;
   seats: (string | null)[];                 // length 8: 0–3 table 1, 4–7 table 2
   nightAssignments: Record<string, NightOutcome | null>;
-  inkVars: Record<string, Record<string, unknown>>; // snapshot per guest
   eventLog: { seq: number; source: string; description: string; effects: Record<string, number> }[];
   debugOpen: boolean;
+  fading: boolean;
 }
 ```
 
-The live inkjs `Story` object for the current guest can be held outside the store (for example in a module-level ref); only its outputs go into the store.
+The live inkjs `Story` for the guest at the bar is a module-level variable outside the store; only its outputs go into the store. Pausing serialises it into `paused.inkState`; ending a visit serialises it into `inkStates[guestId]`.
 
 ---
 
@@ -549,63 +731,121 @@ Art will come from the user's sketches. Until then, each image is a simple place
 | File | Size | Use |
 |---|---|---|
 | `title_bg.png` | 1920×1080 | Title screen |
-| `pub_door_closed.png` | 600×810 | Portrait area before opening |
-| `guest_<id>.png` | 600×620 | Guest portraits (thumbnails are scaled down; portrait area may letterbox) |
+| `pub_door_closed.png` | 600×810 | Portrait area before opening and at day end |
+| `guest_<id>.png` | 600×620 | Guest portraits (faction-tinted placeholders; thumbnails are scaled down) |
 | `desk.png` | 1920×270 | Desk surface |
 | `scroll_rolled.png` | ~200×80 | Scroll on the desk / corkboard |
 | `parchment.png` | ~1000×900 | Scroll / note reader background |
-| `cutout_paper.png` | tileable | Cutout background |
+| `cutout_paper.png` | tileable | Cutout background (tinted by CSS for colour coding) |
 | `trashcan.png` | 180×180 | Trashcan |
 | `corkboard.png` | 960×810 | Corkboard surface |
 | `pin.png` | ~32×40 | Pin on corkboard items |
-| `cork_arrow.png` | ~48×200 | Open/close corkboard tab |
+| `cork_arrow.png` | 48×280 | Corkboard tab (mirrored for "back") |
+| `lounge_bg.png` | 1920×810 | Lounge background |
+| `lounge_arrow.png` | 48×280 | Lounge tab (mirrored for "back") |
+| `icons/k1.png` … `k3.png` | 48×48 | Kingdom icons (shown at 28 px) |
+| `icons/guest_<id>.png` | 48×48 | Guest icons (fallback: scaled portrait) |
+| `icons/unknown.png` | 48×48 | Question mark for an unrevealed faction |
 | `night_bg.png` | 1920×1080 | Night screen |
 | `summary_bg.png` | 1920×1080 | Summary screen |
 
-The upper-area background behind the meters and chat panels can be a plain colour for now.
+The empty slot bubble is plain CSS (dashed outline), so there is no `cutout_slot.png`. The upper-area background behind the meters and chat panels is a plain colour for now.
 
 ---
 
-## 17. Placeholder content to generate
+## 17. Placeholder content
 
-So the loop is playable end to end before the script phase, generate minimal Czech placeholder content, clearly marked as placeholder:
+The build ships a three-day placeholder story, clearly marked `PLACEHOLDER STORY` in every Ink file header, written to exercise every mechanic. It is meant to be replaced in the script phase.
 
-1. Three kingdoms named "Království A/B/C".
-2. One event (a forest fire at the border) reported by three scrolls, one per kingdom, each blaming someone different. One article per scroll with 3–4 cuttable segments.
-3. Five guests across the three kingdoms with different starting affinities, each with a short Ink story (3–6 exchanges, 1–3 choices per turn) that says the name in the first line. Across all stories, every tag from section 14.4 must be used at least once, including one optional variable flag.
-4. Pairings: at least one specific enemy pair, one specific ally pair and a complete faction fallback.
-5. Night effects for all five guests.
-6. About 8–10 summary blocks that together use every condition type.
+**World.** The pub U Tří vran on the Vraní sedlo crossroads between **Velesie** (k1, forests and raftsmen, red, icon "V"), **Kamenec** (k2, silver mines and powder, blue, "K") and **Lukovina** (k3, lowlands, the river Vranka and its ferry, green, "L"). The bartender keeps the crows that carry letters between the kingdoms.
+
+**Quest lines.** *Most přes Vranku* (orange): the rope bridge over the Vranka gorge fell with a Kamenec silver caravan on it. Every kingdom blames another; in truth the ferryman Šebor sawed the ropes to force traffic onto his ferry and emptied the silver chests. *Vraní pošta* (purple): someone reads and forges the crow mail; it is the pedlar Mikuláš, who sold Šebor the caravan's schedule and sells black sealing wax.
+
+**Slot topics and claims.**
+
+| Topic | Claims (sources) |
+|---|---|
+| `bridge_cause` "Proč spadl most?" | `k2_blasting` (Velesský hlásník d1/d2), `k3_rot` (Kamenecké listy d1/d2, Ota, Šebor), `k1_axe` (Lukovinský posel d1), `sawn` (Hana d1/d2), `ferry_saw` (Hana d2/d3, Bertold d3, Kamenecké listy d3) |
+| `letter` "Je ten dopis pravý?" | `genuine` (Velesský hlásník d2, Kamenecké listy d2, Bertold), `forged` (Lukovinský posel d2, Jitka) |
+| `crow_reader` "Kdo čte vraní poštu?" | `k3_spies` (Kamenecké listy d2, Mikuláš), `k2_spies` (Lukovinský posel d3), `mikulas` (Jitka d3 after sharing a room with him, Šebor's confession) |
+
+**Day 1 – Most spadl (one table).** Ota (Kamenec carter, lost his wagon and his driver), Hana (bridge-keeper's daughter from Lukovina, saw the sawn rope) and Vojtěch (Velesian raftsman with an axe on his belt) all have to sit at the single table; Ota and Vojtěch are a hostile pair. Ota's slot has no `*` fallback, Vojtěch's has one and also accepts Hana's `sawn` cutout from earlier the same day. The day is built to be stressful (summary reacts to stress ≥ 5). Room choices matter: Ota + Vojtěch in one room unlock Vojtěch's day-2 follow-up (a brawl if Ota was told it was Velesie, otherwise a flask and a lead to the ferry).
+
+**Day 2 – Vraní pošta (two tables).** Morning stress reset; newspapers react to day 1 (`usedClaim`, `outcome` with day). Queue: Bertold (Kamenec guard captain with the "chancellor's letter"), Mikuláš (pedlar, the spy), Jitka (Lukovinian scribe who knows the letter is forged). Bertold's letter slot is the main conflicting-sources choice (Velesie + Kamenec vs. Lukovina + Jitka) and changes day-3 Kamenec headlines. He then asks about the bridge-keeper's daughter: Hana waits in the lounge (follow-up with `when: told_saw`) with the `ferry_saw` evidence, so the player is motivated to invite her mid-conversation and come back with the cutout. If Hana is left in the lounge she goes home over the ferry and disappears (day-3 newspaper, final summary). Ota's follow-up offers him a rope for the gorge.
+
+**Day 3 – Převoz.** Queue: Ota (only if not kicked on night 1; found the chests opened with a key and asks who reads the crow mail) and Šebor (the ferryman, paying in Kamenec silver). Lounge: Jitka (if she shared a room with Mikuláš she saw him copying the seal → `crow_reader:mikulas`, which Ota is asking for: second cut-in moment), Mikuláš (leaves for good if not invited), Hana (if invited on day 2), Bertold (only if he was sent to the ferry). Šebor's slot: `ferry_saw` → confrontation with an `#bartender` line, then expose him or take the bribe; `sawn` → he gets nervous; `*` → he deflects.
+
+**Endings** (exactly one of): truth (Šebor exposed), bribe, war (a kingdom ≤ −4), shared blame (you spread a kingdom's version), fog (nobody blamed). Plus independent final paragraphs: Hana lost / ill / safe, crow mail clean / still compromised, Mikuláš fled, the crow sold to Mikuláš, Ota gone / a friend, bartender's stress.
+
+**Coverage.** Every tag in 14.4 (including `#aff:<guestId>`, `#bartender`, `#slot` with `*`) and every condition type in 14.7 is used at least once. 7 guests, 18 knots, 8 scrolls, 2 quest lines, 3 topics, 50 summary blocks.
 
 ---
 
 ## 18. Out of scope for the demo
 
-Sound and music; saving and loading; more than one day; character movement or animation beyond allowed fades/slides; consequences other than meter changes and summary text; hint or glow systems that point at relevant cutouts (intentionally removed so the player alone decides what matters); meter effects from roommates; corkboard affecting gameplay (memory aid only); touch and mobile support; languages other than Czech; telemetry or choice logging for export.
+Sound and music; saving and loading (also between sessions); more than three days; character movement or animation beyond the allowed fades/slides; consequences other than meter changes, summary text, newspaper articles and which guests/follow-ups appear; consuming cutouts; hint or glow systems that point at relevant cutouts (a slot shows only its topic, never which cutout fits); meter effects from roommates; the corkboard affecting gameplay; rooms other than the lounge; talking to guests directly in the lounge (only inviting them to the bar); touch and mobile support; languages other than Czech; telemetry or choice logging for export.
 
 ---
 
 ## 19. Acceptance checklist
 
-- [ ] Stage renders at 1920×1080 and scales to any window with letterboxing; drag-and-drop stays accurate at every scale.
-- [ ] Title → desk → 3 × (conversation → seating) → night → summary → "Hrát znovu" works end to end, with fades.
-- [ ] Scrolls open in the reader, cuttable segments create cutouts, the same snippet can be cut repeatedly.
-- [ ] Scrolls and cutouts drag freely, stack, come to front when grabbed, stay within the desk and never hide under the minimap.
-- [ ] Dropping on the trashcan removes items permanently; source tooltips show on hover.
-- [ ] Greeting is inserted automatically; chat appends at the bottom, auto-scrolls and can be scrolled up; `#cut` guest lines create cutouts.
-- [ ] All Ink tags work; name and faction show "???" until revealed.
-- [ ] Closing line opens the seating overlay; seat selection plus "Usadit" seats the guest; pairing effects (specific, then faction fallback) apply immediately; log clears and the next guest arrives.
-- [ ] Meters (including stress) are always visible, clamp to −10…+10 and show the last change; stress badge appears on the bartender answer bubble.
-- [ ] Ink can hide choices via conditions on synced stress/affinity vars.
-- [ ] Corkboard slides open/closed; items drag between desk and board; pins and three string colours work; layout resets on replay.
-- [ ] Night dropdowns prevent double-booked beds; "Hotovo" is disabled until all guests have an outcome; night effects apply.
-- [ ] Summary text is assembled correctly from conditions, with final meters shown.
-- [ ] "Hrát znovu" fully resets state and draws a new random set of 3 guests.
-- [ ] Debug panel toggles with the key under Esc and shows all listed state.
-- [ ] All content (text, numbers, conditions) lives in `src/content/`; no content is hardcoded in components.
+`[x]` = verified for v0.2 (by `npm run build`, `npm run check` and a scripted Chrome run at 1280×720, i.e. scale 0.67).
+
+- [x] Stage renders at 1920×1080 and scales to any window with letterboxing; drag-and-drop stays accurate at every scale (including drops on reply slots).
+- [x] Title → 3 × (morning → conversations/seating → day end → night → summary) works end to end, with fades; after day 3 the final summary and "Hrát znovu" return to day 1 with a clean state.
+- [x] Stress is 0 every morning; other meters, cutouts, the corkboard and reveals persist.
+- [x] Day 1 has one table, days 2–3 two; the unavailable table cannot be picked (minimap and overlay).
+- [x] Scrolls open in the reader, cuttable segments create cutouts, the same snippet can be cut repeatedly; conditional articles appear only when their condition held.
+- [x] Scrolls and cutouts have the right colour (quest > kingdom) and kingdom icon; conversation cutouts have the guest icon and the kingdom icon / `?` until the faction is revealed.
+- [x] Scrolls and cutouts drag freely, stack, come to front when grabbed, stay within the desk and never hide under the minimap.
+- [x] Dropping on the trashcan removes items permanently; source tooltips (with quest line) show on hover.
+- [x] Greeting / returning greeting is inserted automatically; chat appends at the bottom, auto-scrolls and can be scrolled up; `#cut` guest lines create cutouts.
+- [x] All Ink tags work; name and faction show "???" until revealed.
+- [x] Closing line opens the seating overlay; seat selection plus "Usadit" seats the guest; pairing effects apply immediately; the next guest arrives.
+- [x] Meters (including stress) are always visible, clamp to −10…+10 and show the last change; stress badge appears on the bartender answer bubble.
+- [x] Ink can hide choices via conditions on synced stress/affinity/day vars.
+- [x] Right arrow switches to the lounge, left arrow back; the desk stays visible; the arrow badge counts waiting guests.
+- [x] In the morning the lounge shows only guests who slept in a bed last night and have a matching follow-up for the day.
+- [x] An invited guest cuts in; the paused conversation resumes after their seating with the same log and state.
+- [x] Uninvited lounge guests leave on "Zavřít hospodu" and are not on the night screen.
+- [x] The slot accepts a cutout with the right topic, picks the choice by claim (or `*`), rejects others; the cutout is not consumed.
+- [x] The used claim is in the event log and can be used in summary / article conditions.
+- [x] Corkboard slides open/closed; items drag between desk and board; pins and three string colours work; layout resets on replay.
+- [x] Night dropdowns prevent double-booked beds; "Hotovo" is disabled until all guests have an outcome; night effects (incl. per-day overrides) apply.
+- [x] Summary text is assembled correctly per day and for the ending, with final meters shown.
+- [x] Debug panel toggles with the key under Esc and shows day, lounge, paused conversation, night history and used claims; dev day jump works.
+- [x] All content (text, numbers, conditions, schedule) lives in `src/content/`; no content is hardcoded in components.
+- [ ] Playtest with real testers on LAN / GitHub Pages (not done yet).
 
 ---
 
 ## 20. Open items for the script phase
 
-To be written together after the build skeleton exists: kingdom names, identities and relationships; the day's event and the three newspaper versions; the five guests (name, faction, portrait brief, starting affinity, personality, dialogue); specific pairings and faction fallback values; night effects; summary blocks; final wording of the greeting and closing line.
+To be written together now that the multi-day skeleton exists: kingdom names, identities, relationships, colours and icons; the events of each day and the newspaper versions; quest lines and their colours; slot topics and the claims each source makes; the guests (name, faction, portrait brief, starting affinity, personality, dialogue per visit); which follow-ups exist per day and their conditions; specific pairings and faction fallback values; night effects (and per-day overrides); summary and ending blocks; final wording of the greetings, closing line and lounge strings.
+
+Design questions for the team:
+
+- Should a guest be able to stay in the lounge for more than one morning? (v0.2: no.)
+- Should rejected cutouts animate back (a short bounce) or keep jumping back instantly?
+- Should the kingdom colour of a conversation cutout leak the guest's faction before `#reveal:faction`? (v0.2: no – neutral paper and `?` icon.)
+- Should Czech declension be supported in `{name:…}` / `{kingdom:…}` placeholders (e.g. per-case name forms in data)?
+- Should newspapers be able to react within the same day (v0.2: only on the morning a scroll arrives)?
+
+---
+
+## Changes since v0.1
+
+- Three days instead of one: morning (stress reset, new scrolls, lounge) → day → day end ("Zavřít hospodu") → night → summary ("Další den"); day 3 ends with the ending blocks and "Hrát znovu". New `dayEnd` phase; no separate `end` phase (the day-3 summary is the end screen).
+- `days.json`: per-day tables, scrolls, queue (with optional `shuffle` and per-entry `when`) and lounge follow-ups (several per guest, first match wins). Replaces the random draw of 3 out of 5 guests.
+- Tables per day (1 on day 1, 2 later); the locked table is shown faded with "zatím nemáte".
+- Colour coding: kingdom `color`/`icon`, `quests.json`, quest > kingdom rule, icons on scrolls/cutouts/slot tags; conversation cutouts carry guest + kingdom (`?`) icons. Kingdom colour on conversation cutouts only after the faction is revealed.
+- Lounge (strip position 3, arrows, badge), inviting with pause/resume of the current conversation, departures on closing.
+- Cutout reply slots: `#slot:<topic>:<claim>` choice tags (inside the brackets), `*` fallback, rejection, slot tag on the bartender bubble, `usedClaims`, `topics.json` for bubble labels. Cutouts now carry topic/claim/quest. Authoring rule enforced by `npm run check`: every choice point needs a non-slot option.
+- Persistent Ink: one story state per guest across visits, one knot per visit; `VAR day` synced; `aff_<guestId>` synced for every guest met; snapshot per guest kept across days.
+- Conditions: new `day`, `leftLounge`, `invitedFromLounge`, `usedClaim`; optional day parameter on `present`, `outcome`, `roommates`, `sameTable`, `leftLounge`, `invitedFromLounge`; `inkVar` no longer requires the guest to be present today. The same conditions drive summary blocks, lounge/queue `when` and newspaper article `when` (new: newspapers react to earlier days).
+- `summary.json` blocks have `day` (`1`–`3` or `"final"`); `night.json` supports `day<N>` overrides.
+- Guest meters are created on first arrival and persist; the meters panel lists today's guests only.
+- Debug panel extended; dev-only day jump (keys 1–3 with the panel open).
+- Start-up content validation with console errors; `npm run check` now also validates content, walks every Ink branch and runs 3 000 random full playthroughs.
+- New placeholder art: lounge background and arrow, kingdom/guest/unknown icons, seven guest portraits. The slot bubble is CSS only.
+- New three-day placeholder story (section 17) replacing the one-day courier story; kingdoms renamed to original placeholder names.
