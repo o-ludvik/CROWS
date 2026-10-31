@@ -1,7 +1,7 @@
 import { useRef, useState, type PointerEvent } from 'react'
-import { kingdomById, t } from '../content'
-import { DESK, MINIMAP, TOP_H, TRASH, actions, guestName, useGame, type DeskItem } from '../store/gameStore'
+import { DESK, MINIMAP, TOP_H, TRASH, actions, useGame, type DeskItem } from '../store/gameStore'
 import { pointerInCork } from './Corkboard'
+import { ItemFace, cutoutTitle, itemLook, toneStyle } from './IconBadge'
 import { getScale } from './Stage'
 import { stagePoint } from './stageCoords'
 import { Tables } from './Tables'
@@ -42,19 +42,21 @@ function Item({ item, onOverTrash }: { item: DeskItem; onOverTrash: (over: boole
     if (Math.hypot(dx, dy) >= 5) d.moved = true
     if (!d.moved) return
 
-    if (useGame.getState().corkOpen) {
-      const p = stagePoint(e)
+    const p = stagePoint(e)
+    // Corkboard open, or a cutout lifted above the desk towards a chat slot: follow the pointer with a ghost.
+    if (useGame.getState().view === 'cork' || (item.kind === 'cutout' && p.y < TOP_H)) {
       actions.setDragGhost({ id: item.id, stageX: p.x - d.ox, stageY: p.y - d.oy, width: d.w, height: d.h })
       onOverTrash(false)
       return
     }
+    actions.setDragGhost(null)
 
     const el = e.currentTarget
     const x = Math.max(0, Math.min(DESK.w - el.offsetWidth, d.x + dx / getScale()))
     const y = Math.max(0, Math.min(DESK.h - el.offsetHeight, d.y + dy / getScale()))
     actions.moveItem(item.id, x, y)
-    const p = deskPoint(e)
-    onOverTrash(inside(TRASH, p.x, p.y))
+    const dp = deskPoint(e)
+    onOverTrash(inside(TRASH, dp.x, dp.y))
   }
   const up = (e: PointerEvent<HTMLDivElement>) => {
     const d = drag.current
@@ -67,7 +69,7 @@ function Item({ item, onOverTrash }: { item: DeskItem; onOverTrash: (over: boole
       return
     }
 
-    if (useGame.getState().corkOpen) {
+    if (useGame.getState().view === 'cork') {
       const cork = pointerInCork(e, d.ox, d.oy, d.w, d.h)
       if (cork) return actions.setItemSurface(item.id, 'cork', cork.x, cork.y)
       const p = stagePoint(e)
@@ -91,6 +93,12 @@ function Item({ item, onOverTrash }: { item: DeskItem; onOverTrash: (over: boole
       return
     }
 
+    if (item.kind === 'cutout' && stagePoint(e).y < TOP_H) {
+      // Released above the desk: a slot bubble under the pointer reads it; the cutout always returns to its place.
+      const slot = document.elementFromPoint(e.clientX, e.clientY)?.closest<HTMLElement>('[data-slot]')
+      if (slot) actions.dropOnSlot(slot.dataset.slot!, item.id)
+      return actions.moveItem(item.id, d.x, d.y)
+    }
     const p = deskPoint(e)
     if (inside(TRASH, p.x, p.y)) return actions.removeItem(item.id)
     const el = e.currentTarget
@@ -105,23 +113,17 @@ function Item({ item, onOverTrash }: { item: DeskItem; onOverTrash: (over: boole
     }
   }
 
-  const title =
-    item.kind === 'cutout'
-      ? item.source.type === 'scroll'
-        ? t('sourceScroll', { kingdom: kingdomById(item.source.kingdom).name })
-        : t('sourceConversation', { name: guestName(item.source.guestId, s) })
-      : undefined
-
+  const look = itemLook(item, s)
   return (
     <div
-      className={`desk-item ${item.kind}${ghosting ? ' ghosting' : ''}`}
-      style={{ left: item.x, top: item.y, zIndex: item.z }}
-      title={title}
+      className={`desk-item ${item.kind}${look.tone ? ' toned' : ''}${ghosting ? ' ghosting' : ''}`}
+      style={{ left: item.x, top: item.y, zIndex: item.z, ...toneStyle(look.tone) }}
+      title={item.kind === 'cutout' ? cutoutTitle(item, s) : undefined}
       onPointerDown={down}
       onPointerMove={move}
       onPointerUp={up}
     >
-      {item.kind === 'scroll' ? <img src="art/scroll_rolled.png" alt="" draggable={false} /> : item.text}
+      <ItemFace item={item} />
     </div>
   )
 }

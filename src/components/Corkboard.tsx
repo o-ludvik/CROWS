@@ -1,9 +1,10 @@
 import { useRef, useState, type PointerEvent } from 'react'
-import { kingdomById, t } from '../content'
+import { t } from '../content'
 import {
-  CORK, DESK, TOP_H, actions, guestName, useGame,
+  CORK, DESK, TOP_H, actions, useGame,
   type CorkColor, type CorkString, type DeskItem,
 } from '../store/gameStore'
+import { ItemFace, cutoutTitle, itemLook, toneStyle } from './IconBadge'
 import { getScale } from './Stage'
 import { stagePoint } from './stageCoords'
 
@@ -77,18 +78,12 @@ function CorkItem({ item }: { item: DeskItem }) {
     actions.moveItem(item.id, x, y)
   }
 
-  const title =
-    item.kind === 'cutout'
-      ? item.source.type === 'scroll'
-        ? t('sourceScroll', { kingdom: kingdomById(item.source.kingdom).name })
-        : t('sourceConversation', { name: guestName(item.source.guestId, s) })
-      : undefined
-
+  const look = itemLook(item, s)
   return (
     <div
-      className={`desk-item cork-item ${item.kind}${ghosting ? ' ghosting' : ''}`}
-      style={{ left: item.x, top: item.y, zIndex: item.z }}
-      title={title}
+      className={`desk-item cork-item ${item.kind}${look.tone ? ' toned' : ''}${ghosting ? ' ghosting' : ''}`}
+      style={{ left: item.x, top: item.y, zIndex: item.z, ...toneStyle(look.tone) }}
+      title={item.kind === 'cutout' ? cutoutTitle(item, s) : undefined}
       onPointerDown={down}
       onPointerMove={move}
       onPointerUp={up}
@@ -103,7 +98,7 @@ function CorkItem({ item }: { item: DeskItem }) {
       >
         <img src="art/pin.png" alt="" draggable={false} />
       </button>
-      {item.kind === 'scroll' ? <img src="art/scroll_rolled.png" alt="" draggable={false} /> : item.text}
+      <ItemFace item={item} />
       {tip && item.kind === 'cutout' && <div className="cork-tip">{item.text}</div>}
     </div>
   )
@@ -216,17 +211,19 @@ export function pointerInCork(
 /** Floating clone that follows the pointer across desk and corkboard. */
 export function DragGhost() {
   const ghost = useGame((s) => s.dragGhost)
-  const item = useGame((s) => (ghost ? s.deskItems.find((i) => i.id === ghost.id) : undefined))
+  const s = useGame()
+  const item = ghost ? s.deskItems.find((i) => i.id === ghost.id) : undefined
   if (!ghost || !item) return null
+  const look = itemLook(item, s)
   return (
     <div
-      className={`desk-item drag-ghost ${item.kind}${item.surface === 'cork' ? ' cork-item' : ''}`}
-      style={{ left: ghost.stageX, top: ghost.stageY, width: ghost.width, zIndex: 50, pointerEvents: 'none' }}
+      className={`desk-item drag-ghost ${item.kind}${item.surface === 'cork' ? ' cork-item' : ''}${look.tone ? ' toned' : ''}`}
+      style={{ left: ghost.stageX, top: ghost.stageY, width: ghost.width, zIndex: 50, pointerEvents: 'none', ...toneStyle(look.tone) }}
     >
       {item.surface === 'cork' && (
         <span className="cork-pin"><img src="art/pin.png" alt="" draggable={false} /></span>
       )}
-      {item.kind === 'scroll' ? <img src="art/scroll_rolled.png" alt="" draggable={false} /> : item.text}
+      <ItemFace item={item} />
     </div>
   )
 }

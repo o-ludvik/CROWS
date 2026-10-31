@@ -1,28 +1,27 @@
 import { guestById, kingdomById, kingdoms, summaryBlocks, t } from '../content'
 import { MetersPanel } from '../components/MetersPanel'
 import { buildSummary } from '../engine/summary'
-import { actions, useGame } from '../store/gameStore'
+import { LAST_DAY, actions, conditionCtx, useGame } from '../store/gameStore'
+
+const names = (id: string) => (kingdoms.some((k) => k.id === id) ? kingdomById(id).name : guestById(id).name)
 
 export function SummaryScreen() {
-  const s = useGame()
-  // Explicit DayResult — avoid spreading unrelated store fields into the evaluator.
-  const paragraphs = buildSummary(
-    summaryBlocks,
-    {
-      present: s.todayGuests,
-      seats: s.seats,
-      nightAssignments: s.nightAssignments,
-      meters: s.meters,
-      inkVars: s.inkVars,
-    },
-    (id) => kingdoms.some((k) => k.id === id) ? kingdomById(id).name : guestById(id).name,
-  )
+  const day = useGame((s) => s.day)
+  useGame((s) => s.history) // re-render once the day is recorded
+  const ctx = conditionCtx()
+  const last = day >= LAST_DAY
+  const paragraphs = buildSummary(summaryBlocks, ctx, names)
+  const ending = last ? buildSummary(summaryBlocks, ctx, names, true) : []
   return (
     <div className="screen" style={{ backgroundImage: 'url(art/summary_bg.png)' }}>
-      <h2 className="screen-heading">{t('summaryHeading')}</h2>
+      <h2 className="screen-heading">{t('summaryHeading', { n: day })}</h2>
       <div className="summary-text">
         {paragraphs.map((p, i) => <p key={i}>{p}</p>)}
-        <button className="btn" onClick={actions.playAgain}>{t('playAgain')}</button>
+        {last && <h3>{t('endOfDemo')}</h3>}
+        {ending.map((p, i) => <p key={`f${i}`}>{p}</p>)}
+        {last
+          ? <button className="btn" onClick={actions.playAgain}>{t('playAgain')}</button>
+          : <button className="btn" onClick={actions.nextDay}>{t('nextDay')}</button>}
       </div>
       <div className="side-meters"><MetersPanel /></div>
     </div>

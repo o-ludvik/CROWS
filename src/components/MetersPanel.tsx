@@ -25,15 +25,14 @@ function Meter({
 
 export function MetersPanel() {
   const s = useGame()
-  const arrived = s.phase === 'desk' ? 0 : s.phase === 'conversation' || s.phase === 'seating' ? s.currentGuestIndex + 1 : s.todayGuests.length
-  const current = s.phase === 'conversation' || s.phase === 'seating' ? s.todayGuests[s.currentGuestIndex] : null
+  const current = s.current?.guest
   return (
     <div className="meters">
       <Meter label={t('stress')} value={s.meters.stress ?? 0} delta={s.lastDelta.stress} invertColors />
       <hr />
       {kingdoms.map((k) => <Meter key={k.id} label={k.name} value={s.meters[k.id]} delta={s.lastDelta[k.id]} />)}
       <hr />
-      {s.todayGuests.slice(0, arrived).map((id) => (
+      {s.todayGuests.map((id) => (
         <Meter key={id} label={guestName(id, s)} value={s.meters[id]} delta={s.lastDelta[id]} active={id === current} />
       ))}
     </div>
