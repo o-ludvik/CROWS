@@ -9,7 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "ink": "node scripts/compile-ink.mjs",
-    "check": "node --experimental-strip-types --no-warnings src/engine/summary.check.ts"
+    "check": "node --experimental-strip-types --no-warnings src/engine/engine.check.ts && node --experimental-strip-types --no-warnings scripts/check-content.ts"
   },
   "dependencies": {
     "@fontsource/eb-garamond": "^5.3.0",
