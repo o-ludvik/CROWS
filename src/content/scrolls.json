@@ -1,77 +1,304 @@
 [
   {
-    "id": "scroll_k1",
+    "id": "velesie_d1",
     "kingdom": "k1",
-    "title": "Hlasatel Redanie",
+    "title": "Velesský hlásník",
     "articles": [
       {
-        "headline": "Kurýr zavražděn u průsmyku",
+        "headline": "Most přes Vranku se zřítil",
+        "quest": "bridge",
         "paragraphs": [
           [
-            { "text": "Dnes ráno našli u horského průsmyku tělo královského kurýra. " },
-            { "id": "k1_a1_s1", "text": "U mrtvého ležela pečeť mírové smlouvy mezi třemi královstvími – zlomená.", "cut": true }
+            { "text": "V noci na dnešek se zřítil visutý most přes rokli Vranky. " },
+            { "id": "v1_s1", "text": "S mostem spadl i vůz kamenecké karavany se stříbrem.", "cut": true }
           ],
           [
-            { "text": "Redanská stráž tvrdí: " },
-            { "id": "k1_a1_s2", "text": "vraha poznali podle černého pláště v barvách Nilfgaardu.", "cut": true },
-            { "text": " " },
-            { "id": "k1_a1_s3", "text": "Rada žádá uzavření průsmyku pro nilfgaardské poutníky.", "cut": true }
+            { "text": "Velesští voraři, kteří kotvili pod roklí, vypovídají: " },
+            { "id": "v1_s2", "text": "den předtím otřásaly roklí výbuchy z kameneckého lomu – lana to nevydržela.", "cut": true, "topic": "bridge_cause", "claim": "k2_blasting" }
           ],
           [
-            { "text": "Svědci z Javorné prý slyšeli křik krátce po půlnoci. " },
-            { "id": "k1_a1_s4", "text": "Na stezce našli zbytky pochodní namočených v oleji.", "cut": true }
+            { "id": "v1_s3", "text": "Velesie nabízí dřevo na nový most. Za férovou cenu.", "cut": true }
+          ]
+        ]
+      },
+      {
+        "headline": "Vraní pošta zlobí",
+        "quest": "crows",
+        "paragraphs": [
+          [
+            { "text": "Kupci si stěžují, že " },
+            { "id": "v1_s4", "text": "dopisy z hospody U Tří vran docházejí pozdě a s nalomenými pečetěmi.", "cut": true }
           ]
         ]
       }
     ]
   },
   {
-    "id": "scroll_k2",
+    "id": "kamenec_d1",
     "kingdom": "k2",
-    "title": "Posel Nilfgaardu",
+    "title": "Kamenecké listy",
     "articles": [
       {
-        "headline": "Redanie křivě obviňuje Impérium",
+        "headline": "Lukovina zabila naše vozky",
+        "quest": "bridge",
         "paragraphs": [
           [
-            { "text": "Smrt kurýra u průsmyku je tragédie – a také záminka. " },
-            { "id": "k2_a1_s1", "text": "Žádný nilfgaardský voják ten večer u hranice nebyl.", "cut": true }
+            { "text": "Karavana se stříbrem pro kamenecké horníky skončila v rokli Vranky. " },
+            { "id": "k1d_s1", "text": "Lukovina vybírala mostné deset let, ale lana nevyměnila ani jednou.", "cut": true, "topic": "bridge_cause", "claim": "k3_rot" }
           ],
           [
-            { "text": "Impérium ukazuje jinam: " },
-            { "id": "k2_a1_s2", "text": "pašerácká stezka z Fereldenu vede přímo kolem místa činu.", "cut": true },
-            { "text": " " },
-            { "id": "k2_a1_s3", "text": "Pašeráci prý převáželi lampový olej a pochodně.", "cut": true }
-          ],
+            { "id": "k1d_s2", "text": "Vozka Matěj se pohřešuje.", "cut": true },
+            { "text": " Rada žádá náhradu: " },
+            { "id": "k1d_s3", "text": "Lukovina zaplatí každý ztracený groš.", "cut": true }
+          ]
+        ]
+      },
+      {
+        "headline": "Z lomu",
+        "paragraphs": [
           [
-            { "text": "Císařský dvůr varuje: " },
-            { "id": "k2_a1_s4", "text": "kdo Redanii uvěří, podkopává mír celého hřebene.", "cut": true }
+            { "text": "Správa lomu odmítá řeči z Velesie: " },
+            { "id": "k1d_s4", "text": "V den neštěstí se v kameneckém lomu nestřílelo.", "cut": true }
           ]
         ]
       }
     ]
   },
   {
-    "id": "scroll_k3",
+    "id": "lukovina_d1",
     "kingdom": "k3",
-    "title": "Kronika Fereldenu",
+    "title": "Lukovinský posel",
     "articles": [
       {
-        "headline": "Vražda, nebo noční bouře?",
+        "headline": "Kdo podťal most?",
+        "quest": "bridge",
         "paragraphs": [
           [
-            { "text": "Fereldenští učenci zkoumají místo činu. " },
-            { "id": "k3_a1_s1", "text": "Stopa po blesku na skále nad stezkou je čerstvá.", "cut": true }
+            { "text": "Lukovinská stráž ráno ohledala utržená lana. " },
+            { "id": "l1_s1", "text": "Večer předtím viděli u rokle velesské voraře se sekerami.", "cut": true, "topic": "bridge_cause", "claim": "k1_axe" }
           ],
           [
-            { "text": "Jiní však varují: " },
-            { "id": "k3_a1_s2", "text": "redanští dřevaři nechávají u cesty neuhašená ohniště a sudy s olejem.", "cut": true },
-            { "text": " " },
-            { "id": "k3_a1_s3", "text": "O nilfgaardských vrazích nemáme důkaz.", "cut": true }
+            { "id": "l1_s2", "text": "Lukovina lana pravidelně dehtovala – kdo tvrdí opak, lže.", "cut": true }
+          ]
+        ]
+      },
+      {
+        "headline": "Převoz jede",
+        "paragraphs": [
+          [
+            { "text": "Dokud nebude nový most, vozí lidi přes Vranku převozník Šebor. " },
+            { "id": "l1_s3", "text": "Převoz stojí trojí mýto – a fronta je až k lesu.", "cut": true, "quest": "bridge" }
+          ]
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "velesie_d2",
+    "kingdom": "k1",
+    "title": "Velesský hlásník",
+    "articles": [
+      {
+        "headline": "Dopis z Lukoviny",
+        "quest": "crows",
+        "paragraphs": [
+          [
+            { "text": "Hlásník otiskuje dopis, který zachytil Kamenec: " },
+            { "id": "v2_s1", "text": "lukovinský kancléř píše, že za most platit nebude. Dopis je pravý, potvrzují kupci.", "cut": true, "topic": "letter", "claim": "genuine" }
+          ]
+        ]
+      },
+      {
+        "headline": "I hostinský proti nám",
+        "quest": "bridge",
+        "when": { "usedClaim": ["bridge_cause", "k1_axe"] },
+        "paragraphs": [
+          [
+            { "text": "Hostinský U Tří vran prý tvrdí, že most podťali Velesští. " },
+            { "id": "v2_s2", "text": "Vorařské cechy vyhlásily hospodě bojkot.", "cut": true }
+          ]
+        ]
+      },
+      {
+        "headline": "Hostinský potvrzuje: lom",
+        "quest": "bridge",
+        "when": { "usedClaim": ["bridge_cause", "k2_blasting"] },
+        "paragraphs": [
+          [
+            { "id": "v2_s3", "text": "Hostinský U Tří vran prý přiznal, že rokli otřásl kamenecký lom.", "cut": true, "topic": "bridge_cause", "claim": "k2_blasting" }
+          ]
+        ]
+      },
+      {
+        "headline": "Vorař vyhozen do mrazu",
+        "when": { "outcome": ["vojtech", "kick", 1] },
+        "paragraphs": [
+          [
+            { "id": "v2_s4", "text": "Vorař Vojtěch Smrk musel u Vraního sedla spát pod širým nebem. Velesie si to zapamatuje.", "cut": true }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "kamenec_d2",
+    "kingdom": "k2",
+    "title": "Kamenecké listy",
+    "articles": [
+      {
+        "headline": "Lukovina nám vyhlásila hospodářskou válku",
+        "quest": "crows",
+        "paragraphs": [
+          [
+            { "text": "Kapitán stráže Bertold veze z hor dopis lukovinského kancléře. " },
+            { "id": "k2d_s1", "text": "Stojí v něm černé na bílém: ať se Kamenec udusí vlastním stříbrem.", "cut": true, "topic": "letter", "claim": "genuine" }
           ],
           [
-            { "text": "Královna žádá klid. " },
-            { "id": "k3_a1_s4", "text": "Dokud se nevyšetří pečeť smlouvy, ať nikdo nehne vojskem.", "cut": true }
+            { "text": "Jak se dopis dostal na veřejnost? " },
+            { "id": "k2d_s2", "text": "Lukovinští špehové čtou vraní poštu celého sedla.", "cut": true, "topic": "crow_reader", "claim": "k3_spies" }
+          ]
+        ]
+      },
+      {
+        "headline": "Hostinský to ví taky",
+        "quest": "bridge",
+        "when": { "usedClaim": ["bridge_cause", "k3_rot"] },
+        "paragraphs": [
+          [
+            { "id": "k2d_s3", "text": "I hostinský U Tří vran potvrzuje: lukovinská lana byla shnilá.", "cut": true, "topic": "bridge_cause", "claim": "k3_rot" }
+          ]
+        ]
+      },
+      {
+        "headline": "Vozka Ota vyhozen",
+        "when": { "outcome": ["ota", "kick", 1] },
+        "paragraphs": [
+          [
+            { "id": "k2d_s4", "text": "Hostinský vyhodil do noci vozku Otu, který přežil pád mostu. Kamenec si to pamatuje.", "cut": true }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lukovina_d2",
+    "kingdom": "k3",
+    "title": "Lukovinský posel",
+    "articles": [
+      {
+        "headline": "Podvržený dopis",
+        "quest": "crows",
+        "paragraphs": [
+          [
+            { "text": "Kancelář kancléře oznamuje: " },
+            { "id": "l2_s1", "text": "dopis, kterým se Kamenec ohání, je podvrh. Lukovina pečetí zeleným voskem, ne černým.", "cut": true, "topic": "letter", "claim": "forged" }
+          ],
+          [
+            { "text": "Kancléřova písařka Jitka cestuje do Kamence vše vysvětlit." }
+          ]
+        ]
+      },
+      {
+        "headline": "Dcera mostného nocovala venku",
+        "quest": "bridge",
+        "when": { "outcome": ["hana", "kick", 1] },
+        "paragraphs": [
+          [
+            { "id": "l2_s2", "text": "Hanu, dceru mostného, našli ráno prochladlou u brodu. Hostinský ji vyhodil.", "cut": true }
+          ]
+        ]
+      },
+      {
+        "headline": "Hostinský šíří kamenecké lži",
+        "when": { "usedClaim": ["bridge_cause", "k3_rot"] },
+        "paragraphs": [
+          [
+            { "id": "l2_s3", "text": "Hostinský U Tří vran opakuje kamenecké řeči o shnilých lanech.", "cut": true }
+          ]
+        ]
+      }
+    ]
+  },
+
+  {
+    "id": "kamenec_d3",
+    "kingdom": "k2",
+    "title": "Kamenecké listy",
+    "articles": [
+      {
+        "headline": "Kamenec zavírá cesty do Lukoviny",
+        "quest": "crows",
+        "when": { "inkVar": ["bertold", "letter_verdict", "genuine"] },
+        "paragraphs": [
+          [
+            { "id": "k3d_s1", "text": "Na základě svědectví hostinského z Vraního sedla rada uzavírá cesty do Lukoviny.", "cut": true }
+          ]
+        ]
+      },
+      {
+        "headline": "Rada váhá",
+        "quest": "crows",
+        "when": { "inkVar": ["bertold", "letter_verdict", "forged"] },
+        "paragraphs": [
+          [
+            { "id": "k3d_s2", "text": "Kapitán Bertold poslal vránou pochybnosti o pravosti dopisu. Rada odložila hlasování.", "cut": true }
+          ]
+        ]
+      },
+      {
+        "headline": "Stráž u převozu",
+        "quest": "bridge",
+        "when": { "inkVar": ["bertold", "suspects_ferry", true] },
+        "paragraphs": [
+          [
+            { "text": "Kapitán Bertold dal v noci hlídat převoz přes Vranku. " },
+            { "id": "k3d_s3", "text": "V dílně převozníka Šebora visí pila s vylomenými zuby.", "cut": true, "topic": "bridge_cause", "claim": "ferry_saw" }
+          ]
+        ]
+      },
+      {
+        "headline": "Seznam dopisů",
+        "quest": "crows",
+        "paragraphs": [
+          [
+            { "id": "k3d_s4", "text": "Kamenec žádá, aby hostinský U Tří vran vydal seznam všech dopisů, které jeho vrány nesly.", "cut": true }
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lukovina_d3",
+    "kingdom": "k3",
+    "title": "Lukovinský posel",
+    "articles": [
+      {
+        "headline": "Kdo čte poštu?",
+        "quest": "crows",
+        "paragraphs": [
+          [
+            { "id": "l3_s1", "text": "Kamenečtí agenti v sedle čtou cizí dopisy – jak jinak by se dostali ke kancléřovu „dopisu“?", "cut": true, "topic": "crow_reader", "claim": "k2_spies" }
+          ]
+        ]
+      },
+      {
+        "headline": "Pohřešuje se dcera mostného",
+        "quest": "bridge",
+        "when": { "leftLounge": "hana" },
+        "paragraphs": [
+          [
+            { "id": "l3_s2", "text": "Hana, dcera mostného, se včera vydala k převozu. Domů nedorazila.", "cut": true }
+          ]
+        ]
+      },
+      {
+        "headline": "Dcera mostného mluví",
+        "quest": "bridge",
+        "when": { "invitedFromLounge": "hana" },
+        "paragraphs": [
+          [
+            { "id": "l3_s3", "text": "Hana prý ví, proč most spadl. Mluví jen s hostinským U Tří vran.", "cut": true }
           ]
         ]
       }

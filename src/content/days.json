@@ -1,0 +1,43 @@
+[
+  {
+    "day": 1, "tables": 1,
+    "scrolls": ["velesie_d1", "kamenec_d1", "lukovina_d1"],
+    "queue": [
+      { "guest": "ota", "knot": "day1" },
+      { "guest": "hana", "knot": "day1" },
+      { "guest": "vojtech", "knot": "day1" }
+    ],
+    "lounge": []
+  },
+  {
+    "day": 2, "tables": 2,
+    "scrolls": ["velesie_d2", "kamenec_d2", "lukovina_d2"],
+    "queue": [
+      { "guest": "bertold", "knot": "day2" },
+      { "guest": "mikulas", "knot": "day2" },
+      { "guest": "jitka", "knot": "day2" }
+    ],
+    "lounge": [
+      { "guest": "hana", "knot": "followup_day2", "when": { "inkVar": ["hana", "told_saw", true] } },
+      { "guest": "hana", "knot": "followup_day2_quiet" },
+      { "guest": "vojtech", "knot": "followup_day2_brawl", "when": { "all": [{ "roommates": ["ota", "vojtech"] }, { "inkVar": ["ota", "blames", "k1"] }] } },
+      { "guest": "vojtech", "knot": "followup_day2_room", "when": { "roommates": ["ota", "vojtech"] } },
+      { "guest": "ota", "knot": "followup_day2" }
+    ]
+  },
+  {
+    "day": 3, "tables": 2,
+    "scrolls": ["kamenec_d3", "lukovina_d3"],
+    "queue": [
+      { "guest": "ota", "knot": "day3", "when": { "not": { "outcome": ["ota", "kick", 1] } } },
+      { "guest": "sebor", "knot": "day3" }
+    ],
+    "lounge": [
+      { "guest": "jitka", "knot": "followup_day3_room", "when": { "roommates": ["jitka", "mikulas"] } },
+      { "guest": "jitka", "knot": "followup_day3" },
+      { "guest": "mikulas", "knot": "followup_day3" },
+      { "guest": "hana", "knot": "followup_day3" },
+      { "guest": "bertold", "knot": "followup_day3", "when": { "inkVar": ["bertold", "suspects_ferry", true] } }
+    ]
+  }
+]

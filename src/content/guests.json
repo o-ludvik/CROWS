@@ -1,7 +1,9 @@
 [
-  { "id": "mira",   "name": "Mira",   "faction": "k1", "portrait": "art/guest_mira.png",   "startAffinity": -2, "ink": "mira" },
-  { "id": "radek",  "name": "Radek",  "faction": "k1", "portrait": "art/guest_radek.png",  "startAffinity": 0,  "ink": "radek" },
-  { "id": "bohdan", "name": "Bohdan", "faction": "k2", "portrait": "art/guest_bohdan.png", "startAffinity": 1,  "ink": "bohdan" },
-  { "id": "vlasta", "name": "Vlasta", "faction": "k2", "portrait": "art/guest_vlasta.png", "startAffinity": -1, "ink": "vlasta" },
-  { "id": "eliska", "name": "Eliška", "faction": "k3", "portrait": "art/guest_eliska.png", "startAffinity": 2,  "ink": "eliska" }
+  { "id": "ota",     "name": "Ota",     "faction": "k2", "portrait": "art/guest_ota.png",     "icon": "art/icons/guest_ota.png",     "startAffinity": -1, "ink": "ota" },
+  { "id": "hana",    "name": "Hana",    "faction": "k3", "portrait": "art/guest_hana.png",    "icon": "art/icons/guest_hana.png",    "startAffinity": 0,  "ink": "hana" },
+  { "id": "vojtech", "name": "Vojtěch", "faction": "k1", "portrait": "art/guest_vojtech.png", "icon": "art/icons/guest_vojtech.png", "startAffinity": 0,  "ink": "vojtech" },
+  { "id": "bertold", "name": "Bertold", "faction": "k2", "portrait": "art/guest_bertold.png", "icon": "art/icons/guest_bertold.png", "startAffinity": -1, "ink": "bertold" },
+  { "id": "jitka",   "name": "Jitka",   "faction": "k3", "portrait": "art/guest_jitka.png",   "icon": "art/icons/guest_jitka.png",   "startAffinity": 1,  "ink": "jitka" },
+  { "id": "mikulas", "name": "Mikuláš", "faction": "k1", "portrait": "art/guest_mikulas.png", "icon": "art/icons/guest_mikulas.png", "startAffinity": 2,  "ink": "mikulas" },
+  { "id": "sebor",   "name": "Šebor",   "faction": "k3", "portrait": "art/guest_sebor.png",   "icon": "art/icons/guest_sebor.png",   "startAffinity": 1,  "ink": "sebor" }
 ]

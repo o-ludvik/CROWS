@@ -1,320 +1,175 @@
 [
-  {
-    "id": "intro",
-    "text": "Den v hospodě U Tří vran skončil. Za okny ležel průsmyk, kde našli mrtvého kurýra – a pečeť míru, zlomenou napůl."
-  },
-  {
-    "id": "mira_died",
-    "when": { "outcome": ["mira", "kick"] },
-    "text": "{name:mira} zůstala venku. Ráno ji našli u cesty – mrtvou. V Redanii to dají za vinu průsmyku i vám."
-  },
-  {
-    "id": "radek_died",
-    "when": { "outcome": ["radek", "kick"] },
-    "text": "{name:radek} se vydal v noci dál. Do Redanie už nedorazil; u potoka leželo jeho tělo a rozbitý vůz."
-  },
-  {
-    "id": "bohdan_died",
-    "when": { "outcome": ["bohdan", "kick"] },
-    "text": "{name:bohdan} spal pod širákem. Před svítáním ho zabili lapkové. Nilfgaard pošle otázky – ostré."
-  },
-  {
-    "id": "vlasta_died",
-    "when": { "outcome": ["vlasta", "kick"] },
-    "text": "{name:vlasta} zmizela v mlze. Polední stráž našla jen stopy a kapku krve. V Impériu šeptají, že hostinec lidi vyhazuje na smrt."
-  },
-  {
-    "id": "eliska_died",
-    "when": { "outcome": ["eliska", "kick"] },
-    "text": "{name:eliska} šla měřit za tmy. Spadla ze skály – nebo ji někdo strčil. Ferelden ztratil učenku a důvěru v průsmyk."
-  },
-  {
-    "id": "mira_bed",
-    "when": { "outcome": ["mira", "bed"] },
-    "text": "{name:mira} ráno odešla vděčná. V Redanii řekne, že U Tří vran ještě drží slovo."
-  },
-  {
-    "id": "eliska_bed",
-    "when": { "outcome": ["eliska", "bed"] },
-    "text": "{name:eliska} se vyspala a slíbila, že Kronice napíše o hospodě jen dobré – a o pečeti pravdu, až ji najde."
-  },
-  {
-    "id": "mira_bohdan_room",
-    "when": { "roommates": ["mira", "bohdan"] },
-    "text": "{name:mira} a {name:bohdan} spali v jednom pokoji. Do rána se z něj ozývala hádka o kurýrovi a černém plášti."
-  },
-  {
-    "id": "radek_vlasta_table",
-    "when": { "sameTable": ["radek", "vlasta"] },
-    "text": "U jednoho stolu se {name:radek} a {name:vlasta} šeptali o sudích s olejem, až zapomněli, z jakých království jsou."
-  },
-  {
-    "id": "mira_eliska_table",
-    "when": { "sameTable": ["mira", "eliska"] },
-    "text": "{name:mira} popsala {name:eliska} lucerny nad stezkou. Učenka si dělala poznámky ještě při pivu."
-  },
-  {
-    "id": "bohdan_eliska_table",
-    "when": { "sameTable": ["bohdan", "eliska"] },
-    "text": "{name:bohdan} a {name:eliska} se u stolu skoro nepohádali – ale mír mezi nimi nevydržel ani do zákusku."
-  },
-  {
-    "id": "mira_secret",
-    "when": { "inkVar": ["mira", "told_secret", true] },
-    "text": "Hostinský teď ví, že {name:mira} kurýra viděla. Ta znalost má cenu – a cenu i nebezpečí."
-  },
-  {
-    "id": "bohdan_accused",
-    "when": { "inkVar": ["bohdan", "accused_mira", true] },
-    "text": "{name:bohdan} u baru veřejně osočil Miru. Zvěst se rozběhne dřív než posel."
-  },
-  {
-    "id": "eliska_murder",
-    "when": { "inkVar": ["eliska", "believes_murder", true] },
-    "text": "{name:eliska} už nevěří na blesk. Ve Fereldenu budou psát o vraždě – ne o bouři."
-  },
-  {
-    "id": "vlasta_oil",
-    "when": { "inkVar": ["vlasta", "saw_oil", true] },
-    "text": "Díky {name:vlasta} víte o sudích s olejem u stezky. Kdo je tam nechal, zatím mlčí."
-  },
-  {
-    "id": "vlasta_no_show",
-    "when": { "all": [{ "not": { "present": "vlasta" } }, { "present": "bohdan" }] },
-    "text": "{name:bohdan} se celý večer ptal po jakési Vlastě. Nepřišla – a jemu to nebylo vhod."
-  },
-  {
-    "id": "mira_no_show",
-    "when": { "all": [{ "not": { "present": "mira" } }, { "present": "bohdan" }] },
-    "text": "{name:bohdan} hledal očima Miru z Redanie. Dnes nepřišla; ušetřil si hádku, ne podezření."
-  },
-  {
-    "id": "stress_high",
+  { "id": "d1_intro", "day": 1,
+    "text": "První den po pádu mostu přes Vranku. Hospoda U Tří vran měla jen jeden stůl – a u něj seděli lidé ze tří království, kteří se navzájem vinili ze smrti." },
+  { "id": "d1_table_calm", "day": 1,
+    "when": { "all": [{ "sameTable": ["ota", "vojtech"] }, { "inkVar": ["ota", "promised_calm", true] }] },
+    "text": "{name:ota} seděl naproti vorařovi z Velesie. Dvakrát se zvedl k pultu, jak jste mu nabídl, a dvakrát se vrátil klidnější." },
+  { "id": "d1_table_tense", "day": 1,
+    "when": { "all": [{ "sameTable": ["ota", "vojtech"] }, { "not": { "inkVar": ["ota", "promised_calm", true] } }] },
+    "text": "U jediného stolu seděl vozka z Kamence naproti vorařovi z Velesie. Celý večer nepromluvili. Jeden korbel praskl v ruce." },
+  { "id": "d1_vojtech_accused", "day": 1,
+    "when": { "inkVar": ["vojtech", "accused", true] },
+    "text": "{name:vojtech} odcházel od pultu rudý. Že ho obvinil i hostinský, se po vorech rozkřikne až do Velesie." },
+  { "id": "d1_saw", "day": 1,
+    "when": { "inkVar": ["hana", "told_saw", true] },
+    "text": "{name:hana} vám svěřila, co viděla u mostu: lano nařezané pilou. Teď to víte dva." },
+  { "id": "d1_brawl", "day": 1,
+    "when": { "all": [{ "roommates": ["ota", "vojtech"] }, { "inkVar": ["ota", "blames", "k1"] }] },
+    "text": "Z pokoje, kde spali {name:ota} a {name:vojtech}, se v noci ozývaly rány. Ráno chyběla jedna židle." },
+  { "id": "d1_flask", "day": 1,
+    "when": { "all": [{ "roommates": ["ota", "vojtech"] }, { "not": { "inkVar": ["ota", "blames", "k1"] } }] },
+    "text": "{name:ota} a {name:vojtech} spali v jednom pokoji. Nejdřív bylo slyšet vrčení, pak cinkání placatky." },
+  { "id": "d1_hana_ota_room", "day": 1,
+    "when": { "roommates": ["hana", "ota"] },
+    "text": "{name:hana} spala na pokoji s vozkou z Kamence. Celou noc ležela otočená ke zdi – on přece viní ze shnilých lan její rodinu." },
+
+  { "id": "d2_intro", "day": 2,
+    "text": "Druhý den. Hospoda má zase dva stoly – a sedlo dvakrát tolik řečí. Tentokrát nejen o mostě, ale i o vašich vránách." },
+  { "id": "d2_letter_genuine", "day": 2,
+    "when": { "usedClaim": ["letter", "genuine"] },
+    "text": "Kapitán Bertold odjíždí s jistotou, že {kingdom:k3} chce válku. Potvrdil mu ji hostinský – a vrána s jeho hlášením letí do Kamence ještě v noci." },
+  { "id": "d2_letter_forged", "day": 2,
+    "when": { "usedClaim": ["letter", "forged"] },
+    "text": "Bertold si u pultu vyslechl, že dopis je podvrh. Nevěří tomu – ale poprvé v hlášení napsal slovo „možná“." },
+  { "id": "d2_hana_invited", "day": 2,
+    "when": { "invitedFromLounge": "hana" },
+    "text": "{name:hana} vyšla z lounge k pultu a ukázala vám kus nařezaného lana. Kdo ji viděl mluvit s hostinským, si to zapamatoval." },
+  { "id": "d2_hana_left", "day": 2,
+    "when": { "leftLounge": "hana" },
+    "text": "{name:hana} na vás čekala v lounge celé dopoledne. Nikdo pro ni nepřišel. Odpoledne se vydala domů – přes převoz." },
+  { "id": "d2_vojtech_left", "day": 2,
+    "when": { "leftLounge": "vojtech" },
+    "text": "{name:vojtech} odplul bez rozloučení. Na stole v lounge nechal vyřezanou vránu se zlomeným křídlem." },
+  { "id": "d2_ota_left", "day": 2,
+    "when": { "leftLounge": "ota" },
+    "text": "{name:ota} odešel do rokle sám, bez lana a bez lucerny." },
+  { "id": "d2_ferry", "day": 2,
+    "when": { "inkVar": ["bertold", "suspects_ferry", true] },
+    "text": "Kapitán se večer ptal na cestu k převozu. Kolem půlnoci jeho kůň v maštali chyběl." },
+  { "id": "d2_kingdom_table", "day": 2,
+    "when": { "sameTable": ["bertold", "jitka"] },
+    "text": "Kapitán z Kamence a písařka z Lukoviny u jednoho stolu: dvě království, jeden dopis a ani slovo." },
+  { "id": "d2_wax_room", "day": 2,
+    "when": { "roommates": ["jitka", "mikulas"] },
+    "text": "{name:jitka} spala ve stejném pokoji jako kramář {name:mikulas}. Pod jejich dveřmi dlouho do noci svítila svíčka." },
+  { "id": "d2_bertold_kicked", "day": 2,
+    "when": { "outcome": ["bertold", "kick"] },
+    "text": "Kapitán kamenecké stráže vyhozený z hospody do tmy? V Kamenci to zapíšou do kroniky i do účtů." },
+
+  { "id": "d3_intro", "day": 3,
+    "text": "Třetí den. Převoz přes Vranku jezdí od rána do noci a převozník platí stříbrem, které mělo patřit horníkům." },
+  { "id": "d3_exposed", "day": 3,
+    "when": { "inkVar": ["sebor", "exposed", true] },
+    "text": "{name:sebor} u pultu přiznal, že most nařízl. Stříbro vrátil a kramáře Mikuláše prozradil hned k tomu." },
+  { "id": "d3_bribed", "day": 3,
+    "when": { "inkVar": ["sebor", "bribed", true] },
+    "text": "Pod pultem leží měšec kameneckého stříbra. {name:sebor} odcházel s úsměvem; vy jste ho neopětoval." },
+  { "id": "d3_mikulas_left", "day": 3,
+    "when": { "leftLounge": "mikulas" },
+    "text": "{name:mikulas} odešel z lounge, aniž by ho kdo zastavil. Na stole po něm zůstal kousek černého vosku." },
+  { "id": "d3_mikulas_confessed", "day": 3,
+    "when": { "inkVar": ["mikulas", "confessed", true] },
+    "text": "{name:mikulas} se přiznal, že četl a přepisoval vraní poštu. Vraník má od dnešního večera nový zámek." },
+  { "id": "d3_ota_reader", "day": 3,
+    "when": { "all": [{ "present": "ota" }, { "inkVar": ["ota", "blames_reader", "mikulas"] }] },
+    "text": "{name:ota} strávil večer hledáním kramáře. Ví, kdo prodal jeho cestu." },
+
+  { "id": "kick_ota", "when": { "outcome": ["ota", "kick"] },
+    "text": "{name:ota} nocoval v kůlně za hospodou. Ráno odešel, ani se neohlédl." },
+  { "id": "kick_hana", "when": { "outcome": ["hana", "kick"] },
+    "text": "{name:hana} spala pod širým nebem u brodu. Lukovinský posel to ráno nevynechá." },
+  { "id": "kick_vojtech", "when": { "outcome": ["vojtech", "kick"] },
+    "text": "{name:vojtech} spal na voru pod roklí. Ve Velesii se řekne, že hostinský vyhazuje voraře do mrazu." },
+  { "id": "kick_jitka", "when": { "outcome": ["jitka", "kick"] },
+    "text": "{name:jitka} strávila noc ve stáji. Její dopisy pro Kamenec zvlhly a rozpily se." },
+  { "id": "kick_mikulas", "when": { "outcome": ["mikulas", "kick"] },
+    "text": "{name:mikulas} se jen usmál a zmizel ve tmě. Ráno byl vraník otevřený." },
+  { "id": "kick_sebor", "when": { "outcome": ["sebor", "kick"] },
+    "text": "{name:sebor} odešel spát na svůj převoz. Celou noc tam svítila lucerna." },
+
+  { "id": "stress_high_d1",
+    "when": { "all": [{ "day": 1 }, { "meter": ["stress", ">=", 5] }] },
+    "text": "Hostinský usnul až nad ránem. Pád mostu, jediný stůl plný nepřátel – ruce se mu třásly ještě u zamčených dveří. Snad zítřek začne líp." },
+  { "id": "stress_high",
+    "when": { "all": [{ "not": { "day": 1 } }, { "meter": ["stress", ">=", 5] }] },
+    "text": "Hostinský ten den nesl víc, než unesl. Hosté to poznali: u baru stál člověk na pokraji." },
+  { "id": "stress_low",
+    "when": { "meter": ["stress", "<=", 0] },
+    "text": "Přes všechnu šeptandu zůstal hostinský klidný. Lidé si pamatovali spíš jeho rovný hlas než zprávy z hor." },
+  { "id": "stress_mid",
+    "when": { "all": [{ "not": { "meter": ["stress", ">=", 5] } }, { "not": { "meter": ["stress", "<=", 0] } }] },
+    "text": "Hostinského ten den nic nespálilo – ale ani neušetřilo. Obyčejný těžký den u Vraního sedla." },
+
+  { "id": "final_truth", "day": "final",
+    "when": { "inkVar": ["sebor", "exposed", true] },
+    "text": "Most přes Vranku nespadl kvůli válce, ale kvůli mýtu. Když to vyšlo najevo, tři království se na chvíli zastyděla – a začala stavět nový most. Společně. Kronikáři napíšou, že pravdu našel hostinský, který věřil nařezanému lanu víc než novinám." },
+  { "id": "final_bribe", "day": "final",
+    "when": { "all": [
+      { "inkVar": ["sebor", "bribed", true] },
+      { "not": { "any": [{ "meter": ["k1", "<=", -4] }, { "meter": ["k2", "<=", -4] }, { "meter": ["k3", "<=", -4] }] } }
+    ] },
+    "text": "Stříbro pod pultem nevychladlo ani do zimy. Šebor vozí lidi dál a vy mu naléváte zadarmo. Mír drží – ale pokaždé, když u Vranky zaskřípe lano, sáhnete si na měšec." },
+  { "id": "final_war", "day": "final",
+    "when": { "all": [
+      { "not": { "inkVar": ["sebor", "exposed", true] } },
+      { "any": [{ "meter": ["k1", "<=", -4] }, { "meter": ["k2", "<=", -4] }, { "meter": ["k3", "<=", -4] }] }
+    ] },
+    "text": "Do měsíce se sedlo zavřelo. Každé království vědělo, kdo shodil most – a každé to vědělo jinak. Vojska půjdou kolem hospody U Tří vran, protože jiná cesta přes hory není." },
+  { "id": "final_blame", "day": "final",
+    "when": { "all": [
+      { "not": { "inkVar": ["sebor", "exposed", true] } },
+      { "not": { "inkVar": ["sebor", "bribed", true] } },
+      { "not": { "any": [{ "meter": ["k1", "<=", -4] }, { "meter": ["k2", "<=", -4] }, { "meter": ["k3", "<=", -4] }] } },
+      { "any": [
+        { "usedClaim": ["bridge_cause", "k1_axe"] },
+        { "usedClaim": ["bridge_cause", "k2_blasting"] },
+        { "usedClaim": ["bridge_cause", "k3_rot"] }
+      ] }
+    ] },
+    "text": "Válka nezačala, ale vina zůstala viset ve vzduchu – a část z ní jste rozšířil vy. Pokaždé, když někdo u pultu cituje noviny, slyšíte v tom svůj hlas." },
+  { "id": "final_fog", "day": "final",
+    "when": { "all": [
+      { "not": { "inkVar": ["sebor", "exposed", true] } },
+      { "not": { "inkVar": ["sebor", "bribed", true] } },
+      { "not": { "any": [{ "meter": ["k1", "<=", -4] }, { "meter": ["k2", "<=", -4] }, { "meter": ["k3", "<=", -4] }] } },
+      { "not": { "any": [
+        { "usedClaim": ["bridge_cause", "k1_axe"] },
+        { "usedClaim": ["bridge_cause", "k2_blasting"] },
+        { "usedClaim": ["bridge_cause", "k3_rot"] }
+      ] } }
+    ] },
+    "text": "Proč spadl most, se nikdy nedozvěděl nikdo. Ani vy. Ale nikoho jste neobvinil a království to vědí. U Tří vran je pořád místo, kde se dá mluvit." },
+  { "id": "final_hana_lost", "day": "final",
+    "when": { "leftLounge": ["hana", 2] },
+    "text": "{name:hana} se nikdy nevrátila. U převozu prý našli jen její šátek. Kus nařezaného lana pod její postelí jste našel až na podzim." },
+  { "id": "final_hana_kicked", "day": "final",
+    "when": { "outcome": ["hana", "kick", 1] },
+    "text": "{name:hana} po noci u brodu onemocněla. Co viděla u mostu, už nikomu neřekla." },
+  { "id": "final_hana_safe", "day": "final",
+    "when": { "all": [{ "invitedFromLounge": ["hana", 2] }, { "inkVar": ["hana", "stands_with_you", true] }] },
+    "text": "{name:hana} zůstala v sedle. Na jaře bude u nového mostu vybírat mostné – a lana bude natírat dehtem každé jaro." },
+  { "id": "final_crows_clean", "day": "final",
+    "when": { "any": [{ "inkVar": ["mikulas", "confessed", true] }, { "usedClaim": ["crow_reader", "mikulas"] }] },
+    "text": "Vraní pošta je zase čistá. Kupci z celého sedla posílají dopisy přes vaši hospodu, protože víte, kdo je četl – a proč." },
+  { "id": "final_crows_dirty", "day": "final",
+    "when": { "all": [
+      { "not": { "inkVar": ["mikulas", "confessed", true] } },
+      { "not": { "usedClaim": ["crow_reader", "mikulas"] } }
+    ] },
+    "text": "Kdo četl vaši poštu, se nikdy nevyjasnilo. Ještě rok potom chodily dopisy s nalomenými pečetěmi." },
+  { "id": "final_mikulas_fled", "day": "final",
+    "when": { "all": [{ "leftLounge": ["mikulas", 3] }, { "not": { "inkVar": ["mikulas", "confessed", true] } }] },
+    "text": "{name:mikulas} se v sedle už neukázal. Říká se, že teď prodává černý vosk na jihu – a kupuje vrány." },
+  { "id": "final_crow_sold", "day": "final",
+    "when": { "inkVar": ["mikulas", "bought_crow", true] },
+    "text": "Vrána, kterou jste prodal kramáři, se po týdnu vrátila. Na noze měla dopis, který jste nepsal." },
+  { "id": "final_ota_gone", "day": "final",
+    "when": { "not": { "present": ["ota", 3] } },
+    "text": "{name:ota} se z rokle už nevrátil, aspoň ne k vám. Truhly bez stříbra našli až kamenečtí vojáci." },
+  { "id": "final_ota_friend", "day": "final",
+    "when": { "all": [{ "present": ["ota", 3] }, { "meter": ["ota", ">=", 3] }] },
+    "text": "{name:ota} od vás odjížděl jako přítel. Kdykoli pojede přes sedlo, zastaví se – a vždycky přiveze pytel soli." },
+  { "id": "final_stress", "day": "final",
     "when": { "meter": ["stress", ">=", 5] },
-    "text": "Hostinský usnul až nad ránem – ruce se mu třásly ještě u zamčených dveří. Hosté to poznali: u baru stál člověk na pokraji."
-  },
-  {
-    "id": "stress_low",
-    "when": { "meter": ["stress", "<=", -3] },
-    "text": "Přes všechnu šeptandu zůstal hostinský klidný. Ráno si lidé pamatovali víc jeho rovný hlas než zprávy o pečeti."
-  },
-  {
-    "id": "stress_mid",
-    "when": {
-      "all": [
-        { "not": { "meter": ["stress", ">=", 5] } },
-        { "not": { "meter": ["stress", "<=", -3] } }
-      ]
-    },
-    "text": "Stres dne hostinského nespálil – ale taky ho neuhlídal. Byl to obyčejný těžký den u průsmyku."
-  },
-  {
-    "id": "ending_war",
-    "when": {
-      "any": [
-        { "meter": ["k1", "<=", -4] },
-        { "meter": ["k2", "<=", -4] },
-        { "meter": ["k3", "<=", -4] },
-        {
-          "any": [
-            { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
-            { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-            { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-            { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-            { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-            { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-            { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-            { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-            { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-            { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
-          ]
-        }
-      ]
-    },
-    "text": "Do tří dnů se průsmyk zavře. Bubny v Redanii, Nilfgaardu i Fereldenu bijí stejně – do války. Hospoda U Tří vran stojí přesně uprostřed cesty, kudy půjdou vojska."
-  },
-  {
-    "id": "ending_war_stress",
-    "when": {
-      "all": [
-        { "meter": ["stress", ">=", 5] },
-        {
-          "any": [
-            { "meter": ["k1", "<=", -4] },
-            { "meter": ["k2", "<=", -4] },
-            { "meter": ["k3", "<=", -4] },
-            {
-              "any": [
-                { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
-                { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-                { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-                { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-                { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-                { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-                { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-                { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-                { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-                { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    "text": "A hostinský? Válka ho našla už rozbitého. Říká se, že první bubny slyšel dřív než ostatní – ve vlastní hlavě."
-  },
-  {
-    "id": "ending_peace",
-    "when": {
-      "all": [
-        { "not": { "meter": ["k1", "<=", -4] } },
-        { "not": { "meter": ["k2", "<=", -4] } },
-        { "not": { "meter": ["k3", "<=", -4] } },
-        {
-          "not": {
-            "any": [
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
-            ]
-          }
-        },
-        { "any": [{ "not": { "present": "mira" } }, { "not": { "outcome": ["mira", "kick"] } }] },
-        { "any": [{ "not": { "present": "radek" } }, { "not": { "outcome": ["radek", "kick"] } }] },
-        { "any": [{ "not": { "present": "bohdan" } }, { "not": { "outcome": ["bohdan", "kick"] } }] },
-        { "any": [{ "not": { "present": "vlasta" } }, { "not": { "outcome": ["vlasta", "kick"] } }] },
-        { "any": [{ "not": { "present": "eliska" } }, { "not": { "outcome": ["eliska", "kick"] } }] },
-        { "meter": ["k1", ">=", 0] },
-        { "meter": ["k2", ">=", 0] },
-        { "meter": ["k3", ">=", 0] }
-      ]
-    },
-    "text": "Pečeť se nenašla celá – ale království zatím nehýbou vojskem. O hospodě U Tří vran se mluví jako o mostu: kdo tudy projde, ještě věří, že mír vydrží."
-  },
-  {
-    "id": "ending_peace_calm",
-    "when": {
-      "all": [
-        { "meter": ["stress", "<=", -3] },
-        { "not": { "meter": ["k1", "<=", -4] } },
-        { "not": { "meter": ["k2", "<=", -4] } },
-        { "not": { "meter": ["k3", "<=", -4] } },
-        {
-          "not": {
-            "any": [
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
-            ]
-          }
-        },
-        { "any": [{ "not": { "present": "mira" } }, { "not": { "outcome": ["mira", "kick"] } }] },
-        { "any": [{ "not": { "present": "radek" } }, { "not": { "outcome": ["radek", "kick"] } }] },
-        { "any": [{ "not": { "present": "bohdan" } }, { "not": { "outcome": ["bohdan", "kick"] } }] },
-        { "any": [{ "not": { "present": "vlasta" } }, { "not": { "outcome": ["vlasta", "kick"] } }] },
-        { "any": [{ "not": { "present": "eliska" } }, { "not": { "outcome": ["eliska", "kick"] } }] },
-        { "meter": ["k1", ">=", 0] },
-        { "meter": ["k2", ">=", 0] },
-        { "meter": ["k3", ">=", 0] }
-      ]
-    },
-    "text": "A ten klid u baru? Lidé říkají, že právě on udržel průsmyk otevřený o den déle."
-  },
-  {
-    "id": "ending_shadow",
-    "when": {
-      "all": [
-        { "not": { "meter": ["k1", "<=", -4] } },
-        { "not": { "meter": ["k2", "<=", -4] } },
-        { "not": { "meter": ["k3", "<=", -4] } },
-        {
-          "not": {
-            "any": [
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
-            ]
-          }
-        },
-        {
-          "not": {
-            "all": [
-              { "any": [{ "not": { "present": "mira" } }, { "not": { "outcome": ["mira", "kick"] } }] },
-              { "any": [{ "not": { "present": "radek" } }, { "not": { "outcome": ["radek", "kick"] } }] },
-              { "any": [{ "not": { "present": "bohdan" } }, { "not": { "outcome": ["bohdan", "kick"] } }] },
-              { "any": [{ "not": { "present": "vlasta" } }, { "not": { "outcome": ["vlasta", "kick"] } }] },
-              { "any": [{ "not": { "present": "eliska" } }, { "not": { "outcome": ["eliska", "kick"] } }] },
-              { "meter": ["k1", ">=", 0] },
-              { "meter": ["k2", ">=", 0] },
-              { "meter": ["k3", ">=", 0] }
-            ]
-          }
-        }
-      ]
-    },
-    "text": "Válka ještě nezačala – ale šeptanda ano. Špehové si zapisují, koho jste hostili a koho ne. U Tří vran už nejste jen hostinský; jste součást hry o pečeť."
-  },
-  {
-    "id": "ending_shadow_stress",
-    "when": {
-      "all": [
-        { "meter": ["stress", ">=", 5] },
-        { "not": { "meter": ["k1", "<=", -4] } },
-        { "not": { "meter": ["k2", "<=", -4] } },
-        { "not": { "meter": ["k3", "<=", -4] } },
-        {
-          "not": {
-            "any": [
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["radek", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["mira", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["bohdan", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["radek", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["vlasta", "kick"] }] },
-              { "all": [{ "outcome": ["bohdan", "kick"] }, { "outcome": ["eliska", "kick"] }] },
-              { "all": [{ "outcome": ["vlasta", "kick"] }, { "outcome": ["eliska", "kick"] }] }
-            ]
-          }
-        },
-        {
-          "not": {
-            "all": [
-              { "any": [{ "not": { "present": "mira" } }, { "not": { "outcome": ["mira", "kick"] } }] },
-              { "any": [{ "not": { "present": "radek" } }, { "not": { "outcome": ["radek", "kick"] } }] },
-              { "any": [{ "not": { "present": "bohdan" } }, { "not": { "outcome": ["bohdan", "kick"] } }] },
-              { "any": [{ "not": { "present": "vlasta" } }, { "not": { "outcome": ["vlasta", "kick"] } }] },
-              { "any": [{ "not": { "present": "eliska" } }, { "not": { "outcome": ["eliska", "kick"] } }] },
-              { "meter": ["k1", ">=", 0] },
-              { "meter": ["k2", ">=", 0] },
-              { "meter": ["k3", ">=", 0] }
-            ]
-          }
-        }
-      ]
-    },
-    "text": "Špehové si všimli i vašich třesoucích se rukou. V hlášeních stojí: hostinský ví víc, než unese."
-  }
+    "text": "A hostinský? Tři dny ho stály víc než celá předchozí zima. Ještě dlouho se budil, když v noci zakrákala vrána." }
 ]

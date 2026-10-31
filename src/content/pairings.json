@@ -1,20 +1,19 @@
 {
   "pairs": [
-    { "guests": ["mira", "bohdan"], "effects": { "a": -3, "b": -3, "k1": -1, "k2": -1 } },
-    { "guests": ["mira", "eliska"], "effects": { "a": 2, "b": 2, "k3": 1 } },
-    { "guests": ["radek", "vlasta"], "effects": { "a": 2, "b": 2, "k1": 1, "k2": 1 } },
-    { "guests": ["mira", "radek"], "effects": { "a": 1, "b": 1, "k1": 1 } },
-    { "guests": ["bohdan", "vlasta"], "effects": { "a": 1, "b": -1, "k2": 1 } },
-    { "guests": ["bohdan", "eliska"], "effects": { "a": -2, "b": -1, "k2": -1, "k3": -1 } },
-    { "guests": ["radek", "bohdan"], "effects": { "a": -2, "b": -2, "k1": -1, "k2": -1 } },
-    { "guests": ["vlasta", "eliska"], "effects": { "a": 1, "b": 1 } },
-    { "guests": ["mira", "vlasta"], "effects": { "a": -1, "b": -1, "k1": -1 } },
-    { "guests": ["radek", "eliska"], "effects": { "a": 1, "b": 1, "k1": 1, "k3": 1 } }
+    { "guests": ["ota", "vojtech"],    "effects": { "a": -2, "b": -2, "k1": -1, "k2": -1 } },
+    { "guests": ["ota", "hana"],       "effects": { "a": -1, "b": -1 } },
+    { "guests": ["hana", "vojtech"],   "effects": { "a": 1, "b": 1 } },
+    { "guests": ["bertold", "jitka"],  "effects": { "a": -2, "b": -2, "k2": -1, "k3": -1 } },
+    { "guests": ["bertold", "hana"],   "effects": { "a": 1, "b": 1, "k2": 1 } },
+    { "guests": ["jitka", "mikulas"],  "effects": { "a": 1, "b": 1 } },
+    { "guests": ["hana", "sebor"],     "effects": { "a": -3, "b": -1 } },
+    { "guests": ["bertold", "sebor"],  "effects": { "a": -1, "b": -2 } },
+    { "guests": ["ota", "mikulas"],    "effects": { "a": -1, "b": 1 } }
   ],
   "factionFallback": {
-    "same":  { "a": 2,  "b": 2 },
-    "k1-k2": { "a": -2, "b": -2, "k1": -1, "k2": -1 },
-    "k1-k3": { "a": 1,  "b": 1 },
+    "same":  { "a": 1,  "b": 1 },
+    "k1-k2": { "a": -1, "b": -1 },
+    "k1-k3": { "a": 0,  "b": 0 },
     "k2-k3": { "a": -1, "b": -1, "k2": -1, "k3": -1 }
   }
 }
