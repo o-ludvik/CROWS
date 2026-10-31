@@ -420,8 +420,9 @@ export const actions = {
   start: () => fadeTo(() => { set(newGame()); morning(1) }),
   playAgain: () => fadeTo(() => { set(newGame()); morning(1) }),
   nextDay: () => fadeTo(() => morning(get().day + 1)),
-  openPub: () => fadeTo(next),
-  closePub: () => fadeTo(closeDay),
+  // Opening/closing the pub always returns to the main view (the door button is also visible from the corkboard).
+  openPub: () => { set({ view: 'main', corkPinFrom: null }); fadeTo(next) },
+  closePub: () => { set({ view: 'main', corkPinFrom: null }); fadeTo(closeDay) },
   choose(index: number, usedCutout?: UsedCutout) {
     const c = get().choices.find((ch) => ch.index === index)
     if (!story || !c) return

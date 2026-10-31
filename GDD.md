@@ -104,7 +104,7 @@ The strip has three positions (`view` in the store):
 | `main` | −960 | portrait + meters + chat | left edge → `cork`; right edge → `lounge` (with a red badge showing how many guests wait) |
 | `lounge` | −2880 | lounge | left edge → `main` |
 
-The chat panel has extra right padding so the lounge arrow never covers bartender lines. Inviting a guest, closing a conversation and the start of each morning switch back to `main`. These coordinates are a starting point and can be tuned once real art exists. The trashcan and minimap are fixed and always render above desk items.
+The chat panel has extra right padding so the lounge arrow never covers bartender lines. An arrow on the left edge always points left and one on the right edge always points right (the arrow art points right and is mirrored on the left edge). "Otevřít hospodu", "Zavřít hospodu", inviting a guest, closing a conversation and the start of each morning switch back to `main`. These coordinates are a starting point and can be tuned once real art exists. The trashcan and minimap are fixed and always render above desk items.
 
 ---
 

@@ -56,12 +56,12 @@ export function PubScreen() {
         </>
       )}
       {view === 'cork' && (
-        <button type="button" className="side-arrow right flip" title={t('corkClose')} onClick={() => actions.setView('main')}>
+        <button type="button" className="side-arrow right" title={t('corkClose')} onClick={() => actions.setView('main')}>
           <img src="art/cork_arrow.png" alt="" draggable={false} />
         </button>
       )}
       {view === 'lounge' && (
-        <button type="button" className="side-arrow left flip" title={t('loungeBack')} onClick={() => actions.setView('main')}>
+        <button type="button" className="side-arrow left" title={t('loungeBack')} onClick={() => actions.setView('main')}>
           <img src="art/lounge_arrow.png" alt="" draggable={false} />
         </button>
       )}
