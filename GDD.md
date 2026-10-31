@@ -224,7 +224,7 @@ In Ink a slot is a group of choices tagged with the same topic:
 
 The engine does not render slot choices as buttons; it shows one bubble per topic (hint "Přetáhněte sem výstřižek, nebo klikněte").
 
-**Two ways to fill a slot.** Drag a cutout from the desk onto the bubble, or **click the bubble**: a modal opens (same parchment overlay as the reader) with the topic as its heading, listing every cutout the player has on this topic, from the desk and the corkboard, with its colour, icons and source tooltip. Clicking a cutout in the modal puts it into the slot exactly like a drop, and the modal closes. A ✕ button in the top-right corner (or a click outside) closes it without choosing. With no cutout on the topic the modal says "K tomuhle tématu nemáte na stole ani na nástěnce žádný výstřižek." The modal filters by topic only, not by claim, so a listed cutout can still be rejected by a slot without `*`.
+**Two ways to fill a slot.** Drag a cutout from the desk onto the bubble, or **click the bubble**: a modal opens (same parchment overlay as the reader) with the topic as its heading, listing every cutout from the desk and the corkboard that this slot would accept (same matching as a drop: right topic and a matching claim or a `*` option), with its colour, icons and source tooltip. Clicking a cutout in the modal puts it into the slot exactly like a drop, and the modal closes. A ✕ button in the top-right corner (or a click outside) closes it without choosing. With no acceptable cutout the modal says "Na stole ani na nástěnce nemáte žádný výstřižek, který by tu sedl." Rejection can therefore only happen by dragging.
 
 When a cutout is dropped on the bubble (or picked in the modal):
 
@@ -235,7 +235,7 @@ When a cutout is dropped on the bubble (or picked in the modal):
 
 Effects (affinity to the kingdom whose version is spread, stress, flags such as `~ blames = "k1"`) live in the Ink branch as usual (`#aff`, `#stress`). Several sources can share a topic with different claims; the placeholder story has five claims for `bridge_cause` from three newspapers and two guests (section 17).
 
-A slot stands next to normal choices. **Authoring rule:** every choice point must also offer at least one normal (non-slot) choice, because the player may have no fitting cutout. `npm run check` fails if a choice point consists only of slots. The bubble shows only its topic; the click-to-pick modal narrows the choice to cutouts on that topic but never says which claim the guest reacts to.
+A slot stands next to normal choices. **Authoring rule:** every choice point must also offer at least one normal (non-slot) choice, because the player may have no fitting cutout. `npm run check` fails if a choice point consists only of slots. The bubble shows only its topic; the click-to-pick modal lists only cutouts the guest accepts, which reveals which claims the slot reacts to (accepted as a deliberate exception, section 18).
 
 ---
 
@@ -587,7 +587,7 @@ All fixed UI text, so wording can be changed without touching code (excerpt; see
   "sourceConversation": "Zdroj: Rozhovor – {name}",
   "sourceQuest": "Linka: {quest}",
   "slotPlaceholder": "Přetáhněte sem výstřižek, nebo klikněte",
-  "slotPickerEmpty": "K tomuhle tématu nemáte na stole ani na nástěnce žádný výstřižek.",
+  "slotPickerEmpty": "Na stole ani na nástěnce nemáte žádný výstřižek, který by tu sedl.",
   "slotRejected": "Tohle sem nepatří.",
   "loungeTitle": "Lounge",
   "loungeBack": "Zpět k pultu",
@@ -789,7 +789,7 @@ The build ships a three-day placeholder story, clearly marked `PLACEHOLDER STORY
 
 ## 18. Out of scope for the demo
 
-Sound and music; saving and loading (also between sessions); more than three days; character movement or animation beyond the allowed fades/slides; consequences other than meter changes, summary text, newspaper articles and which guests/follow-ups appear; consuming cutouts; hint or glow systems that point at relevant cutouts (exception: the slot's click-to-pick modal lists cutouts on the slot's topic, by request; it never says which claim fits); meter effects from roommates; the corkboard affecting gameplay; rooms other than the lounge; talking to guests directly in the lounge (only inviting them to the bar); touch and mobile support; languages other than Czech; telemetry or choice logging for export.
+Sound and music; saving and loading (also between sessions); more than three days; character movement or animation beyond the allowed fades/slides; consequences other than meter changes, summary text, newspaper articles and which guests/follow-ups appear; consuming cutouts; hint or glow systems that point at relevant cutouts (exception, by request: the slot's click-to-pick modal lists only the cutouts the slot accepts); meter effects from roommates; the corkboard affecting gameplay; rooms other than the lounge; talking to guests directly in the lounge (only inviting them to the bar); touch and mobile support; languages other than Czech; telemetry or choice logging for export.
 
 ---
 
@@ -815,7 +815,7 @@ Sound and music; saving and loading (also between sessions); more than three day
 - [x] An invited guest cuts in; the paused conversation resumes after their seating with the same log and state.
 - [x] Uninvited lounge guests leave on "Zavřít hospodu" and are not on the night screen.
 - [x] The slot accepts a cutout with the right topic, picks the choice by claim (or `*`), rejects others; the cutout is not consumed.
-- [x] Clicking the slot opens a modal with the cutouts on its topic (desk + corkboard); clicking one fills the slot and closes the modal; ✕ closes it.
+- [x] Clicking the slot opens a modal with the cutouts it accepts (desk + corkboard); clicking one fills the slot and closes the modal; ✕ closes it.
 - [x] The used claim is in the event log and can be used in summary / article conditions.
 - [x] Corkboard slides open/closed; items drag between desk and board; pins and three string colours work; layout resets on replay.
 - [x] Night dropdowns prevent double-booked beds; "Hotovo" is disabled until all guests have an outcome; night effects (incl. per-day overrides) apply.
@@ -847,7 +847,7 @@ Design questions for the team:
 - Tables per day (1 on day 1, 2 later); the locked table is shown faded with "zatím nemáte".
 - Colour coding: kingdom `color`/`icon`, `quests.json`, quest > kingdom rule, icons on scrolls/cutouts/slot tags; conversation cutouts carry guest + kingdom (`?`) icons. Kingdom colour on conversation cutouts only after the faction is revealed.
 - Lounge (strip position 3, arrows, badge), inviting with pause/resume of the current conversation, departures on closing.
-- Cutout reply slots: `#slot:<topic>:<claim>` choice tags (inside the brackets), drag or click-to-pick modal (cutouts on the topic from desk + corkboard), `*` fallback, rejection, slot tag on the bartender bubble, `usedClaims`, `topics.json` for bubble labels. Cutouts now carry topic/claim/quest. Authoring rule enforced by `npm run check`: every choice point needs a non-slot option.
+- Cutout reply slots: `#slot:<topic>:<claim>` choice tags (inside the brackets), drag or click-to-pick modal (acceptable cutouts from desk + corkboard), `*` fallback, rejection, slot tag on the bartender bubble, `usedClaims`, `topics.json` for bubble labels. Cutouts now carry topic/claim/quest. Authoring rule enforced by `npm run check`: every choice point needs a non-slot option.
 - Persistent Ink: one story state per guest across visits, one knot per visit; `VAR day` synced; `aff_<guestId>` synced for every guest met; snapshot per guest kept across days.
 - Conditions: new `day`, `leftLounge`, `invitedFromLounge`, `usedClaim`; optional day parameter on `present`, `outcome`, `roommates`, `sameTable`, `leftLounge`, `invitedFromLounge`; `inkVar` no longer requires the guest to be present today. The same conditions drive summary blocks, lounge/queue `when` and newspaper article `when` (new: newspapers react to earlier days).
 - `summary.json` blocks have `day` (`1`–`3` or `"final"`); `night.json` supports `day<N>` overrides.

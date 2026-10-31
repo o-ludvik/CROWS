@@ -1,11 +1,12 @@
 import { t, topics } from '../content'
+import { pickSlot } from '../engine/slots'
 import { actions, useGame, type CutoutItem } from '../store/gameStore'
 import { Icons, cutoutLook, cutoutTitle, toneStyle } from './IconBadge'
 
-/** Modal opened by clicking a slot bubble: the player's cutouts on this topic (desk + corkboard); a click puts one in. */
+/** Modal opened by clicking a slot bubble: the player's cutouts (desk + corkboard) the guest would accept; a click puts one in. */
 export function SlotPicker({ topic }: { topic: string }) {
   const s = useGame()
-  const fitting = s.deskItems.filter((i): i is CutoutItem => i.kind === 'cutout' && i.topic === topic)
+  const fitting = s.deskItems.filter((i): i is CutoutItem => i.kind === 'cutout' && !!pickSlot(s.choices, topic, i))
   const close = () => actions.openSlotPicker(null)
   return (
     <div className="backdrop" onClick={close}>
