@@ -1,4 +1,4 @@
-// Condition evaluation (GDD 14.7). Pure: no store or content imports, so the node checks can run it.
+// Condition evaluation. Pure: no store or content imports, so the node checks can run it.
 
 export type NightOutcome = 'r1a' | 'r1b' | 'r2a' | 'r2b' | 'kick'
 type Op = '<' | '<=' | '==' | '>=' | '>'
@@ -7,7 +7,6 @@ type GuestRef = string | [string, number]
 
 export type Condition =
   | { present: GuestRef }
-  | { leftLounge: GuestRef }
   | { invitedFromLounge: GuestRef }
   | { outcome: [string, 'kick' | 'bed'] | [string, 'kick' | 'bed', number] }
   | { roommates: [string, string] | [string, string, number] }
@@ -26,7 +25,6 @@ export interface DayRecord {
   seats: (string | null)[]
   night: Record<string, NightOutcome | null>
   invited: string[]
-  left: string[]
 }
 
 export interface Ctx {
@@ -52,7 +50,6 @@ export function evaluate(c: Condition, r: Ctx): boolean {
   if ('not' in c) return !evaluate(c.not, r)
   if ('day' in c) return r.day === c.day
   if ('present' in c) { const [id, d] = ref(c.present); return !!d?.present.includes(id) }
-  if ('leftLounge' in c) { const [id, d] = ref(c.leftLounge); return !!d?.left.includes(id) }
   if ('invitedFromLounge' in c) { const [id, d] = ref(c.invitedFromLounge); return !!d?.invited.includes(id) }
   if ('outcome' in c) {
     const [id, want, day] = c.outcome

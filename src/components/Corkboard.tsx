@@ -4,7 +4,7 @@ import {
   CORK, DESK, TOP_H, actions, useGame,
   type CorkColor, type CorkString, type DeskItem,
 } from '../store/gameStore'
-import { ItemFace, cutoutTitle, itemLook, toneStyle } from './IconBadge'
+import { ItemFace, itemLook, itemTitle, toneStyle } from './IconBadge'
 import { getScale } from './Stage'
 import { stagePoint } from './stageCoords'
 
@@ -83,7 +83,7 @@ function CorkItem({ item }: { item: DeskItem }) {
     <div
       className={`desk-item cork-item ${item.kind}${look.tone ? ' toned' : ''}${ghosting ? ' ghosting' : ''}`}
       style={{ left: item.x, top: item.y, zIndex: item.z, ...toneStyle(look.tone) }}
-      title={item.kind === 'cutout' ? cutoutTitle(item, s) : undefined}
+      title={itemTitle(item, s)}
       onPointerDown={down}
       onPointerMove={move}
       onPointerUp={up}

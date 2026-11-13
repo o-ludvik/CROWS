@@ -1,0 +1,6 @@
+[
+  { "id": "gold_pouch",   "name": "Měšec varhořských zlaťáků", "image": "art/items/gold_pouch.png" },
+  { "id": "havel_flask",  "name": "Havlova placatka – pro kuráž", "image": "art/items/havel_flask.png" },
+  { "id": "spear_tip",    "name": "Hrot kopí z tábora v údolí", "image": "art/items/spear_tip.png" },
+  { "id": "samael_ring",  "name": "Pečetní prsten pravenské královny", "image": "art/items/samael_ring.png" }
+]

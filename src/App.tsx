@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { t } from './content'
 import { Stage } from './components/Stage'
 import { DebugPanel } from './components/DebugPanel'
+import { Menus } from './components/Menus'
 import { TitleScreen } from './screens/TitleScreen'
 import { PubScreen } from './screens/PubScreen'
 import { NightScreen } from './screens/NightScreen'
@@ -30,6 +31,8 @@ export default function App() {
       {(phase === 'desk' || phase === 'conversation' || phase === 'seating' || phase === 'dayEnd') && <PubScreen />}
       {phase === 'night' && <NightScreen />}
       {phase === 'summary' && <SummaryScreen />}
+      {phase !== 'title' && <button type="button" className="btn menu-button" onClick={() => actions.openOverlay('menu')}>{t('menu')}</button>}
+      <Menus />
       {!debugOpen && <div className="debug-hint">{t('debugHint')}</div>}
       <div className={`fade ${fading ? 'on' : ''}`} />
       {debugOpen && <DebugPanel />}

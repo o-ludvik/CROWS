@@ -1,16 +1,34 @@
 import { useEffect, useRef } from 'react'
-import { questById, t, topics } from '../content'
+import { t, topics } from '../content'
 import { slotTopics } from '../engine/slots'
-import { actions, currentGuestId, guestName, useGame } from '../store/gameStore'
-import { CutoutTag, toneStyle } from './IconBadge'
+import { actions, currentGuestId, guestName, useGame, type ChatLine } from '../store/gameStore'
+import { CutoutTag } from './IconBadge'
 
-/** Empty bubble a cutout is dropped into (GDD 7.5). The desk drag finds it via data-slot; a click opens the picker. */
+/** Empty topic bubble a cutout is dropped into. The desk drag finds it via data-slot; a click opens the picker. */
 function CutoutSlot({ topic }: { topic: string }) {
   const rejected = useGame((s) => s.slotRejected === topic)
   return (
     <div className={`cutout-slot ${rejected ? 'rejected' : ''}`} data-slot={topic} onClick={() => actions.openSlotPicker(topic)}>
       <div className="slot-topic">{topics[topic]}</div>
       <div className="slot-hint">{rejected ? t('slotRejected') : t('slotPlaceholder')}</div>
+    </div>
+  )
+}
+
+/** One chat line; cuttable guest lines become cutouts on click. Shared by the chat and the character log. */
+export function ChatLineView({ line, guestId }: { line: ChatLine; guestId: string }) {
+  const s = useGame()
+  return (
+    <div className={`line ${line.speaker}`}>
+      <div className="label">{line.speaker === 'bartender' ? t('bartenderLabel') : guestName(guestId, s)}</div>
+      <div className="bubble">
+        {line.cuttable ? (
+          <span className="cut" onClick={() => actions.addCutout(line.text, { type: 'conversation', guestId }, line.meta)}>{line.text}</span>
+        ) : (
+          <span>{line.text}</span>
+        )}
+      </div>
+      {line.usedCutout && <CutoutTag used={line.usedCutout} />}
     </div>
   )
 }
@@ -26,27 +44,7 @@ export function ChatPanel() {
   const id = currentGuestId()
   return (
     <div className="chat">
-      {s.chatLog.map((line, i) => {
-        const tone = questById(line.meta?.quest)?.color
-        return (
-          <div key={i} className={`line ${line.speaker}`}>
-            <div className="label">{line.speaker === 'bartender' ? t('bartenderLabel') : guestName(id, s)}</div>
-            <div className={`bubble ${tone ? 'toned' : ''}`} style={toneStyle(tone)}>
-              {line.cuttable ? (
-                <span className="cut" onClick={() => actions.addCutout(line.text, { type: 'conversation', guestId: id }, line.meta)}>{line.text}</span>
-              ) : (
-                <span>{line.text}</span>
-              )}
-              {line.stressDelta != null && line.stressDelta !== 0 && (
-                <span className={`stress-badge ${line.stressDelta > 0 ? 'up' : 'down'}`}>
-                  {line.stressDelta > 0 ? '+' : ''}{line.stressDelta}
-                </span>
-              )}
-            </div>
-            {line.usedCutout && <CutoutTag used={line.usedCutout} />}
-          </div>
-        )
-      })}
+      {s.chatLog.map((line, i) => <ChatLineView key={i} line={line} guestId={id} />)}
       <div className="choices" ref={bottom}>
         {slotTopics(s.choices).map((topic) => <CutoutSlot key={topic} topic={topic} />)}
         {s.choices.filter((c) => !c.slot).map((c) => (

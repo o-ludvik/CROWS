@@ -1,5 +1,4 @@
 import { guestById, t, type StringKey } from '../content'
-import { MetersPanel } from '../components/MetersPanel'
 import { actions, guestFaction, guestName, useGame, type NightOutcome } from '../store/gameStore'
 
 const OPTIONS: [NightOutcome, StringKey][] = [['r1a', 'bedR1A'], ['r1b', 'bedR1B'], ['r2a', 'bedR2A'], ['r2b', 'bedR2B'], ['kick', 'kick']]
@@ -34,7 +33,6 @@ export function NightScreen() {
         })}
         <button className="btn" disabled={!allSet} onClick={actions.finishNight}>{t('done')}</button>
       </div>
-      <div className="side-meters"><MetersPanel /></div>
     </div>
   )
 }

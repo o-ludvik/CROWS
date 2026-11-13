@@ -1,8 +1,9 @@
 // Content check (part of `npm run check`):
 // 1. validateContent() – the same validation the game runs at start-up;
 // 2. every .ink compiles and matches its committed .json;
-// 3. every knot from days.json is walked through every branch: no choice point may consist only of slots;
-// 4. random full 3-day playthroughs (random choices, slots, seats, beds, lounge invites) must never get stuck,
+// 3. every knot from days.json is walked through every branch: no choice point may consist only of slots,
+//    and every slot topic has a `*` option (a clipping on the right topic is never rejected);
+// 4. random full 3-day playthroughs (random choices, slots, seats, beds, lounge invites; uninvited lounge guests come last) must never get stuck,
 //    and each run's final summary must pick exactly one ending.
 import { readFileSync, readdirSync } from 'node:fs'
 import { Compiler } from 'inkjs/full'
@@ -11,7 +12,7 @@ import { validateContent } from '../src/engine/days.ts'
 import { selectLounge, selectQueue } from '../src/engine/days.ts'
 import { buildSummary, type Ctx, type DayRecord, type NightOutcome } from '../src/engine/summary.ts'
 import { parseChoices } from '../src/engine/slots.ts'
-import type { DayDef, Guest, Kingdom, Night, Pairings, Quest, Scroll, SummaryBlock } from '../src/content/index.ts'
+import type { Chronicle, DayDef, Guest, Item, Kingdom, Night, Pairings, Scroll, SummaryBlock } from '../src/content/index.ts'
 
 const dir = new URL('../src/content/', import.meta.url)
 const load = <T,>(f: string): T => JSON.parse(readFileSync(new URL(f, dir), 'utf8'))
@@ -41,7 +42,7 @@ for (const f of readdirSync(new URL('ink/', dir)).filter((x) => x.endsWith('.ink
 
 // 1. validation
 for (const p of validateContent({
-  kingdoms, guests, scrolls: load<Scroll[]>('scrolls.json'), quests: load<Quest[]>('quests.json'),
+  kingdoms, guests, scrolls: load<Scroll[]>('scrolls.json'), items: load<Item[]>('items.json'), chronicle: load<Chronicle>('chronicle.json'),
   topics: load<Record<string, string>>('topics.json'), days, summary, night, pairings: load<Pairings>('pairings.json'), ink,
 })) fail(p)
 
@@ -64,6 +65,7 @@ for (const d of days) {
         if (!choices.length) { paths++; return }
         if (depth > 30) return fail(`${v.guest}:${v.knot} looks endless`)
         if (choices.every((c) => c.slot)) fail(`${v.guest}:${v.knot} has a choice point with only slot options (${choices.map((c) => c.text).join(' | ')})`)
+        for (const c of choices) if (c.slot && !choices.some((o) => o.slot?.topic === c.slot!.topic && o.slot.claim === '*')) fail(`${v.guest}:${v.knot} slot "${c.slot.topic}" has no * option`)
         const here = story.state.toJson()
         for (const c of choices) {
           story.state.LoadJson(here)
@@ -75,7 +77,7 @@ for (const d of days) {
     }
   }
 }
-// First visit of every guest must reveal the name in its first line (GDD 14.4 convention).
+// First visit of every guest must reveal the name in its first line (Ink convention, CLAUDE.md).
 const firstKnot = new Map<string, string>()
 for (const d of days) for (const v of d.queue) if (!firstKnot.has(v.guest)) firstKnot.set(v.guest, v.knot)
 for (const [id, knot] of firstKnot) {
@@ -87,7 +89,7 @@ for (const [id, knot] of firstKnot) {
 
 // 4. random playthroughs with a minimal copy of the store's day loop
 const BEDS: NightOutcome[] = ['r1a', 'r1b', 'r2a', 'r2b']
-const ENDINGS = ['final_truth', 'final_bribe', 'final_war', 'final_blame', 'final_fog']
+const ENDINGS = load<Chronicle>('chronicle.json').endings.map((e) => e.block)
 const seen = { knots: new Set<string>(), blocks: new Set<string>(), claims: new Set<string>() }
 let rnd = 12345
 const random = () => ((rnd = (rnd * 1103515245 + 12345) % 2 ** 31) / 2 ** 31)
@@ -106,14 +108,15 @@ function playthrough() {
     meters.stress = 0
     const queue = selectQueue(def, ctx(def.day - 1), random)
     const lounge = selectLounge(def, ctx(def.day - 1))
-    const rec: DayRecord = { present: [], seats: Array(8).fill(null), night: {}, invited: [], left: [] }
+    const rec: DayRecord = { present: [], seats: Array(8).fill(null), night: {}, invited: [] }
     history[def.day] = rec
-    // Random subset of the lounge gets invited, at a random point in the queue.
-    const invites = lounge.filter(() => random() < 0.6).map((v) => ({ v, at: Math.floor(random() * (queue.length + 1)) }))
+    // Random subset of the lounge gets invited at a random point in the queue; the rest come on their own at the end.
+    const invites = lounge.filter(() => random() < 0.6).map((v) => ({ v, at: Math.floor(random() * queue.length) }))
+    const invited = new Set(invites.map((x) => x.v))
     const order = queue.flatMap((v, i) => [...invites.filter((x) => x.at === i).map((x) => x.v), v])
-      .concat(invites.filter((x) => x.at === queue.length).map((x) => x.v))
+      .concat(lounge.filter((v) => !invited.has(v)))
     for (const v of order) {
-      if (lounge.includes(v)) rec.invited.push(v.guest)
+      if (invited.has(v)) rec.invited.push(v.guest)
       rec.present.push(v.guest)
       if (!(v.guest in meters)) meters[v.guest] = guest(v.guest).startAffinity
       seen.knots.add(`${v.guest}:${v.knot}`)
@@ -153,7 +156,6 @@ function playthrough() {
       if (!free.length) throw new Error(`day ${def.day}: no free seat for ${v.guest}`)
       rec.seats[pick(free)] = v.guest
     }
-    rec.left = lounge.filter((v) => !rec.invited.includes(v.guest)).map((v) => v.guest)
     const beds = [...BEDS].sort(() => random() - 0.5)
     for (const id of rec.present) rec.night[id] = random() < 0.25 ? 'kick' : (beds.pop() ?? 'kick')
     const paragraphs = buildSummary(summary, ctx(def.day), (x) => x)
@@ -177,7 +179,7 @@ const neverFired = summary.filter((b) => !seen.blocks.has(b.id)).map((b) => b.id
 if (neverFired.length) fail(`summary blocks that never fired in ${RUNS} runs: ${neverFired.join(', ')}`)
 
 if (failures.length) {
-  console.error(failures.map((f) => `FAIL ${f}`).join('\n'))
+  console.error([...new Set(failures)].map((f) => `FAIL ${f}`).join("\n"))
   process.exit(1)
 }
 console.log(`check-content: ${Object.keys(ink).length} stories, ${paths} branch paths, ${RUNS} playthroughs, ${seen.claims.size} slot claims, all summary blocks reached`)

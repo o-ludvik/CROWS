@@ -1,5 +1,4 @@
 import { guestById, kingdomById, kingdoms, summaryBlocks, t } from '../content'
-import { MetersPanel } from '../components/MetersPanel'
 import { buildSummary } from '../engine/summary'
 import { LAST_DAY, actions, conditionCtx, useGame } from '../store/gameStore'
 
@@ -23,7 +22,6 @@ export function SummaryScreen() {
           ? <button className="btn" onClick={actions.playAgain}>{t('playAgain')}</button>
           : <button className="btn" onClick={actions.nextDay}>{t('nextDay')}</button>}
       </div>
-      <div className="side-meters"><MetersPanel /></div>
     </div>
   )
 }

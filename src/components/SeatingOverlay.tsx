@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { guestById, t } from '../content'
-import { MetersPanel } from './MetersPanel'
+import { CloseX } from './IconBadge'
 import { Tables } from './Tables'
 import { actions, currentGuestId, guestName, useGame } from '../store/gameStore'
 
@@ -16,7 +16,7 @@ export function SeatingOverlay() {
         <div>{guestName(id, s)}</div>
       </div>
       <Tables size="large" selected={selected} onPick={setSelected} />
-      <div className="side-meters"><MetersPanel /></div>
+      <CloseX onClick={actions.closeSeating} />
       <button className="btn confirm" disabled={selected === null} onClick={() => selected !== null && actions.seat(selected)}>
         {t('seatConfirm')}
       </button>

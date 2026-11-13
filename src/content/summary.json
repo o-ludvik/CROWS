@@ -1,175 +1,552 @@
 [
-  { "id": "d1_intro", "day": 1,
-    "text": "První den po pádu mostu přes Vranku. Hospoda U Tří vran měla jen jeden stůl – a u něj seděli lidé ze tří království, kteří se navzájem vinili ze smrti." },
-  { "id": "d1_table_calm", "day": 1,
-    "when": { "all": [{ "sameTable": ["ota", "vojtech"] }, { "inkVar": ["ota", "promised_calm", true] }] },
-    "text": "{name:ota} seděl naproti vorařovi z Velesie. Dvakrát se zvedl k pultu, jak jste mu nabídl, a dvakrát se vrátil klidnější." },
-  { "id": "d1_table_tense", "day": 1,
-    "when": { "all": [{ "sameTable": ["ota", "vojtech"] }, { "not": { "inkVar": ["ota", "promised_calm", true] } }] },
-    "text": "U jediného stolu seděl vozka z Kamence naproti vorařovi z Velesie. Celý večer nepromluvili. Jeden korbel praskl v ruce." },
-  { "id": "d1_vojtech_accused", "day": 1,
-    "when": { "inkVar": ["vojtech", "accused", true] },
-    "text": "{name:vojtech} odcházel od pultu rudý. Že ho obvinil i hostinský, se po vorech rozkřikne až do Velesie." },
-  { "id": "d1_saw", "day": 1,
-    "when": { "inkVar": ["hana", "told_saw", true] },
-    "text": "{name:hana} vám svěřila, co viděla u mostu: lano nařezané pilou. Teď to víte dva." },
-  { "id": "d1_brawl", "day": 1,
-    "when": { "all": [{ "roommates": ["ota", "vojtech"] }, { "inkVar": ["ota", "blames", "k1"] }] },
-    "text": "Z pokoje, kde spali {name:ota} a {name:vojtech}, se v noci ozývaly rány. Ráno chyběla jedna židle." },
-  { "id": "d1_flask", "day": 1,
-    "when": { "all": [{ "roommates": ["ota", "vojtech"] }, { "not": { "inkVar": ["ota", "blames", "k1"] } }] },
-    "text": "{name:ota} a {name:vojtech} spali v jednom pokoji. Nejdřív bylo slyšet vrčení, pak cinkání placatky." },
-  { "id": "d1_hana_ota_room", "day": 1,
-    "when": { "roommates": ["hana", "ota"] },
-    "text": "{name:hana} spala na pokoji s vozkou z Kamence. Celou noc ležela otočená ke zdi – on přece viní ze shnilých lan její rodinu." },
-
-  { "id": "d2_intro", "day": 2,
-    "text": "Druhý den. Hospoda má zase dva stoly – a sedlo dvakrát tolik řečí. Tentokrát nejen o mostě, ale i o vašich vránách." },
-  { "id": "d2_letter_genuine", "day": 2,
-    "when": { "usedClaim": ["letter", "genuine"] },
-    "text": "Kapitán Bertold odjíždí s jistotou, že {kingdom:k3} chce válku. Potvrdil mu ji hostinský – a vrána s jeho hlášením letí do Kamence ještě v noci." },
-  { "id": "d2_letter_forged", "day": 2,
-    "when": { "usedClaim": ["letter", "forged"] },
-    "text": "Bertold si u pultu vyslechl, že dopis je podvrh. Nevěří tomu – ale poprvé v hlášení napsal slovo „možná“." },
-  { "id": "d2_hana_invited", "day": 2,
-    "when": { "invitedFromLounge": "hana" },
-    "text": "{name:hana} vyšla z lounge k pultu a ukázala vám kus nařezaného lana. Kdo ji viděl mluvit s hostinským, si to zapamatoval." },
-  { "id": "d2_hana_left", "day": 2,
-    "when": { "leftLounge": "hana" },
-    "text": "{name:hana} na vás čekala v lounge celé dopoledne. Nikdo pro ni nepřišel. Odpoledne se vydala domů – přes převoz." },
-  { "id": "d2_vojtech_left", "day": 2,
-    "when": { "leftLounge": "vojtech" },
-    "text": "{name:vojtech} odplul bez rozloučení. Na stole v lounge nechal vyřezanou vránu se zlomeným křídlem." },
-  { "id": "d2_ota_left", "day": 2,
-    "when": { "leftLounge": "ota" },
-    "text": "{name:ota} odešel do rokle sám, bez lana a bez lucerny." },
-  { "id": "d2_ferry", "day": 2,
-    "when": { "inkVar": ["bertold", "suspects_ferry", true] },
-    "text": "Kapitán se večer ptal na cestu k převozu. Kolem půlnoci jeho kůň v maštali chyběl." },
-  { "id": "d2_kingdom_table", "day": 2,
-    "when": { "sameTable": ["bertold", "jitka"] },
-    "text": "Kapitán z Kamence a písařka z Lukoviny u jednoho stolu: dvě království, jeden dopis a ani slovo." },
-  { "id": "d2_wax_room", "day": 2,
-    "when": { "roommates": ["jitka", "mikulas"] },
-    "text": "{name:jitka} spala ve stejném pokoji jako kramář {name:mikulas}. Pod jejich dveřmi dlouho do noci svítila svíčka." },
-  { "id": "d2_bertold_kicked", "day": 2,
-    "when": { "outcome": ["bertold", "kick"] },
-    "text": "Kapitán kamenecké stráže vyhozený z hospody do tmy? V Kamenci to zapíšou do kroniky i do účtů." },
-
-  { "id": "d3_intro", "day": 3,
-    "text": "Třetí den. Převoz přes Vranku jezdí od rána do noci a převozník platí stříbrem, které mělo patřit horníkům." },
-  { "id": "d3_exposed", "day": 3,
-    "when": { "inkVar": ["sebor", "exposed", true] },
-    "text": "{name:sebor} u pultu přiznal, že most nařízl. Stříbro vrátil a kramáře Mikuláše prozradil hned k tomu." },
-  { "id": "d3_bribed", "day": 3,
-    "when": { "inkVar": ["sebor", "bribed", true] },
-    "text": "Pod pultem leží měšec kameneckého stříbra. {name:sebor} odcházel s úsměvem; vy jste ho neopětoval." },
-  { "id": "d3_mikulas_left", "day": 3,
-    "when": { "leftLounge": "mikulas" },
-    "text": "{name:mikulas} odešel z lounge, aniž by ho kdo zastavil. Na stole po něm zůstal kousek černého vosku." },
-  { "id": "d3_mikulas_confessed", "day": 3,
-    "when": { "inkVar": ["mikulas", "confessed", true] },
-    "text": "{name:mikulas} se přiznal, že četl a přepisoval vraní poštu. Vraník má od dnešního večera nový zámek." },
-  { "id": "d3_ota_reader", "day": 3,
-    "when": { "all": [{ "present": "ota" }, { "inkVar": ["ota", "blames_reader", "mikulas"] }] },
-    "text": "{name:ota} strávil večer hledáním kramáře. Ví, kdo prodal jeho cestu." },
-
-  { "id": "kick_ota", "when": { "outcome": ["ota", "kick"] },
-    "text": "{name:ota} nocoval v kůlně za hospodou. Ráno odešel, ani se neohlédl." },
-  { "id": "kick_hana", "when": { "outcome": ["hana", "kick"] },
-    "text": "{name:hana} spala pod širým nebem u brodu. Lukovinský posel to ráno nevynechá." },
-  { "id": "kick_vojtech", "when": { "outcome": ["vojtech", "kick"] },
-    "text": "{name:vojtech} spal na voru pod roklí. Ve Velesii se řekne, že hostinský vyhazuje voraře do mrazu." },
-  { "id": "kick_jitka", "when": { "outcome": ["jitka", "kick"] },
-    "text": "{name:jitka} strávila noc ve stáji. Její dopisy pro Kamenec zvlhly a rozpily se." },
-  { "id": "kick_mikulas", "when": { "outcome": ["mikulas", "kick"] },
-    "text": "{name:mikulas} se jen usmál a zmizel ve tmě. Ráno byl vraník otevřený." },
-  { "id": "kick_sebor", "when": { "outcome": ["sebor", "kick"] },
-    "text": "{name:sebor} odešel spát na svůj převoz. Celou noc tam svítila lucerna." },
-
-  { "id": "stress_high_d1",
-    "when": { "all": [{ "day": 1 }, { "meter": ["stress", ">=", 5] }] },
-    "text": "Hostinský usnul až nad ránem. Pád mostu, jediný stůl plný nepřátel – ruce se mu třásly ještě u zamčených dveří. Snad zítřek začne líp." },
-  { "id": "stress_high",
-    "when": { "all": [{ "not": { "day": 1 } }, { "meter": ["stress", ">=", 5] }] },
-    "text": "Hostinský ten den nesl víc, než unesl. Hosté to poznali: u baru stál člověk na pokraji." },
-  { "id": "stress_low",
-    "when": { "meter": ["stress", "<=", 0] },
-    "text": "Přes všechnu šeptandu zůstal hostinský klidný. Lidé si pamatovali spíš jeho rovný hlas než zprávy z hor." },
-  { "id": "stress_mid",
-    "when": { "all": [{ "not": { "meter": ["stress", ">=", 5] } }, { "not": { "meter": ["stress", "<=", 0] } }] },
-    "text": "Hostinského ten den nic nespálilo – ale ani neušetřilo. Obyčejný těžký den u Vraního sedla." },
-
-  { "id": "final_truth", "day": "final",
-    "when": { "inkVar": ["sebor", "exposed", true] },
-    "text": "Most přes Vranku nespadl kvůli válce, ale kvůli mýtu. Když to vyšlo najevo, tři království se na chvíli zastyděla – a začala stavět nový most. Společně. Kronikáři napíšou, že pravdu našel hostinský, který věřil nařezanému lanu víc než novinám." },
-  { "id": "final_bribe", "day": "final",
-    "when": { "all": [
-      { "inkVar": ["sebor", "bribed", true] },
-      { "not": { "any": [{ "meter": ["k1", "<=", -4] }, { "meter": ["k2", "<=", -4] }, { "meter": ["k3", "<=", -4] }] } }
-    ] },
-    "text": "Stříbro pod pultem nevychladlo ani do zimy. Šebor vozí lidi dál a vy mu naléváte zadarmo. Mír drží – ale pokaždé, když u Vranky zaskřípe lano, sáhnete si na měšec." },
-  { "id": "final_war", "day": "final",
-    "when": { "all": [
-      { "not": { "inkVar": ["sebor", "exposed", true] } },
-      { "any": [{ "meter": ["k1", "<=", -4] }, { "meter": ["k2", "<=", -4] }, { "meter": ["k3", "<=", -4] }] }
-    ] },
-    "text": "Do měsíce se sedlo zavřelo. Každé království vědělo, kdo shodil most – a každé to vědělo jinak. Vojska půjdou kolem hospody U Tří vran, protože jiná cesta přes hory není." },
-  { "id": "final_blame", "day": "final",
-    "when": { "all": [
-      { "not": { "inkVar": ["sebor", "exposed", true] } },
-      { "not": { "inkVar": ["sebor", "bribed", true] } },
-      { "not": { "any": [{ "meter": ["k1", "<=", -4] }, { "meter": ["k2", "<=", -4] }, { "meter": ["k3", "<=", -4] }] } },
-      { "any": [
-        { "usedClaim": ["bridge_cause", "k1_axe"] },
-        { "usedClaim": ["bridge_cause", "k2_blasting"] },
-        { "usedClaim": ["bridge_cause", "k3_rot"] }
-      ] }
-    ] },
-    "text": "Válka nezačala, ale vina zůstala viset ve vzduchu – a část z ní jste rozšířil vy. Pokaždé, když někdo u pultu cituje noviny, slyšíte v tom svůj hlas." },
-  { "id": "final_fog", "day": "final",
-    "when": { "all": [
-      { "not": { "inkVar": ["sebor", "exposed", true] } },
-      { "not": { "inkVar": ["sebor", "bribed", true] } },
-      { "not": { "any": [{ "meter": ["k1", "<=", -4] }, { "meter": ["k2", "<=", -4] }, { "meter": ["k3", "<=", -4] }] } },
-      { "not": { "any": [
-        { "usedClaim": ["bridge_cause", "k1_axe"] },
-        { "usedClaim": ["bridge_cause", "k2_blasting"] },
-        { "usedClaim": ["bridge_cause", "k3_rot"] }
-      ] } }
-    ] },
-    "text": "Proč spadl most, se nikdy nedozvěděl nikdo. Ani vy. Ale nikoho jste neobvinil a království to vědí. U Tří vran je pořád místo, kde se dá mluvit." },
-  { "id": "final_hana_lost", "day": "final",
-    "when": { "leftLounge": ["hana", 2] },
-    "text": "{name:hana} se nikdy nevrátila. U převozu prý našli jen její šátek. Kus nařezaného lana pod její postelí jste našel až na podzim." },
-  { "id": "final_hana_kicked", "day": "final",
-    "when": { "outcome": ["hana", "kick", 1] },
-    "text": "{name:hana} po noci u brodu onemocněla. Co viděla u mostu, už nikomu neřekla." },
-  { "id": "final_hana_safe", "day": "final",
-    "when": { "all": [{ "invitedFromLounge": ["hana", 2] }, { "inkVar": ["hana", "stands_with_you", true] }] },
-    "text": "{name:hana} zůstala v sedle. Na jaře bude u nového mostu vybírat mostné – a lana bude natírat dehtem každé jaro." },
-  { "id": "final_crows_clean", "day": "final",
-    "when": { "any": [{ "inkVar": ["mikulas", "confessed", true] }, { "usedClaim": ["crow_reader", "mikulas"] }] },
-    "text": "Vraní pošta je zase čistá. Kupci z celého sedla posílají dopisy přes vaši hospodu, protože víte, kdo je četl – a proč." },
-  { "id": "final_crows_dirty", "day": "final",
-    "when": { "all": [
-      { "not": { "inkVar": ["mikulas", "confessed", true] } },
-      { "not": { "usedClaim": ["crow_reader", "mikulas"] } }
-    ] },
-    "text": "Kdo četl vaši poštu, se nikdy nevyjasnilo. Ještě rok potom chodily dopisy s nalomenými pečetěmi." },
-  { "id": "final_mikulas_fled", "day": "final",
-    "when": { "all": [{ "leftLounge": ["mikulas", 3] }, { "not": { "inkVar": ["mikulas", "confessed", true] } }] },
-    "text": "{name:mikulas} se v sedle už neukázal. Říká se, že teď prodává černý vosk na jihu – a kupuje vrány." },
-  { "id": "final_crow_sold", "day": "final",
-    "when": { "inkVar": ["mikulas", "bought_crow", true] },
-    "text": "Vrána, kterou jste prodal kramáři, se po týdnu vrátila. Na noze měla dopis, který jste nepsal." },
-  { "id": "final_ota_gone", "day": "final",
-    "when": { "not": { "present": ["ota", 3] } },
-    "text": "{name:ota} se z rokle už nevrátil, aspoň ne k vám. Truhly bez stříbra našli až kamenečtí vojáci." },
-  { "id": "final_ota_friend", "day": "final",
-    "when": { "all": [{ "present": ["ota", 3] }, { "meter": ["ota", ">=", 3] }] },
-    "text": "{name:ota} od vás odjížděl jako přítel. Kdykoli pojede přes sedlo, zastaví se – a vždycky přiveze pytel soli." },
-  { "id": "final_stress", "day": "final",
-    "when": { "meter": ["stress", ">=", 5] },
-    "text": "A hostinský? Tři dny ho stály víc než celá předchozí zima. Ještě dlouho se budil, když v noci zakrákala vrána." }
+  {
+    "id": "d1_intro",
+    "day": 1,
+    "text": "První den nového hostinského na trojmezí. Jeden stůl, tři království a cesta do Pravny pod skálou. Ráno vlétly oknem tři vrány a každá krákala něco jiného."
+  },
+  {
+    "id": "d1_bribe",
+    "day": 1,
+    "when": {
+      "inkVar": [
+        "radomil",
+        "took_bribe",
+        true
+      ]
+    },
+    "text": "Varhořský měšec teď leží na stole mezi svitky. Těžký jako kočka – přesně jako ty, o kterých mluvil {name:havel}."
+  },
+  {
+    "id": "d1_refused",
+    "day": 1,
+    "when": {
+      "inkVar": [
+        "radomil",
+        "refused_bribe",
+        true
+      ]
+    },
+    "text": "{name:radomil} odcházel od pultu s plným měšcem a prázdným úsměvem. Ve Varhoři se dozvědí, že nový hostinský není na prodej. Zatím."
+  },
+  {
+    "id": "d1_table",
+    "day": 1,
+    "when": {
+      "sameTable": [
+        "havel",
+        "tetka"
+      ]
+    },
+    "text": "U jediného stolu {name:havel} celý večer opakoval Tetčiny drby a smál se tak, že mu teklo pivo nosem. {name:tetka} se tvářila, jako by kousla do citronu."
+  },
+  {
+    "id": "d1_bara_army",
+    "day": 1,
+    "when": {
+      "inkVar": [
+        "bara",
+        "told_army",
+        true
+      ]
+    },
+    "text": "{name:bara} vám šeptem řekla, co viděla v údolí: kopí, ne lopaty. Teď to víte vy dva – a možná i ten, kdo poslouchal u vedlejšího stolu."
+  },
+  {
+    "id": "d1_bara_tetka",
+    "day": 1,
+    "when": {
+      "roommates": [
+        "bara",
+        "tetka"
+      ]
+    },
+    "text": "{name:bara} spala na pokoji s Tetkou. Ráno prý poprvé za rok vypadala vyspale."
+  },
+  {
+    "id": "d1_bara_man",
+    "day": 1,
+    "when": {
+      "any": [
+        {
+          "roommates": [
+            "bara",
+            "havel"
+          ]
+        },
+        {
+          "roommates": [
+            "bara",
+            "radomil"
+          ]
+        }
+      ]
+    },
+    "text": "{name:bara} prosila, ať nespí s mužem. Celou noc proseděla na posteli s nožem v klíně."
+  },
+  {
+    "id": "d1_bara_kicked",
+    "day": 1,
+    "when": {
+      "outcome": [
+        "bara",
+        "kick"
+      ]
+    },
+    "text": "{name:bara} odešla do tmy. Cesta vede jen dvěma směry – do hor, nebo zpátky do údolí."
+  },
+  {
+    "id": "d1_havel_radomil",
+    "day": 1,
+    "when": {
+      "roommates": [
+        "havel",
+        "radomil"
+      ]
+    },
+    "text": "Z pokoje, kde spali {name:havel} a {name:radomil}, se do půlnoci ozývalo cinkání placatky a smích. Pak už jen šepot."
+  },
+  {
+    "id": "d1_radomil_kicked",
+    "day": 1,
+    "when": {
+      "outcome": [
+        "radomil",
+        "kick"
+      ]
+    },
+    "text": "Varhořský posel spal ve stáji. Ráno odjížděl bez pozdravu a s brkem v ruce."
+  },
+  {
+    "id": "d2_intro",
+    "day": 2,
+    "text": "Druhý den. Zase dva stoly a dvakrát tolik řečí. V údolí pod hospodou hoří ohně a nikdo se neshodne, kdo u nich sedí."
+  },
+  {
+    "id": "d2_samael_trust",
+    "day": 2,
+    "when": {
+      "inkVar": [
+        "samael",
+        "trusts",
+        true
+      ]
+    },
+    "text": "Obr z hor vám svěřil prsten pravenské královny. Kdo nosí cizí pečeť, nese i cizí osud."
+  },
+  {
+    "id": "d2_samael_cold",
+    "day": 2,
+    "when": {
+      "not": {
+        "inkVar": [
+          "samael",
+          "trusts",
+          true
+        ]
+      }
+    },
+    "text": "{name:samael} dopil pivo a celý večer mlčel. Své tajemství si odnesl na pokoj – nebo do tmy."
+  },
+  {
+    "id": "d2_bara_invited",
+    "day": 2,
+    "when": {
+      "invitedFromLounge": "bara"
+    },
+    "text": "{name:bara} přišla z lounge k pultu uprostřed cizího rozhovoru. Kdo ji viděl mluvit s hostinským, si to zapamatoval."
+  },
+  {
+    "id": "d2_rumor",
+    "day": 2,
+    "when": {
+      "inkVar": [
+        "tetka",
+        "spreads_raiders",
+        true
+      ]
+    },
+    "text": "Do večera věděla celá hospoda, že Pravna chystá přepadení. Od Tetky. Která to měla od Varhořana. Který to měl od své vlády."
+  },
+  {
+    "id": "d2_samael_havel",
+    "day": 2,
+    "when": {
+      "sameTable": [
+        "samael",
+        "havel"
+      ]
+    },
+    "text": "{name:havel} si přisedl k obrovi a vyprávěl mu vtipy. {name:samael} se ani jednou nezasmál – jen sevřel korbel, až praskl."
+  },
+  {
+    "id": "d2_covered",
+    "day": 2,
+    "when": {
+      "inkVar": [
+        "radomil",
+        "covered_bara",
+        true
+      ]
+    },
+    "text": "Varhořský posel se ptal po uprchlé ženě. U pultu se nedozvěděl nic."
+  },
+  {
+    "id": "d2_betrayed",
+    "day": 2,
+    "when": {
+      "inkVar": [
+        "radomil",
+        "betrayed_bara",
+        true
+      ]
+    },
+    "text": "Varhořský posel se ptal po uprchlé ženě. A hostinský mu odpověděl. Vrána do tábora letěla ještě před polednem."
+  },
+  {
+    "id": "d2_samael_kicked",
+    "day": 2,
+    "when": {
+      "outcome": [
+        "samael",
+        "kick"
+      ]
+    },
+    "text": "{name:samael} nedostal postel. Odešel do noci směrem k horám a nikdo se neodvážil zeptat, kam."
+  },
+  {
+    "id": "d3_intro",
+    "day": 3,
+    "text": "Třetí den. Ohně v údolí se v noci zdvojnásobily. Svíčka na pultu dohořívá a brána do údolí čeká na rozhodnutí."
+  },
+  {
+    "id": "d3_unmasked",
+    "day": 3,
+    "when": {
+      "inkVar": [
+        "radomil",
+        "unmasked",
+        true
+      ]
+    },
+    "text": "{name:radomil} poprvé přestal lhát. Ne proto, že by chtěl – ale protože už nebylo komu."
+  },
+  {
+    "id": "d3_gate_open",
+    "day": 3,
+    "when": {
+      "inkVar": [
+        "radomil",
+        "let_pass",
+        true
+      ]
+    },
+    "text": "V noci zaskřípala brána. Pod okny hospody prošly stovky mužů. Lopaty na vozech navrch, kopí pod plachtou."
+  },
+  {
+    "id": "d3_gate_closed",
+    "day": 3,
+    "when": {
+      "not": {
+        "inkVar": [
+          "radomil",
+          "let_pass",
+          true
+        ]
+      }
+    },
+    "text": "Brána zůstala zavřená. Celou noc za ní bylo slyšet vozy, které se otáčely zpátky."
+  },
+  {
+    "id": "d3_truth",
+    "day": 3,
+    "when": {
+      "inkVar": [
+        "pravdomluv",
+        "said_army",
+        true
+      ]
+    },
+    "text": "{name:pravdomluv} si u pultu připil na pravdu. Pak usnul s hlavou na nástěnce."
+  },
+  {
+    "id": "final_pact",
+    "day": "final",
+    "when": {
+      "all": [
+        {
+          "any": [
+            {
+              "inkVar": [
+                "samael",
+                "report",
+                "army"
+              ]
+            },
+            {
+              "inkVar": [
+                "ignac",
+                "report",
+                "army"
+              ]
+            }
+          ]
+        },
+        {
+          "not": {
+            "inkVar": [
+              "radomil",
+              "let_pass",
+              true
+            ]
+          }
+        }
+      ]
+    },
+    "text": "Rada Čeřavy dostala dvě zprávy z hranice – a obě říkaly totéž. Poprvé po pěti stech letech poslala k trojmezí své muže, bok po boku s Pravnou. Varhořští „dělníci“ se otočili. Válka se odkládá. Pakt drží – a má zase strážce."
+  },
+  {
+    "id": "final_trap",
+    "day": "final",
+    "when": {
+      "all": [
+        {
+          "any": [
+            {
+              "inkVar": [
+                "samael",
+                "report",
+                "army"
+              ]
+            },
+            {
+              "inkVar": [
+                "ignac",
+                "report",
+                "army"
+              ]
+            }
+          ]
+        },
+        {
+          "inkVar": [
+            "radomil",
+            "let_pass",
+            true
+          ]
+        }
+      ]
+    },
+    "text": "Brána se otevřela, ale v údolí už čekaly hlídky Pravny a Čeřavy, varované vaším hlášením. Varhořský pluk narazil na zeď štítů a stáhl se. Válka se odkládá – jenže všechna tři království vědí, kdo otevřel bránu. Rada paktu si vás předvolá."
+  },
+  {
+    "id": "final_war",
+    "day": "final",
+    "when": {
+      "all": [
+        {
+          "not": {
+            "any": [
+              {
+                "inkVar": [
+                  "samael",
+                  "report",
+                  "army"
+                ]
+              },
+              {
+                "inkVar": [
+                  "ignac",
+                  "report",
+                  "army"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "inkVar": [
+            "radomil",
+            "let_pass",
+            true
+          ]
+        }
+      ]
+    },
+    "text": "Pluk prošel údolím do Čeřavy dřív, než se rada stačila sejít. Nikdo ji nevaroval. Za týden hořely první vesnice pod průsmykem a vrány přestaly létat. Největší válka už není pověst."
+  },
+  {
+    "id": "final_silence",
+    "day": "final",
+    "when": {
+      "all": [
+        {
+          "not": {
+            "any": [
+              {
+                "inkVar": [
+                  "samael",
+                  "report",
+                  "army"
+                ]
+              },
+              {
+                "inkVar": [
+                  "ignac",
+                  "report",
+                  "army"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "not": {
+            "inkVar": [
+              "radomil",
+              "let_pass",
+              true
+            ]
+          }
+        }
+      ]
+    },
+    "text": "Brána zůstala zavřená, ale nikdo nevěděl proč. Varhoř obvinila hostinského ze sabotáže, Pravna z mlčení. Válka se odkládá – a vy čekáte, kdo si pro vás přijde dřív."
+  },
+  {
+    "id": "final_bribe",
+    "day": "final",
+    "when": {
+      "all": [
+        {
+          "inkVar": [
+            "radomil",
+            "took_bribe",
+            true
+          ]
+        },
+        {
+          "not": {
+            "inkVar": [
+              "radomil",
+              "returned_gold",
+              true
+            ]
+          }
+        }
+      ]
+    },
+    "text": "Za měsíc otiskly Pravenské listy kresbu měšce s varhořskou pečetí – nalezeného na stole hostinského. Stejně začínal Matouš."
+  },
+  {
+    "id": "final_wrong_report",
+    "day": "final",
+    "when": {
+      "any": [
+        {
+          "inkVar": [
+            "samael",
+            "report",
+            "workers"
+          ]
+        },
+        {
+          "inkVar": [
+            "ignac",
+            "report",
+            "workers"
+          ]
+        },
+        {
+          "inkVar": [
+            "ignac",
+            "report",
+            "raiders"
+          ]
+        }
+      ]
+    },
+    "text": "Jedno hlášení, které odešlo od vašeho pultu, mluvilo hlasem Varhoře. Rada ho četla dvakrát."
+  },
+  {
+    "id": "final_bara_safe",
+    "day": "final",
+    "when": {
+      "any": [
+        {
+          "inkVar": [
+            "bara",
+            "hidden",
+            true
+          ]
+        },
+        {
+          "inkVar": [
+            "bara",
+            "escaped",
+            true
+          ]
+        }
+      ]
+    },
+    "text": "{name:bara} přežila. Desátník Kubát ji hledal ve všech pokojích, ale do sklepa ani do hor se nepodíval."
+  },
+  {
+    "id": "final_bara_lost",
+    "day": "final",
+    "when": {
+      "any": [
+        {
+          "outcome": [
+            "bara",
+            "kick",
+            1
+          ]
+        },
+        {
+          "inkVar": [
+            "radomil",
+            "betrayed_bara",
+            true
+          ]
+        }
+      ]
+    },
+    "text": "O Báře už nikdo nic neslyšel. Jen Tetka tvrdí, že ji viděla v táboře. Tentokrát to není drb."
+  },
+  {
+    "id": "final_rumor",
+    "day": "final",
+    "when": {
+      "inkVar": [
+        "tetka",
+        "spreads_raiders",
+        true
+      ]
+    },
+    "text": "Drb o pravenských lupičích přežil všechno. Ještě za rok ho lidé v Čeřavě opakují jako pravdu."
+  },
+  {
+    "id": "final_havel",
+    "day": "final",
+    "when": {
+      "inkVar": [
+        "havel",
+        "warned_cerava",
+        true
+      ]
+    },
+    "text": "{name:havel} vystoupil před radou Čeřavy. Smrděl pivem, ale mluvil tak, že ho poslouchali."
+  },
+  {
+    "id": "final_truth",
+    "day": "final",
+    "when": {
+      "inkVar": [
+        "pravdomluv",
+        "said_army",
+        true
+      ]
+    },
+    "text": "{name:pravdomluv} přijde zítra zase. Poslední. Jako vždycky."
+  }
 ]

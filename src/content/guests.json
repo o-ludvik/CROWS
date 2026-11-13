@@ -1,9 +1,9 @@
 [
-  { "id": "ota",     "name": "Ota",     "faction": "k2", "portrait": "art/guest_ota.png",     "icon": "art/icons/guest_ota.png",     "startAffinity": -1, "ink": "ota" },
-  { "id": "hana",    "name": "Hana",    "faction": "k3", "portrait": "art/guest_hana.png",    "icon": "art/icons/guest_hana.png",    "startAffinity": 0,  "ink": "hana" },
-  { "id": "vojtech", "name": "Vojtěch", "faction": "k1", "portrait": "art/guest_vojtech.png", "icon": "art/icons/guest_vojtech.png", "startAffinity": 0,  "ink": "vojtech" },
-  { "id": "bertold", "name": "Bertold", "faction": "k2", "portrait": "art/guest_bertold.png", "icon": "art/icons/guest_bertold.png", "startAffinity": -1, "ink": "bertold" },
-  { "id": "jitka",   "name": "Jitka",   "faction": "k3", "portrait": "art/guest_jitka.png",   "icon": "art/icons/guest_jitka.png",   "startAffinity": 1,  "ink": "jitka" },
-  { "id": "mikulas", "name": "Mikuláš", "faction": "k1", "portrait": "art/guest_mikulas.png", "icon": "art/icons/guest_mikulas.png", "startAffinity": 2,  "ink": "mikulas" },
-  { "id": "sebor",   "name": "Šebor",   "faction": "k3", "portrait": "art/guest_sebor.png",   "icon": "art/icons/guest_sebor.png",   "startAffinity": 1,  "ink": "sebor" }
+  { "id": "havel",      "name": "Havel",       "faction": "k3", "portrait": "art/guest_havel.png",      "icon": "art/icons/guest_havel.png",      "startAffinity": 2,  "ink": "havel" },
+  { "id": "radomil",    "name": "Radomil",     "faction": "k1", "portrait": "art/guest_radomil.png",    "icon": "art/icons/guest_radomil.png",    "startAffinity": 0,  "ink": "radomil" },
+  { "id": "tetka",      "name": "Tetka",       "faction": "k2", "portrait": "art/guest_tetka.png",      "icon": "art/icons/guest_tetka.png",      "startAffinity": 1,  "ink": "tetka" },
+  { "id": "bara",       "name": "Bára",        "faction": "k1", "portrait": "art/guest_bara.png",       "icon": "art/icons/guest_bara.png",       "startAffinity": -1, "ink": "bara" },
+  { "id": "samael",     "name": "Samael",      "faction": "k2", "portrait": "art/guest_samael.png",     "icon": "art/icons/guest_samael.png",     "startAffinity": 0,  "ink": "samael" },
+  { "id": "ignac",      "name": "Bratr Ignác", "faction": "k3", "portrait": "art/guest_ignac.png",      "icon": "art/icons/guest_ignac.png",      "startAffinity": 0,  "ink": "ignac" },
+  { "id": "pravdomluv", "name": "Pravdomluv",  "faction": "k1", "portrait": "art/guest_pravdomluv.png", "icon": "art/icons/guest_pravdomluv.png", "startAffinity": 0,  "ink": "pravdomluv" }
 ]

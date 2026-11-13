@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { guestById, t } from '../content'
 import { actions, canInvite, guestFaction, guestName, useGame } from '../store/gameStore'
 
-/** Room right of the bar (GDD 7a): guests who slept here and have a follow-up wait to be invited. */
+/** Room right of the bar: guests who slept here and have a follow-up wait; uninvited ones come to the bar on their own last. */
 export function Lounge() {
   const s = useGame()
   const [picked, setPicked] = useState<string | null>(null)
   const can = canInvite(s)
-  const why = can ? undefined : s.current?.fromLounge ? t('inviteBusy') : t('inviteClosed')
+  const why = can ? undefined : s.paused ? t('inviteBusy') : s.phase === 'seating' ? t('inviteSeating') : t('inviteClosed')
   return (
     <div className="lounge" onClick={() => setPicked(null)}>
       <img className="lounge-bg" src="art/lounge_bg.png" alt="" draggable={false} />

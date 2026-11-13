@@ -1,4 +1,4 @@
-// Cutout reply slots (GDD 7.5). Pure, so the node checks can run it.
+// Cutout reply slots (topic bubbles). Pure, so the node checks can run it.
 
 export interface SlotTag { topic: string; claim: string }
 export interface InkChoice { index: number; text: string; slot?: SlotTag }
@@ -14,7 +14,7 @@ export function parseChoices(choices: { text: string; tags?: string[] | null }[]
 /** Topics that currently have a slot bubble, in choice order. */
 export const slotTopics = (choices: InkChoice[]) => [...new Set(choices.flatMap((c) => (c.slot ? [c.slot.topic] : [])))]
 
-/** Which choice a dropped cutout selects: same claim, else the `*` option, else null (rejected). */
+/** Which choice a dropped cutout selects: same claim, else the `*` option; null (rejected) when the topic differs. Every slot group has a `*` (npm run check). */
 export function pickSlot(choices: InkChoice[], topic: string, cutout: { topic?: string; claim?: string }): InkChoice | null {
   if (cutout.topic !== topic) return null
   const group = choices.filter((c) => c.slot?.topic === topic)

@@ -1,6 +1,8 @@
 import { t } from '../content'
 import { actions, useGame } from '../store/gameStore'
+import { CloseX } from './IconBadge'
 
+/** Large preview of a corkboard cutout. */
 export function NoteReader({ itemId }: { itemId: string }) {
   const item = useGame((s) => s.deskItems.find((i) => i.id === itemId))
   const close = () => actions.openNote(null)
@@ -8,9 +10,9 @@ export function NoteReader({ itemId }: { itemId: string }) {
   return (
     <div className="backdrop" onClick={close}>
       <div className="reader note-reader" onClick={(e) => e.stopPropagation()}>
+        <CloseX onClick={close} />
         <div className="reader-kingdom">{t('noteHeading')}</div>
         <p className="note-body">{item.text}</p>
-        <button className="btn" onClick={close}>{t('close')}</button>
       </div>
     </div>
   )

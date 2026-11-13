@@ -1,7 +1,7 @@
 import { guestById, t } from '../content'
 import { guestFaction, guestName, useGame } from '../store/gameStore'
 
-/** Both tables with their seats; tables beyond today's count show as locked (GDD 10). Used by the minimap (read-only) and the seating overlay (onPick). */
+/** Both tables with their seats; tables beyond today's count show as locked. Used by the minimap (read-only) and the seating overlay (onPick). */
 export function Tables({ size, selected, onPick }: { size: 'small' | 'large'; selected?: number | null; onPick?: (seat: number) => void }) {
   const s = useGame()
   return (

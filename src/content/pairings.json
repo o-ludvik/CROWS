@@ -1,19 +1,41 @@
 {
-  "pairs": [
-    { "guests": ["ota", "vojtech"],    "effects": { "a": -2, "b": -2, "k1": -1, "k2": -1 } },
-    { "guests": ["ota", "hana"],       "effects": { "a": -1, "b": -1 } },
-    { "guests": ["hana", "vojtech"],   "effects": { "a": 1, "b": 1 } },
-    { "guests": ["bertold", "jitka"],  "effects": { "a": -2, "b": -2, "k2": -1, "k3": -1 } },
-    { "guests": ["bertold", "hana"],   "effects": { "a": 1, "b": 1, "k2": 1 } },
-    { "guests": ["jitka", "mikulas"],  "effects": { "a": 1, "b": 1 } },
-    { "guests": ["hana", "sebor"],     "effects": { "a": -3, "b": -1 } },
-    { "guests": ["bertold", "sebor"],  "effects": { "a": -1, "b": -2 } },
-    { "guests": ["ota", "mikulas"],    "effects": { "a": -1, "b": 1 } }
-  ],
-  "factionFallback": {
-    "same":  { "a": 1,  "b": 1 },
-    "k1-k2": { "a": -1, "b": -1 },
-    "k1-k3": { "a": 0,  "b": 0 },
-    "k2-k3": { "a": -1, "b": -1, "k2": -1, "k3": -1 }
+  "table": {
+    "pairs": [
+      { "guests": ["havel", "tetka"],      "effects": { "a": 1,  "b": -2 } },
+      { "guests": ["havel", "samael"],     "effects": { "a": -1, "b": -2 } },
+      { "guests": ["havel", "radomil"],    "effects": { "a": 0,  "b": 1 } },
+      { "guests": ["radomil", "bara"],     "effects": { "a": 0,  "b": -3 } },
+      { "guests": ["radomil", "samael"],   "effects": { "a": -2, "b": -2, "k1": -1, "k2": -1 } },
+      { "guests": ["tetka", "bara"],       "effects": { "a": 1,  "b": 1 } },
+      { "guests": ["tetka", "samael"],     "effects": { "a": -1, "b": -1 } },
+      { "guests": ["ignac", "pravdomluv"], "effects": { "a": 1,  "b": 1 } }
+    ],
+    "factionFallback": {
+      "same":  { "a": 1,  "b": 1 },
+      "k1-k2": { "a": -1, "b": -1 },
+      "k1-k3": { "a": 0,  "b": 0 },
+      "k2-k3": { "a": 0,  "b": 0 }
+    }
+  },
+  "room": {
+    "pairs": [
+      { "guests": ["tetka", "bara"],       "effects": { "a": 2,  "b": 2 } },
+      { "guests": ["havel", "bara"],       "effects": { "a": -1, "b": -2 } },
+      { "guests": ["radomil", "bara"],     "effects": { "a": 0,  "b": -4 } },
+      { "guests": ["samael", "bara"],      "effects": { "a": 0,  "b": 2 } },
+      { "guests": ["ignac", "bara"],       "effects": { "a": 0,  "b": -1 } },
+      { "guests": ["pravdomluv", "bara"],  "effects": { "a": 0,  "b": -2 } },
+      { "guests": ["havel", "radomil"],    "effects": { "a": 1,  "b": -1 } },
+      { "guests": ["tetka", "radomil"],    "effects": { "a": 2,  "b": 1 } },
+      { "guests": ["havel", "tetka"],      "effects": { "a": 1,  "b": -3 } },
+      { "guests": ["samael", "radomil"],   "effects": { "a": -3, "b": -3, "k1": -1, "k2": -1 } },
+      { "guests": ["samael", "ignac"],     "effects": { "a": 1,  "b": 1 } }
+    ],
+    "factionFallback": {
+      "same":  { "a": 1,  "b": 1 },
+      "k1-k2": { "a": -1, "b": -1 },
+      "k1-k3": { "a": 0,  "b": 0 },
+      "k2-k3": { "a": 0,  "b": 0 }
+    }
   }
 }

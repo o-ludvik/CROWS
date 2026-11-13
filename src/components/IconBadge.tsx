@@ -1,39 +1,45 @@
-// Colour coding and icons for scrolls and cutouts (GDD 6.6).
+// Colour coding and icons: scrolls and cutouts carry their kingdom's colour and icon.
 import type { CSSProperties } from 'react'
-import { UNKNOWN_ICON, guestById, guestIcon, kingdomById, questById, scrollById, t } from '../content'
+import { UNKNOWN_ICON, guestById, guestIcon, itemById, kingdomById, scrollById, t } from '../content'
 import { guestName, useGame, type CutoutSource, type DeskItem, type UsedCutout } from '../store/gameStore'
 
 type State = ReturnType<typeof useGame.getState>
 interface Look { tone?: string; icons: string[] }
 
-/** Quest colour beats kingdom colour; kingdom icon whenever the source is a kingdom; "?" until a guest's faction is revealed. */
-export function cutoutLook(c: { source: CutoutSource; quest?: string }, s: State): Look {
-  const quest = questById(c.quest)
+/** Kingdom colour + icon; a conversation cutout shows the guest's icon and "?" (no colour) until the faction is revealed. */
+export function cutoutLook(c: { source: CutoutSource }, s: State): Look {
   if (c.source.type === 'scroll') {
     const k = kingdomById(c.source.kingdom)
-    return { tone: quest?.color ?? k.color, icons: [k.icon] }
+    return { tone: k.color, icons: [k.icon] }
   }
   const g = guestById(c.source.guestId)
   const k = kingdomById(g.faction)
   const known = s.revealed[g.id]?.faction
-  return { tone: quest?.color ?? (known ? k.color : undefined), icons: [guestIcon(g.id), known ? k.icon : UNKNOWN_ICON] }
+  return { tone: known ? k.color : undefined, icons: [guestIcon(g.id), known ? k.icon : UNKNOWN_ICON] }
 }
 
 export function itemLook(item: DeskItem, s: State): Look {
   if (item.kind === 'cutout') return cutoutLook(item, s)
+  if (item.kind === 'item') return { icons: [] }
   const k = kingdomById(scrollById(item.scrollId).kingdom)
   return { tone: k.color, icons: [k.icon] }
 }
 
 export const toneStyle = (tone?: string) => (tone ? ({ '--tone': tone } as CSSProperties) : undefined)
 
-/** Source tooltip, e.g. "Zdroj: Svitek – Velesie · Linka: Most přes Vranku". */
-export function cutoutTitle(c: { source: CutoutSource; quest?: string }, s: State) {
-  const src = c.source.type === 'scroll'
+/** Source tooltip, e.g. "Zdroj: Svitek – Varhoř". */
+export function cutoutTitle(c: { source: CutoutSource }, s: State) {
+  return c.source.type === 'scroll'
     ? t('sourceScroll', { kingdom: kingdomById(c.source.kingdom).name })
     : t('sourceConversation', { name: guestName(c.source.guestId, s) })
-  const quest = questById(c.quest)
-  return quest ? `${src} · ${t('sourceQuest', { quest: quest.name })}` : src
+}
+
+/** Hover tooltip for anything on the desk / corkboard. */
+export function itemTitle(item: DeskItem, s: State) {
+  if (item.kind === 'cutout') return cutoutTitle(item, s)
+  if (item.kind === 'item') return itemById(item.itemId).name
+  const scroll = scrollById(item.scrollId)
+  return `${scroll.title} – ${kingdomById(scroll.kingdom).name}`
 }
 
 export function Icons({ icons }: { icons: string[] }) {
@@ -43,6 +49,7 @@ export function Icons({ icons }: { icons: string[] }) {
 /** Inside of a desk / corkboard / ghost item. */
 export function ItemFace({ item }: { item: DeskItem }) {
   const s = useGame()
+  if (item.kind === 'item') return <img src={itemById(item.itemId).image} alt="" draggable={false} />
   return (
     <>
       {item.kind === 'scroll' ? <img src="art/scroll_rolled.png" alt="" draggable={false} /> : item.text}
@@ -58,7 +65,11 @@ export function CutoutTag({ used }: { used: UsedCutout }) {
   return (
     <div className={`cutout-tag ${look.tone ? 'toned' : ''}`} style={toneStyle(look.tone)} title={cutoutTitle(used, s)}>
       <Icons icons={look.icons} />
-      <span className="cutout-tag-text">{used.text}</span>
     </div>
   )
+}
+
+/** ✕ button in the corner of an overlay. */
+export function CloseX({ onClick }: { onClick: () => void }) {
+  return <button type="button" className="overlay-close" title={t('close')} onClick={onClick}>✕</button>
 }

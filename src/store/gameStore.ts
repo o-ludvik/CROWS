@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { Story } from 'inkjs'
 import {
-  days, guestById, guests, inkJson, kingdomById, kingdoms, night, pairings, scrollById, t,
-  type Effects, type KingdomId, type Visit,
+  STRESS_THRESHOLD, chronicle, days, guestById, guests, inkJson, kingdomById, kingdoms, night, pairings, scrollById, summaryBlocks, t,
+  type Effects, type KingdomId, type PairingRules, type Visit,
 } from '../content'
 import { evaluate, type Ctx, type DayRecord, type NightOutcome } from '../engine/summary'
 import { parseChoices, pickSlot, type InkChoice } from '../engine/slots'
@@ -10,6 +10,9 @@ import { selectLounge, selectQueue } from '../engine/days'
 
 export type Phase = 'title' | 'desk' | 'conversation' | 'seating' | 'dayEnd' | 'night' | 'summary'
 export type View = 'cork' | 'main' | 'lounge'
+/** Menu-type overlays: in-game menu, save list, settings, title chronicle, character log. */
+export type Overlay = 'menu' | 'load' | 'settings' | 'chronicle' | 'log'
+export type SaveSlot = 'auto' | 'manual'
 export type { NightOutcome }
 export type CorkColor = 'red' | 'twine' | 'blue'
 export type ItemSurface = 'desk' | 'cork'
@@ -17,10 +20,12 @@ export type ItemSurface = 'desk' | 'cork'
 interface DeskItemBase { id: string; x: number; y: number; z: number; surface: ItemSurface }
 export interface ScrollItem extends DeskItemBase { kind: 'scroll'; scrollId: string }
 export type CutoutSource = { type: 'scroll'; kingdom: KingdomId } | { type: 'conversation'; guestId: string }
-/** Slot topic/claim and quest line a cutout carries over from its source (GDD 6.6, 7.5). */
-export interface CutoutMeta { topic?: string; claim?: string; quest?: string }
+/** Slot topic/claim a cutout carries over from its source. */
+export interface CutoutMeta { topic?: string; claim?: string }
 export interface CutoutItem extends DeskItemBase, CutoutMeta { kind: 'cutout'; text: string; source: CutoutSource }
-export type DeskItem = ScrollItem | CutoutItem
+/** Something a guest handed over (items.json); desk only. */
+export interface ThingItem extends DeskItemBase { kind: 'item'; itemId: string }
+export type DeskItem = ScrollItem | CutoutItem | ThingItem
 /** Snapshot of the cutout used in a slot, for the tag on the bartender bubble. */
 export interface UsedCutout extends CutoutMeta { text: string; source: CutoutSource }
 export interface ChatLine {
@@ -28,9 +33,10 @@ export interface ChatLine {
   text: string
   cuttable: boolean
   meta?: CutoutMeta
-  stressDelta?: number
   usedCutout?: UsedCutout
 }
+/** One finished visit, for the character log. */
+export interface Transcript { day: number; lines: ChatLine[] }
 export interface LogEntry { seq: number; source: string; description: string; effects: Effects }
 export interface CorkString { id: string; a: string; b: string; color: CorkColor }
 export interface ActiveVisit extends Visit { fromLounge: boolean }
@@ -53,14 +59,29 @@ export const MINIMAP = { x: 1680, y: 30, w: 220, h: 220 }
 export const LAST_DAY = days.length
 const FADE_MS = 400
 const BEDS: NightOutcome[] = ['r1a', 'r1b', 'r2a', 'r2b']
+const SAVE_VERSION = 1
+const saveKey = (slot: SaveSlot) => `crows.save.${slot}`
+const CHRONICLE_KEY = 'crows.chronicle'
+/** UI-only state that is never saved. */
+const TRANSIENT = ['fading', 'debugOpen', 'dragGhost', 'slotRejected', 'slotPicker', 'readerOpen', 'noteOpen', 'corkPinFrom', 'overlay'] as const
+
+/** localStorage that never throws (private mode, blocked storage). */
+function readStore<T>(key: string): T | null {
+  try { return JSON.parse(localStorage.getItem(key) ?? 'null') as T | null } catch { return null }
+}
+function writeStore(key: string, value: unknown) {
+  try { localStorage.setItem(key, JSON.stringify(value)) } catch { /* storage unavailable */ }
+}
 
 interface GameState {
   phase: Phase
   day: number
   view: View
   tableCount: number
+  /** Guests expected today (queue + lounge); the candle burns down by 1/dayTotal per seated guest. */
+  dayTotal: number
+  /** Hidden from the player; only the debug panel shows them. */
   meters: Record<string, number>
-  lastDelta: Record<string, number>
   /** Guests still waiting in today's queue. */
   queue: Visit[]
   /** Guest at the bar. */
@@ -70,7 +91,6 @@ interface GameState {
   /** Today's guests in arrival order (queue + invited). */
   todayGuests: string[]
   invitedFromLounge: string[]
-  leftLounge: string[]
   /** Finished days, keyed by day number. */
   history: Record<number, DayRecord>
   usedClaims: UsedClaim[]
@@ -78,12 +98,16 @@ interface GameState {
   inkStates: Record<string, string>
   inkVars: Record<string, Record<string, unknown>>
   revealed: Record<string, { name: boolean; faction: boolean }>
+  /** Finished visits per guest (character log). */
+  transcripts: Record<string, Transcript[]>
+  /** Portrait variant from a `#portrait:<variant>` tag in the lines since the last reply (lie tells), else null. */
+  portraitVariant: string | null
   chatLog: ChatLine[]
   choices: InkChoice[]
   storyEnded: boolean
   inkTags: string[]
   slotRejected: string | null
-  /** Topic whose cutout picker modal is open (GDD 7.5). */
+  /** Topic whose cutout picker modal is open. */
   slotPicker: string | null
   deskItems: DeskItem[]
   /** `${scrollId}#${articleIndex}` of articles whose `when` was false that morning. */
@@ -97,6 +121,7 @@ interface GameState {
   seats: (string | null)[]
   nightAssignments: Record<string, NightOutcome | null>
   eventLog: LogEntry[]
+  overlay: Overlay | null
   debugOpen: boolean
   fading: boolean
 }
@@ -112,12 +137,13 @@ function newGame(): Partial<GameState> {
   return {
     day: 0,
     meters,
-    lastDelta: {},
     history: {},
     usedClaims: [],
     inkStates: {},
     inkVars: {},
     revealed: Object.fromEntries(guests.map((g) => [g.id, { name: false, faction: false }])),
+    transcripts: {},
+    portraitVariant: null,
     deskItems: [],
     hiddenArticles: [],
     corkStrings: [],
@@ -133,13 +159,13 @@ export const useGame = create<GameState>(() => ({
   phase: 'title',
   view: 'main',
   tableCount: 1,
+  dayTotal: 0,
   queue: [],
   current: null,
   paused: null,
   loungeGuests: [],
   todayGuests: [],
   invitedFromLounge: [],
-  leftLounge: [],
   chatLog: [],
   choices: [],
   storyEnded: false,
@@ -150,6 +176,7 @@ export const useGame = create<GameState>(() => ({
   noteOpen: null,
   seats: Array(8).fill(null),
   nightAssignments: {},
+  overlay: null,
   debugOpen: false,
   fading: false,
 }))
@@ -171,10 +198,9 @@ function logEvent(source: string, description: string, effects: Effects = {}) {
   set({ eventLog: [...get().eventLog, { seq: ++seq, source, description, effects }] })
 }
 
-/** The single entry point for every meter change: clamps, records the delta, logs the event. */
+/** The single entry point for every meter change: clamps and logs the event. */
 export function applyEffects(effects: Effects, source: string): Effects {
   const meters = { ...get().meters }
-  const lastDelta = { ...get().lastDelta }
   const applied: Effects = {}
   for (const [id, d] of Object.entries(effects)) {
     if (!(id in meters) || !d) continue // unknown or not-yet-met guest → ignored
@@ -183,10 +209,9 @@ export function applyEffects(effects: Effects, source: string): Effects {
     if (!delta) continue // already at clamp
     applied[id] = delta
     meters[id] = next
-    lastDelta[id] = delta
   }
   if (!Object.keys(applied).length) { syncInkVars(); return applied }
-  set({ meters, lastDelta })
+  set({ meters })
   logEvent(source, Object.entries(applied).map(([id, d]) => `${id} ${d > 0 ? '+' : ''}${d}`).join(', '), applied)
   syncInkVars()
   return applied
@@ -195,7 +220,7 @@ export function applyEffects(effects: Effects, source: string): Effects {
 function syncInkVars() {
   if (!story) return
   const m = get().meters
-  const values: Record<string, number> = { stress: m.stress, aff_self: m[currentGuestId()] ?? 0, day: get().day }
+  const values: Record<string, number> = { stress: m.stress, stress_threshold: STRESS_THRESHOLD, aff_self: m[currentGuestId()] ?? 0, day: get().day }
   for (const [id, v] of Object.entries(m)) if (id !== 'stress') values[`aff_${id}`] = v
   for (const [name, v] of Object.entries(values)) {
     if (story.variablesState.GlobalVariableExistsWithName(name)) story.variablesState.$(name, v)
@@ -214,7 +239,8 @@ export function liveInkVars(): Record<string, unknown> {
 function continueStory(action?: string) {
   if (!story) return
   const id = currentGuestId()
-  let stressFromChoice = 0
+  // A `#portrait:<variant>` tell anywhere in this stretch of lines stays on until the player's next reply.
+  let variant: string | null = null
   while (story.canContinue) {
     const text = story.Continue()!.trim()
     const tags = story.currentTags ?? []
@@ -224,10 +250,13 @@ function continueStory(action?: string) {
     for (const tag of tags) {
       const [kind, a, b] = tag.trim().split(':')
       if (kind === 'cut') { line.cuttable = true; if (a) Object.assign(meta, { topic: a, claim: b }) }
-      else if (kind === 'quest') meta.quest = a
       else if (kind === 'bartender') line.speaker = 'bartender'
-      else if (kind === 'reveal' && (a === 'name' || a === 'faction'))
+      else if (kind === 'item') addThing(a)
+      else if (kind === 'portrait') variant = a
+      else if (kind === 'reveal' && (a === 'name' || a === 'faction')) {
         set({ revealed: { ...get().revealed, [id]: { ...get().revealed[id], [a]: true } } })
+        if (a === 'name') noteMet(id, true)
+      }
       else if (kind === 'aff') effects[a === 'self' ? id : a] = (effects[a === 'self' ? id : a] ?? 0) + Number(b)
       else if (kind === 'stress') effects.stress = (effects.stress ?? 0) + Number(a)
       else console.warn(`Unknown ink tag "${tag}" in ${id}`)
@@ -236,20 +265,9 @@ function continueStory(action?: string) {
     if (Object.keys(meta).length) line.meta = meta
     set({ inkTags: tags })
     if (text) set({ chatLog: [...get().chatLog, line] })
-    if (Object.keys(effects).length) {
-      const applied = applyEffects(effects, action ?? `ink:${id}`)
-      if (applied.stress) stressFromChoice += applied.stress
-    }
+    if (Object.keys(effects).length) applyEffects(effects, action ?? `ink:${id}`)
   }
-  if (action?.startsWith('choice:') && stressFromChoice) {
-    const log = [...get().chatLog]
-    let i = log.length - 1
-    while (i >= 0 && log[i].speaker === 'guest') i--
-    if (i >= 0 && log[i].speaker === 'bartender') {
-      log[i] = { ...log[i], stressDelta: stressFromChoice }
-      set({ chatLog: log })
-    }
-  }
+  set({ portraitVariant: variant })
   const choices = parseChoices(story.currentChoices)
   if (!choices.length) {
     // Visit over: keep the story state for the guest's next visit and snapshot VARs for conditions.
@@ -259,7 +277,7 @@ function continueStory(action?: string) {
 }
 
 const todayRecord = (s: GameState = get()): DayRecord => ({
-  present: s.todayGuests, seats: s.seats, night: s.nightAssignments, invited: s.invitedFromLounge, left: s.leftLounge,
+  present: s.todayGuests, seats: s.seats, night: s.nightAssignments, invited: s.invitedFromLounge,
 })
 
 /** Condition context; `day` picks the default day for guest conditions (morning data uses yesterday). */
@@ -286,18 +304,21 @@ function morning(day: number) {
   const hidden = def.scrolls.flatMap((id) =>
     scrollById(id).articles.flatMap((a, ai) => (a.when && !evaluate(a.when, ctx) ? [`${id}#${ai}`] : [])),
   )
+  const queue = selectQueue(def, ctx)
+  const loungeGuests = selectLounge(def, ctx)
   set({
     day,
     phase: 'desk',
     view: 'main',
     tableCount: def.tables,
-    queue: selectQueue(def, ctx),
-    loungeGuests: selectLounge(def, ctx),
+    dayTotal: queue.length + loungeGuests.length,
+    queue,
+    loungeGuests,
     current: null,
     paused: null,
+    portraitVariant: null,
     todayGuests: [],
     invitedFromLounge: [],
-    leftLounge: [],
     seats: Array(8).fill(null),
     nightAssignments: {},
     chatLog: [],
@@ -312,7 +333,8 @@ function morning(day: number) {
     hiddenArticles: [...s.hiddenArticles, ...hidden],
   })
   if (s.meters.stress) applyEffects({ stress: -s.meters.stress }, 'morning reset')
-  logEvent(`day ${day}`, `morning: queue ${get().queue.map((v) => v.guest).join(', ') || '–'}; lounge ${get().loungeGuests.map((v) => v.guest).join(', ') || '–'}`)
+  logEvent(`day ${day}`, `morning: queue ${queue.map((v) => v.guest).join(', ') || '–'}; lounge ${loungeGuests.map((v) => v.guest).join(', ') || '–'}`)
+  saveGame('auto')
 }
 
 /** A guest steps up to the bar: load their persistent story and jump to today's knot. */
@@ -322,12 +344,15 @@ function arrive(v: Visit, fromLounge: boolean) {
   story = new Story(inkJson(g.ink))
   if (s.inkStates[v.guest]) story.state.LoadJson(s.inkStates[v.guest])
   story.ChoosePathString(v.knot)
+  noteMet(v.guest, s.revealed[v.guest]?.name ?? false)
+  // The guest greets first: the knot's opening lines are the greeting.
   set({
     phase: 'conversation',
     current: { ...v, fromLounge },
     meters: v.guest in s.meters ? s.meters : { ...s.meters, [v.guest]: g.startAffinity },
     todayGuests: s.todayGuests.includes(v.guest) ? s.todayGuests : [...s.todayGuests, v.guest],
-    chatLog: [{ speaker: 'bartender', text: t(fromLounge ? 'greetingReturning' : 'greeting'), cuttable: false }],
+    portraitVariant: null,
+    chatLog: [],
     choices: [],
     storyEnded: false,
     inkTags: [],
@@ -336,7 +361,7 @@ function arrive(v: Visit, fromLounge: boolean) {
   continueStory()
 }
 
-/** After a seating: the paused guest returns, else the next in the queue, else the day can end. */
+/** After a seating: the paused guest returns, else the next in the queue, else lounge guests come on their own, else the day can end. */
 function next() {
   const s = get()
   if (s.paused) {
@@ -344,7 +369,7 @@ function next() {
     story = new Story(inkJson(guestById(p.visit.guest).ink))
     story.state.LoadJson(p.inkState)
     const choices = parseChoices(story.currentChoices)
-    set({ phase: 'conversation', paused: null, current: p.visit, chatLog: p.chatLog, choices, storyEnded: !choices.length, inkTags: [] })
+    set({ phase: 'conversation', paused: null, current: p.visit, chatLog: p.chatLog, choices, storyEnded: !choices.length, inkTags: [], portraitVariant: null })
     syncInkVars()
     logEvent('lounge', `${p.visit.guest} returns to the bar`)
     return
@@ -354,15 +379,20 @@ function next() {
     arrive(s.queue[0], false)
     return
   }
+  if (s.loungeGuests.length) {
+    const [v, ...rest] = s.loungeGuests
+    set({ loungeGuests: rest })
+    logEvent('lounge', `${v.guest} comes to the bar on their own`)
+    arrive(v, true)
+    return
+  }
   story = null
   set({ phase: 'dayEnd', current: null, chatLog: [], choices: [], storyEnded: false, inkTags: [] })
 }
 
 function closeDay() {
-  const left = get().loungeGuests.map((v) => v.guest)
-  for (const id of left) logEvent('lounge', `${id} left without being invited`)
   set({
-    phase: 'night', view: 'main', leftLounge: left, loungeGuests: [], readerOpen: null, noteOpen: null,
+    phase: 'night', view: 'main', readerOpen: null, noteOpen: null,
     nightAssignments: Object.fromEntries(get().todayGuests.map((id) => [id, null])),
   })
 }
@@ -376,17 +406,24 @@ function endNight() {
     for (const [k, d] of Object.entries(rule)) effects[k === 'self' ? id : k] = d
     applyEffects(effects, `night:${id}:${o}`)
   }
+  // Roommates (same room, e.g. r1a + r1b) affect each other and their kingdoms.
+  const beds = Object.entries(s.nightAssignments).filter(([, o]) => o && o !== 'kick') as [string, NightOutcome][]
+  beds.forEach(([a, ra], i) => beds.slice(i + 1).forEach(([b, rb]) => {
+    if (ra.slice(0, 2) === rb.slice(0, 2)) applyEffects(pairingEffects(pairings.room, a, b), `room:${a}+${b}`)
+  }))
   set({ history: { ...get().history, [s.day]: todayRecord() } })
+  recordChronicle()
 }
 
-function pairingEffects(newId: string, otherId: string): Effects {
-  const specific = pairings.pairs.find((p) => p.guests.includes(newId) && p.guests.includes(otherId))
+/** Pairing rule for two guests at one table / in one room: a specific pair, else the faction fallback. */
+function pairingEffects(rules: PairingRules, newId: string, otherId: string): Effects {
+  const specific = rules.pairs.find((p) => p.guests.includes(newId) && p.guests.includes(otherId))
   const [aId, bId] = specific ? specific.guests : [newId, otherId]
   let rule = specific?.effects
   if (!rule) {
     const fa = guestById(aId).faction
     const fb = guestById(bId).faction
-    rule = pairings.factionFallback[fa === fb ? 'same' : [fa, fb].sort().join('-')] ?? {}
+    rule = rules.factionFallback[fa === fb ? 'same' : [fa, fb].sort().join('-')] ?? {}
   }
   const out: Effects = {}
   for (const [k, d] of Object.entries(rule)) {
@@ -396,9 +433,58 @@ function pairingEffects(newId: string, otherId: string): Effects {
   return out
 }
 
-/** Inviting from the lounge needs an open pub, no seating overlay and no conversation already paused. */
-export const canInvite = (s: GameState = get()) =>
-  (s.phase === 'conversation' || s.phase === 'dayEnd') && !s.current?.fromLounge
+/** Inviting from the lounge needs a conversation at the bar (not seating) and no conversation already paused. */
+export const canInvite = (s: GameState = get()) => s.phase === 'conversation' && !s.paused
+
+// --- Chronicle (across playthroughs) --------------------------------------------------
+export interface ChronicleProgress { met: Record<string, boolean>; achievements: string[]; endings: string[] }
+export const readChronicle = (): ChronicleProgress =>
+  ({ met: {}, achievements: [], endings: [], ...readStore<ChronicleProgress>(CHRONICLE_KEY) })
+
+/** Remember a met guest; `named` once the player learned the name. */
+function noteMet(id: string, named: boolean) {
+  const c = readChronicle()
+  if (id in c.met && (c.met[id] || !named)) return
+  writeStore(CHRONICLE_KEY, { ...c, met: { ...c.met, [id]: named } })
+}
+
+/** After each night: unlock achievements; after the last night also the ending reached. */
+function recordChronicle() {
+  const c = readChronicle()
+  const ctx = conditionCtx()
+  const add = (have: string[], ids: string[]) => [...new Set([...have, ...ids])]
+  const achievements = add(c.achievements, chronicle.achievements.filter((a) => evaluate(a.when, ctx)).map((a) => a.id))
+  const endings = get().day < LAST_DAY ? c.endings : add(c.endings, chronicle.endings.filter((e) => {
+    const block = summaryBlocks.find((b) => b.id === e.block)
+    return !!block && (!block.when || evaluate(block.when, ctx))
+  }).map((e) => e.id))
+  writeStore(CHRONICLE_KEY, { ...c, achievements, endings })
+}
+
+// --- Saves ------------------------------------------------------------------------------
+interface SaveData { v: number; savedAt: number; state: Partial<GameState>; liveInk: string | null }
+export const saveInfo = (slot: SaveSlot) => {
+  const d = readStore<SaveData>(saveKey(slot))
+  return d?.v === SAVE_VERSION ? { day: d.state.day ?? 1, savedAt: d.savedAt } : null
+}
+
+function saveGame(slot: SaveSlot) {
+  const state: Record<string, unknown> = { ...get() }
+  for (const k of TRANSIENT) delete state[k]
+  writeStore(saveKey(slot), { v: SAVE_VERSION, savedAt: Date.now(), state, liveInk: story?.state.toJson() ?? null })
+}
+
+function loadGame(slot: SaveSlot) {
+  const d = readStore<SaveData>(saveKey(slot))
+  if (d?.v !== SAVE_VERSION) return
+  story = null
+  set({ ...d.state, overlay: null, readerOpen: null, noteOpen: null, slotPicker: null, corkPinFrom: null, dragGhost: null, slotRejected: null })
+  const cur = get().current
+  if (cur && d.liveInk) {
+    story = new Story(inkJson(guestById(cur.guest).ink))
+    story.state.LoadJson(d.liveInk)
+  }
+}
 
 /** Dev only: play earlier days automatically (first non-slot choice, first free seat, beds in arrival order). */
 function autoplayDay() {
@@ -408,7 +494,7 @@ function autoplayDay() {
     if (s.phase === 'seating') { actions.seat(s.seats.findIndex((x, i) => !x && i < s.tableCount * 4)); continue }
     const c = s.choices.find((ch) => !ch.slot)
     if (c) actions.choose(c.index)
-    else if (s.storyEnded) set({ phase: 'seating' })
+    else if (s.storyEnded) actions.closeConversation()
     else break
   }
   closeDay()
@@ -416,8 +502,15 @@ function autoplayDay() {
   endNight()
 }
 
+function addThing(itemId: string) {
+  const items = get().deskItems
+  const z = Math.max(0, ...items.map((i) => i.z)) + 1
+  const thing: ThingItem = { id: crypto.randomUUID(), kind: 'item', itemId, z, surface: 'desk', x: 500 + Math.random() * 900, y: 40 + Math.random() * 100 }
+  set({ deskItems: [...items, thing] })
+}
+
 export const actions = {
-  start: () => fadeTo(() => { set(newGame()); morning(1) }),
+  start: () => fadeTo(() => { set({ ...newGame(), overlay: null }); morning(1) }),
   playAgain: () => fadeTo(() => { set(newGame()); morning(1) }),
   nextDay: () => fadeTo(() => morning(get().day + 1)),
   // Opening/closing the pub always returns to the main view (the door button is also visible from the corkboard).
@@ -444,10 +537,12 @@ export const actions = {
     set({ usedClaims: [...s.usedClaims, { topic, claim: item.claim!, cutoutId, day: s.day, guestId }] })
     const from = item.source.type === 'scroll' ? `scroll ${item.source.kingdom}` : `conversation ${item.source.guestId}`
     logEvent(`slot:${guestId}`, `${topic} ← ${item.claim} (${from}) → choice "${pick.text}"`)
-    actions.choose(pick.index, { text: item.text, source: item.source, topic: item.topic, claim: item.claim, quest: item.quest })
+    actions.choose(pick.index, { text: item.text, source: item.source, topic: item.topic, claim: item.claim })
     return true
   },
   closeConversation: () => set({ phase: 'seating', readerOpen: null, noteOpen: null, view: 'main' }),
+  /** Seat picker closed without seating: back to the finished conversation. */
+  closeSeating: () => set({ phase: 'conversation' }),
   seat(seatIndex: number) {
     const s = get()
     const id = currentGuestId()
@@ -456,11 +551,13 @@ export const actions = {
     const mates = s.seats.slice(table * 4, table * 4 + 4).filter((x): x is string => !!x)
     const seats = [...s.seats]
     seats[seatIndex] = id
-    set({ seats })
-    for (const other of mates) applyEffects(pairingEffects(id, other), `seating:${id}+${other}`)
+    const transcripts = { ...s.transcripts, [id]: [...(s.transcripts[id] ?? []), { day: s.day, lines: s.chatLog }] }
+    set({ seats, transcripts })
+    for (const other of mates) applyEffects(pairingEffects(pairings.table, id, other), `seating:${id}+${other}`)
     story = null
-    set({ current: null })
+    set({ current: null, portraitVariant: null })
     next()
+    saveGame('auto')
   },
   invite(guestId: string) {
     const s = get()
@@ -481,7 +578,7 @@ export const actions = {
     endNight()
     fadeTo(() => set({ phase: 'summary' }))
   },
-  /** Dev only (GDD 13.3): restart and auto-play up to the morning of `day`. */
+  /** Dev only: restart and auto-play up to the morning of `day`. */
   debugJump(day: number) {
     if (day < 1 || day > LAST_DAY) return
     set(newGame())
@@ -513,6 +610,11 @@ export const actions = {
       noteOpen: get().noteOpen === id ? null : get().noteOpen,
       corkPinFrom: get().corkPinFrom === id ? null : get().corkPinFrom,
     }),
+  // Menu, saves, overlays
+  openOverlay: (overlay: Overlay | null) => set({ overlay }),
+  save: () => saveGame('manual'),
+  load: (slot: SaveSlot) => fadeTo(() => loadGame(slot)),
+
   addCutout(text: string, source: CutoutSource, meta: CutoutMeta = {}) {
     const items = get().deskItems
     const z = Math.max(0, ...items.map((i) => i.z)) + 1

@@ -15,14 +15,12 @@ const r: Ctx = {
       seats: ['mira', null, 'bohdan', null, 'eliska', null, null, null],
       night: { mira: 'r1a', bohdan: 'r1b', eliska: 'kick' },
       invited: [],
-      left: [],
     },
     2: {
       present: ['bohdan', 'radek', 'mira'],
       seats: ['radek', 'mira', null, null, 'bohdan', null, null, null],
       night: { bohdan: 'r2a', radek: 'kick', mira: 'r2b' },
       invited: ['mira'],
-      left: ['eliska'],
     },
   },
   meters: { stress: 6, k1: -3, k2: 0, k3: 2, mira: 1, bohdan: 0, eliska: -4 },
@@ -55,12 +53,10 @@ const cases: [Condition, boolean][] = [
   [{ inkVar: ['bohdan', 'told_secret', true] }, false],
   [{ invitedFromLounge: 'mira' }, true],
   [{ invitedFromLounge: ['mira', 1] }, false],
-  [{ leftLounge: 'eliska' }, true],
-  [{ leftLounge: 'mira' }, false],
   [{ usedClaim: ['fire', 'k2_soldiers'] }, true],
   [{ usedClaim: ['fire', 'accident'] }, false],
   [{ all: [{ present: 'mira' }, { not: { present: 'eliska' } }] }, true],
-  [{ any: [{ present: 'eliska' }, { leftLounge: 'bohdan' }] }, false],
+  [{ any: [{ present: 'eliska' }, { invitedFromLounge: 'bohdan' }] }, false],
 ]
 cases.forEach(([c, want], i) => ok(evaluate(c, r) === want, `summary case ${i} failed: ${JSON.stringify(c)} expected ${want}`))
 
@@ -69,7 +65,7 @@ const blocks = [
   { day: 2, text: 'day two' },
   { day: 1, text: 'day one' },
   { day: 'final' as const, text: 'ending {name:mira}' },
-  { day: 2, when: { leftLounge: 'mira' } as Condition, text: 'never' },
+  { day: 2, when: { invitedFromLounge: 'eliska' } as Condition, text: 'never' },
 ]
 const names = (id: string) => id.toUpperCase()
 ok(JSON.stringify(buildSummary(blocks, r, names)) === '["every day","day two"]', 'buildSummary day filter')

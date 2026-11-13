@@ -1,10 +1,10 @@
 {
-  "ota":     { "bed": { "self": 1, "k2": 1 }, "kick": { "self": -3, "k2": -1 } },
-  "hana":    { "bed": { "self": 2 },          "kick": { "self": -3, "k3": -1 },
-               "day2": { "bed": { "self": 2, "k3": 1 }, "kick": { "self": -4, "k3": -2 } } },
-  "vojtech": { "bed": { "self": 1 },          "kick": { "self": -2, "k1": -1 } },
-  "bertold": { "bed": { "self": 1, "k2": 1 }, "kick": { "self": -3, "k2": -2 } },
-  "jitka":   { "bed": { "self": 1, "k3": 1 }, "kick": { "self": -3, "k3": -1 } },
-  "mikulas": { "bed": { "self": 2 },          "kick": { "self": -2 } },
-  "sebor":   { "bed": { "self": 1 },          "kick": { "self": -2, "k3": -1 } }
+  "havel":      { "bed": { "self": 1 },          "kick": { "self": -3, "k3": -1 } },
+  "radomil":    { "bed": { "self": 1, "k1": 1 }, "kick": { "self": -3, "k1": -3 } },
+  "tetka":      { "bed": { "self": 1 },          "kick": { "self": -2, "k2": -1 } },
+  "bara":       { "bed": { "self": 2 },          "kick": { "self": -4 } },
+  "samael":     { "bed": { "self": 1, "k2": 1 }, "kick": { "self": -2, "k2": -2 } },
+  "ignac":      { "bed": { "self": 1, "k3": 1 }, "kick": { "self": -2, "k3": -1 } },
+  "pravdomluv": { "bed": { "self": 1 },          "kick": { "self": 0 },
+                  "day3": { "bed": { "self": 2 }, "kick": { "self": -1 } } }
 }

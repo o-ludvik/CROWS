@@ -3,7 +3,6 @@ import { ChatPanel } from '../components/ChatPanel'
 import { Corkboard, DragGhost } from '../components/Corkboard'
 import { Desk } from '../components/Desk'
 import { Lounge } from '../components/Lounge'
-import { MetersPanel } from '../components/MetersPanel'
 import { NoteReader } from '../components/NoteReader'
 import { ScrollReader } from '../components/ScrollReader'
 import { SeatingOverlay } from '../components/SeatingOverlay'
@@ -19,6 +18,10 @@ export function PubScreen() {
   const view = useGame((s) => s.view)
   const waiting = useGame((s) => s.loungeGuests.length)
   const day = useGame((s) => s.day)
+  const variant = useGame((s) => s.portraitVariant)
+  const total = useGame((s) => s.dayTotal)
+  const served = useGame((s) => s.seats.filter(Boolean).length)
+  const portrait = guestId && guestById(guestId).portrait
   return (
     <div className="screen pub">
       <div className={`pub-top view-${view}`}>
@@ -37,10 +40,20 @@ export function PubScreen() {
             </>
           ) : (
             // key → remount → CSS fade-in for each new (or returning) guest
-            <img key={guestId} className="portrait" src={guestById(guestId).portrait} alt="" />
+            // A `#portrait:<variant>` tell swaps the image instantly (guest_<id>_<variant>.png, base portrait if missing).
+            <img
+              key={guestId}
+              className="portrait"
+              src={variant ? portrait!.replace(/\.png$/, `_${variant}.png`) : portrait!}
+              onError={(e) => { if (variant) e.currentTarget.src = portrait! }}
+              alt=""
+            />
           )}
+          {/* Candle: shrinks by 1/total for every guest served today. */}
+          <div className="candle" title={t('candle', { n: total - served, total })}>
+            <div className="candle-wax" style={{ height: `${total ? (1 - served / total) * 100 : 0}%` }} />
+          </div>
         </div>
-        <MetersPanel />
         <ChatPanel />
         <Lounge />
       </div>
@@ -66,6 +79,7 @@ export function PubScreen() {
         </button>
       )}
       <div className="day-label">{t('dayLabel', { n: day })}</div>
+      <button type="button" className="log-arrow" title={t('characterLog')} onClick={() => actions.openOverlay('log')}>▼</button>
       <Desk />
       <DragGhost />
       {readerOpen && <ScrollReader scrollId={readerOpen} />}

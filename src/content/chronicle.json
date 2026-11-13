@@ -1,0 +1,80 @@
+{
+  "achievements": [
+    {
+      "id": "clean_hands",
+      "name": "Čisté ruce",
+      "description": "Odmítněte varhořský měšec.",
+      "when": {
+        "inkVar": [
+          "radomil",
+          "refused_bribe",
+          true
+        ]
+      }
+    },
+    {
+      "id": "safe_harbor",
+      "name": "Bezpečný přístav",
+      "description": "Uložte Báru na pokoj s Tetkou.",
+      "when": {
+        "roommates": [
+          "bara",
+          "tetka"
+        ]
+      }
+    },
+    {
+      "id": "cut_in",
+      "name": "Předbíhání",
+      "description": "Zavolejte Báru z lounge k pultu.",
+      "when": {
+        "invitedFromLounge": "bara"
+      }
+    },
+    {
+      "id": "unmasked",
+      "name": "Lži do očí",
+      "description": "Řekněte varhořskému poslovi, co je doopravdy v údolí.",
+      "when": {
+        "inkVar": [
+          "radomil",
+          "unmasked",
+          true
+        ]
+      }
+    },
+    {
+      "id": "powder",
+      "name": "Čmouhy od prachu",
+      "description": "Ukažte Pravdomluvovi stopy na kamenech.",
+      "when": {
+        "usedClaim": [
+          "road",
+          "powder"
+        ]
+      }
+    }
+  ],
+  "endings": [
+    {
+      "id": "pact",
+      "name": "Pakt drží",
+      "block": "final_pact"
+    },
+    {
+      "id": "trap",
+      "name": "Past v údolí",
+      "block": "final_trap"
+    },
+    {
+      "id": "war",
+      "name": "Válka",
+      "block": "final_war"
+    },
+    {
+      "id": "silence",
+      "name": "Mlčení",
+      "block": "final_silence"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-// Day schedule (GDD 4, 7a, 14.9) and start-up content validation. Pure, so the node checks can run it.
-import type { DayDef, Guest, Kingdom, Night, Pairings, Quest, Scroll, SummaryBlock, Visit } from '../content/index.ts'
+// Day schedule (gameplay_SoT: Level Design, Lounge) and start-up content validation. Pure, so the node checks can run it.
+import type { Chronicle, DayDef, Guest, Item, Kingdom, Night, Pairings, Scroll, SummaryBlock, Visit } from '../content/index.ts'
 import { evaluate, type Ctx } from './summary.ts'
 
 /** Today's queue: entries whose `when` holds (ctx = previous day), shuffled if the day asks for it. */
@@ -41,16 +41,17 @@ export interface ContentBundle {
   kingdoms: Kingdom[]
   guests: Guest[]
   scrolls: Scroll[]
-  quests: Quest[]
+  items: Item[]
   topics: Record<string, string>
   days: DayDef[]
   summary: SummaryBlock[]
   night: Night
   pairings: Pairings
+  chronicle: Chronicle
   ink: Record<string, object | undefined>
 }
 
-const TAG_KINDS = new Set(['cut', 'quest', 'slot', 'reveal', 'aff', 'stress', 'bartender'])
+const TAG_KINDS = new Set(['cut', 'slot', 'reveal', 'aff', 'stress', 'bartender', 'item', 'portrait'])
 
 /** Human-readable problems with the content; empty when everything is consistent. */
 export function validateContent(c: ContentBundle): string[] {
@@ -58,7 +59,7 @@ export function validateContent(c: ContentBundle): string[] {
   const err = (where: string, msg: string) => errors.push(`${where}: ${msg}`)
   const kingdom = new Set<string>(c.kingdoms.map((k) => k.id))
   const guest = new Map(c.guests.map((g) => [g.id, g]))
-  const quest = new Set(c.quests.map((q) => q.id))
+  const item = new Set(c.items.map((i) => i.id))
   const scroll = new Set(c.scrolls.map((s) => s.id))
 
   for (const g of c.guests) {
@@ -67,13 +68,11 @@ export function validateContent(c: ContentBundle): string[] {
   }
   for (const s of c.scrolls) {
     if (!kingdom.has(s.kingdom)) err(`scrolls.json ${s.id}`, `unknown kingdom "${s.kingdom}"`)
-    s.articles.forEach((a, ai) => {
-      if (a.quest && !quest.has(a.quest)) err(`scrolls.json ${s.id}[${ai}]`, `unknown quest "${a.quest}"`)
+    s.articles.forEach((a) => {
       for (const seg of a.paragraphs.flat()) {
-        if (seg.quest && !quest.has(seg.quest)) err(`scrolls.json ${s.id}`, `unknown quest "${seg.quest}"`)
         if (seg.topic && !(seg.topic in c.topics)) err(`scrolls.json ${s.id}`, `unknown topic "${seg.topic}"`)
         if (seg.topic && !seg.claim) err(`scrolls.json ${s.id}`, `segment with topic "${seg.topic}" has no claim`)
-        if ((seg.topic || seg.quest) && !seg.cut) err(`scrolls.json ${s.id}`, `topic/quest on a segment that is not cuttable`)
+        if (seg.topic && !seg.cut) err(`scrolls.json ${s.id}`, `topic on a segment that is not cuttable`)
       }
     })
   }
@@ -111,12 +110,14 @@ export function validateContent(c: ContentBundle): string[] {
       if (!TAG_KINDS.has(kind)) err(where, `unknown tag`)
       if ((kind === 'slot' || (kind === 'cut' && a)) && !(a in c.topics)) err(where, `unknown topic "${a}"`)
       if ((kind === 'slot' || (kind === 'cut' && a)) && !b) err(where, `missing claim`)
-      if (kind === 'quest' && !quest.has(a)) err(where, `unknown quest "${a}"`)
+      if (kind === 'item' && !item.has(a)) err(where, `unknown item "${a}"`)
+      if (kind === 'portrait' && !a) err(where, `missing portrait variant`)
       if (kind === 'aff' && a !== 'self' && !kingdom.has(a) && !guest.has(a)) err(where, `unknown meter "${a}"`)
     }
   }
 
-  for (const p of c.pairings.pairs) for (const id of p.guests) if (!guest.has(id)) err('pairings.json', `unknown guest "${id}"`)
+  for (const p of [...c.pairings.table.pairs, ...c.pairings.room.pairs]) for (const id of p.guests) if (!guest.has(id)) err('pairings.json', `unknown guest "${id}"`)
+  for (const e of c.chronicle.endings) if (!c.summary.some((b) => b.id === e.block && b.day === 'final')) err(`chronicle.json ${e.id}`, `no final summary block "${e.block}"`)
   for (const id of Object.keys(c.night)) if (!guest.has(id)) err('night.json', `unknown guest "${id}"`)
   for (const b of c.summary) {
     for (const m of b.text.matchAll(/\{(name|kingdom):(\w+)\}/g)) {

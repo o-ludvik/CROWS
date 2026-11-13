@@ -1,6 +1,6 @@
 import { currentGuestId, liveInkVars, useGame } from '../store/gameStore'
 
-/** Read-only state dump, toggled with the key under Esc. In dev builds, keys 1–3 jump to that day (GDD 13.3). */
+/** Read-only state dump (incl. the hidden meters), toggled with the key under Esc. In dev builds, keys 1–3 jump to that day. */
 export function DebugPanel() {
   const s = useGame()
   const dump = {
@@ -11,11 +11,11 @@ export function DebugPanel() {
     queue: s.queue.map((v) => `${v.guest}:${v.knot}`),
     lounge: s.loungeGuests.map((v) => `${v.guest}:${v.knot}`),
     invitedFromLounge: s.invitedFromLounge,
-    leftLounge: s.leftLounge,
     currentGuest: s.current && `${currentGuestId()}:${s.current.knot}`,
     pausedConversation: s.paused && `${s.paused.visit.guest}:${s.paused.visit.knot}`,
     todayGuests: s.todayGuests,
     meters: s.meters,
+    portraitVariant: s.portraitVariant,
     revealed: Object.fromEntries(Object.entries(s.revealed).filter(([, r]) => r.name || r.faction)),
     seats: s.seats,
     nightAssignments: s.nightAssignments,

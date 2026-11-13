@@ -1,7 +1,7 @@
 import { useRef, useState, type PointerEvent } from 'react'
 import { DESK, MINIMAP, TOP_H, TRASH, actions, useGame, type DeskItem } from '../store/gameStore'
 import { pointerInCork } from './Corkboard'
-import { ItemFace, cutoutTitle, itemLook, toneStyle } from './IconBadge'
+import { ItemFace, itemLook, itemTitle, toneStyle } from './IconBadge'
 import { getScale } from './Stage'
 import { stagePoint } from './stageCoords'
 import { Tables } from './Tables'
@@ -71,7 +71,8 @@ function Item({ item, onOverTrash }: { item: DeskItem; onOverTrash: (over: boole
 
     if (useGame.getState().view === 'cork') {
       const cork = pointerInCork(e, d.ox, d.oy, d.w, d.h)
-      if (cork) return actions.setItemSurface(item.id, 'cork', cork.x, cork.y)
+      // Items a guest gave stay on the desk; only scrolls and cutouts get pinned.
+      if (cork && item.kind !== 'item') return actions.setItemSurface(item.id, 'cork', cork.x, cork.y)
       const p = stagePoint(e)
       const deskX = Math.max(0, Math.min(DESK.w - d.w, p.x - d.ox))
       const deskY = Math.max(0, Math.min(DESK.h - d.h, p.y - d.oy - TOP_H))
@@ -118,7 +119,7 @@ function Item({ item, onOverTrash }: { item: DeskItem; onOverTrash: (over: boole
     <div
       className={`desk-item ${item.kind}${look.tone ? ' toned' : ''}${ghosting ? ' ghosting' : ''}`}
       style={{ left: item.x, top: item.y, zIndex: item.z, ...toneStyle(look.tone) }}
-      title={item.kind === 'cutout' ? cutoutTitle(item, s) : undefined}
+      title={itemTitle(item, s)}
       onPointerDown={down}
       onPointerMove={move}
       onPointerUp={up}
